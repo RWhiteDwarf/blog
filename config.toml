@@ -1,6 +1,6 @@
-baseURL = "https://example.com"
-title = "Blonde"
-author = "wamo"
+baseURL = "https://rwhitedwarf.onrender.com"
+title = "R with White Dwarf"
+author = "teoten"
 languageCode = "en"
 DefaultContentLanguage = "en"
 enableInlineShortcodes = true
