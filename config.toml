@@ -22,10 +22,10 @@ enableRobotsTXT = true
 base_color = "bg-gray-800"
 
 #Site description
-description = "Blonde theme for Hugo."
+description = "R tutorials and guides."
 
 # The number of articles to be displayed on a single page.
-paginator_pages = "5"
+paginator_pages = "10"
 
 # Enable this if you want the archive list to be in a drop-down format.
 archive_dropdown = "false"
