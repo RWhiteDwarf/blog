@@ -7,6 +7,20 @@ enableInlineShortcodes = true
 theme = "Blonde"
 enableRobotsTXT = true
 
+# Enable for syntax highlighting
+pygmentsUseClasses = false
+pygmentsCodefences = true
+
+[markup.highlight]
+      style = "syntax"
+      codeFences = true
+      guessSyntax = true
+      ineNoStart = 1
+      lineNos = true
+      lineNumbersInTable = true
+      tabWidth = 4
+      noClasses = true
+      
 # Please enable this feature if the site is available in Japanese, Chinese or Korean.
 #hasCJKLanguage = true
 
