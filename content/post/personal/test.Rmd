@@ -1,12 +1,17 @@
 ---
-title: "My Rmd Post"
-date: "2021-11-25"
-tags: ["plot"]
-draft: "false"
-categories: ["R"]
+author: "Manuel T."
+title: "Basic setup"
+image: "img/prism.jpg"
+draft: true
+date: 2021-11-25
+description: "Basic setup of Rmd"
+tags: ["personal"]
+categories: ["personal"]
+archives: ["2021"]
 ---
+# General info
 
-# And R post
+# An R post
 
 ```{r setup}
 library(ggplot2)
