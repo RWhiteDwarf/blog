@@ -1,37 +1,37 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Posts on R with White Dwarf</title>
-    <link>https://rwhitedwarf.onrender.com/post/</link>
-    <description>Recent content in Posts on R with White Dwarf</description>
+    <title>Posts on Blonde</title>
+    <link>https://example.com/post/</link>
+    <description>Recent content in Posts on Blonde</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Thu, 25 Nov 2021 08:28:22 +0100</lastBuildDate><atom:link href="https://rwhitedwarf.onrender.com/post/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 25 Nov 2021 08:28:22 +0100</lastBuildDate><atom:link href="https://example.com/post/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>My First Post</title>
-      <link>https://rwhitedwarf.onrender.com/post/my-first-post/</link>
+      <link>https://example.com/post/my-first-post/</link>
       <pubDate>Thu, 25 Nov 2021 08:28:22 +0100</pubDate>
       
-      <guid>https://rwhitedwarf.onrender.com/post/my-first-post/</guid>
+      <guid>https://example.com/post/my-first-post/</guid>
       <description>New post My firrst post with Hugo</description>
     </item>
     
     <item>
       <title>My Rmd Post</title>
-      <link>https://rwhitedwarf.onrender.com/post/test/</link>
+      <link>https://example.com/post/test/</link>
       <pubDate>Thu, 25 Nov 2021 08:28:22 +0100</pubDate>
       
-      <guid>https://rwhitedwarf.onrender.com/post/test/</guid>
+      <guid>https://example.com/post/test/</guid>
       <description>  And R post library(ggplot2) library(dplyr) ## ## Attaching package: &amp;#39;dplyr&amp;#39; ## The following objects are masked from &amp;#39;package:stats&amp;#39;: ## ## filter, lag ## The following objects are masked from &amp;#39;package:base&amp;#39;: ## ## intersect, setdiff, setequal, union smaller &amp;lt;- diamonds %&amp;gt;% filter(carat &amp;lt;= 2.5) We have data about 53940 diamonds. Only 126 are larger than 2.5 carats. The distribution of the remainder is shown below:
  </description>
     </item>
     
     <item>
       <title>Hello R Markdown</title>
-      <link>https://rwhitedwarf.onrender.com/post/2020-12-01-r-rmarkdown/</link>
+      <link>https://example.com/post/2020-12-01-r-rmarkdown/</link>
       <pubDate>Tue, 01 Dec 2020 21:13:14 -0500</pubDate>
       
-      <guid>https://rwhitedwarf.onrender.com/post/2020-12-01-r-rmarkdown/</guid>
+      <guid>https://example.com/post/2020-12-01-r-rmarkdown/</guid>
       <description>R Markdown This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see http://rmarkdown.rstudio.com.
 You can embed an R code chunk like this:
 summary(cars) ## speed dist ## Min. : 4.0 Min. : 2.00 ## 1st Qu.:12.0 1st Qu.: 26.00 ## Median :15.0 Median : 36.00 ## Mean :15.4 Mean : 42.</description>
