@@ -46,7 +46,7 @@ We have data about 53940 diamonds. Only
 2.5 carats. The distribution of the remainder is shown
 below:
 
-![plot of chunk unnamed-chunk-1](post/personal/figure/unnamed-chunk-1-1.png)
+![plot of chunk unnamed-chunk-1](/post/personal/figure/unnamed-chunk-1-1.png)
 
  For images, we can tell `knitr` to store the resulted images in the static directory, like:
  
