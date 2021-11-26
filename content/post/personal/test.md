@@ -2,7 +2,7 @@
 author: "Manuel T."
 title: "Basic setup"
 image: "img/prism.jpg"
-draft: true
+draft: false
 date: 2021-11-25
 description: "Basic setup of Rmd"
 tags: ["personal"]
@@ -53,7 +53,7 @@ below:
  
 
 ```r
-opts_knit$set(base.dir = '/home/teoten/Code/WebApps/Rwhitedwarf-blog/static/post/test/')
+opts_knit$set(base.dir = '¬/Code/WebApps/Rwhitedwarf-blog/static/post/test/')
 ```
 Here, the final folder *test* does not yet exists, but it'll be created.
 
