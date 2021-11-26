@@ -2,7 +2,7 @@
 author: "Manuel T."
 title: "Basic setup"
 image: "img/prism.jpg"
-draft: true
+draft: false
 date: 2021-11-25
 description: "Basic setup of Rmd"
 tags: ["personal"]
@@ -17,7 +17,26 @@ archives: ["2021"]
 ```r
 library(ggplot2)
 library(dplyr)
+```
 
+```
+## 
+## Attaching package: 'dplyr'
+```
+
+```
+## The following objects are masked from 'package:stats':
+## 
+##     filter, lag
+```
+
+```
+## The following objects are masked from 'package:base':
+## 
+##     intersect, setdiff, setequal, union
+```
+
+```r
 smaller <- diamonds %>% 
   filter(carat <= 2.5)
 ```
