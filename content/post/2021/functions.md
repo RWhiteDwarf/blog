@@ -1,0 +1,51 @@
+---
+author: "Teoten"
+title: "Functions in R"
+image: ""
+draft: false
+date: 2021-11-26
+description: "Basic description of functions in R"
+tags: ["R tips", "R basics", "R functions"]
+categories: ["R"]
+archives: ["2021"]
+---
+# Background
+
+This is the first post of R with White Dwarf and I decided to start this blog with a basic tutorial. There is already a lot of information in the web about getting started with R. With a simple google search you can easily find info on how to install it, how to use R studio or other text editor, learn about the basic functions and concepts, etc. Therefore, I decided to start with a topic that is also basic but slightly less common: Functions.
+
+How to create a function is not an easy topic for non-programmers and non-mathematicians, Myself I have a background in ecology and when I started using R for my statistical analysis I was avoiding using functions at all cost, while most of my colleagues where avoiding R fully. Many people has the idea that, as a programming language, R is really difficult to use and it should be left for the initiated ones. They end up using user interface based-software which assumes not only that the user doesn't know about programming, but also about statistics. It limits the possibilities of what you can do with your data and as a result, it limits also what you can learn. 
+
+In today's world, it is important to to have at least a basic understanding of programming. [DEVELOP MORE HERE]
+
+
+# Understanding functions in R
+
+Using R is not difficult and creating functions the same. Basically, when we use R we are using functions all the time. When you can to obtain the summation of values, or the mean or standard deviation, you are simply calling a function to do that. 
+
+
+
+```r
+values <- c(2, 3, 4, 5)
+sum(values)
+```
+
+[1] 14
+
+```r
+mean(values)
+```
+
+[1] 3.5
+
+```r
+sd(values)
+```
+
+[1] 1.290994
+
+
+[CALL MEAN AND THEN MAKE IT AS FUNC]
+
+## Starting from scratch
+
+# A practical example

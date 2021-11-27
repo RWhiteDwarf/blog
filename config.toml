@@ -96,9 +96,9 @@ darkmode = "light"
     weight = 2
 
   [[menu.main]]
-    identifier = "contact"
-    name = "Contact"
-    url = "/contact/"
+    identifier = "archives"
+    name = "Archives"
+    url = "/archives/"
     weight = 3
 
 [taxonomies]
