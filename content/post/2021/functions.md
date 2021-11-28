@@ -8,8 +8,10 @@ description: "Basic description of functions in R"
 tags: ["R tips", "R basics", "R functions"]
 categories: ["R"]
 archives: ["2021"]
+editor_options:
+  chunk_output_type: console
 ---
-# Background
+## Background
 
 This is the first post of R with White Dwarf and I decided to start this blog with a basic tutorial. There is already a lot of information in the web about getting started with R. With a simple google search you can easily find info on how to install it, how to use R studio or other text editor, learn about the basic functions and concepts, etc. Therefore, I decided to start with a topic that is also basic but slightly less common: Functions.
 
@@ -18,9 +20,11 @@ How to create a function is not an easy topic for non-programmers and non-mathem
 In today's world, it is important to to have at least a basic understanding of programming. [DEVELOP MORE HERE]
 
 
-# Understanding functions in R
+## Understanding functions in R
 
 Using R is not difficult and creating functions the same. Basically, when we use R we are using functions all the time. When you can to obtain the summation of values, or the mean or standard deviation, you are simply calling a function to do that. 
+
+
 
 
 
@@ -29,23 +33,33 @@ values <- c(2, 3, 4, 5)
 sum(values)
 ```
 
-[1] 14
+```
+> [1] 14
+```
 
 ```r
 mean(values)
 ```
 
-[1] 3.5
+```
+> [1] 3.5
+```
 
 ```r
 sd(values)
 ```
 
-[1] 1.290994
+```
+> [1] 1.290994
+```
 
 
 [CALL MEAN AND THEN MAKE IT AS FUNC]
 
-## Starting from scratch
+### Starting from scratch
 
-# A practical example
+## A practical example
+
+### Why to write functions
+
+### Example

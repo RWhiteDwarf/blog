@@ -149,10 +149,14 @@ archive = "archives"
       xhtml = false
     [markup.highlight]
       style = 'emacs'
+      cssstyles = 'emacs'
+      prestyles = 'emacs'
       codeFences = true
       guessSyntax = true
       ineNoStart = 1
       lineNos = true
+      linenos = 'table'
       lineNumbersInTable = true
       tabWidth = 4
       noClasses = true
+      wrapcode = true
