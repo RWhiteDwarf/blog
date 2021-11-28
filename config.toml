@@ -11,15 +11,6 @@ enableRobotsTXT = true
 pygmentsUseClasses = false
 pygmentsCodefences = true
 
-[markup.highlight]
-      style = "syntax"
-      codeFences = true
-      guessSyntax = true
-      ineNoStart = 1
-      lineNos = true
-      lineNumbersInTable = true
-      tabWidth = 4
-      noClasses = true
       
 # Please enable this feature if the site is available in Japanese, Chinese or Korean.
 #hasCJKLanguage = true
@@ -135,3 +126,33 @@ archive = "archives"
 
 [build]
   writeStats = true
+
+[markup]
+  [markup.goldmark]
+    [markup.goldmark.extensions]
+      definitionList = true
+      footnote = true
+      linkify = true
+      strikethrough = true
+      table = true
+      taskList = true
+      typographer = true
+    [markup.goldmark.parser]
+      autoHeadingID = true
+      autoHeadingIDType = 'github'
+      #[markup.goldmark.parser.attribute]
+      #  block = false
+      #  title = true
+    [markup.goldmark.renderer]
+      hardWraps = false
+      unsafe = false
+      xhtml = false
+    [markup.highlight]
+      style = 'emacs'
+      codeFences = true
+      guessSyntax = true
+      ineNoStart = 1
+      lineNos = true
+      lineNumbersInTable = true
+      tabWidth = 4
+      noClasses = true

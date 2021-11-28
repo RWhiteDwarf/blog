@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Posts on R with White Dwarf</title>
+    <link>https://blog.rwhitedwarf.com/post/</link>
+    <description>Recent content in Posts on R with White Dwarf</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Sun, 28 Nov 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.rwhitedwarf.com/post/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Functions in R</title>
+      <link>https://blog.rwhitedwarf.com/post/2021/functions/</link>
+      <pubDate>Sun, 28 Nov 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.rwhitedwarf.com/post/2021/functions/</guid>
+      <description>Background This is the first post of R with White Dwarf and I decided to start this blog with a basic tutorial. There is already a lot of information in the web about getting started with R. With a simple google search you can easily find info on how to install it, how to use R studio or other text editor, learn about the basic functions and concepts, etc. Therefore, I decided to start with a topic that is also basic but slightly less common: Functions.</description>
+    </item>
+    
+  </channel>
+</rss>
