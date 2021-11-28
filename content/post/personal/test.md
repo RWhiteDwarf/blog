@@ -2,7 +2,7 @@
 author: "Manuel T."
 title: "Basic setup"
 image: "img/prism.jpg"
-draft: false
+draft: true
 date: 2021-11-25
 description: "Basic setup of Rmd"
 tags: ["personal"]

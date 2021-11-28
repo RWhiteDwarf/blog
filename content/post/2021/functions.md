@@ -3,7 +3,7 @@ author: "Teoten"
 title: "Functions in R"
 image: ""
 draft: false
-date: 2021-11-26
+date: 2021-11-28
 description: "Basic description of functions in R"
 tags: ["R tips", "R basics", "R functions"]
 categories: ["R"]
