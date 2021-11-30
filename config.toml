@@ -1,6 +1,6 @@
 baseURL = "https://blog.rwhitedwarf.com"
 title = "R with White Dwarf"
-author = "teoten"
+author = "White Dwarf"
 languageCode = "en"
 DefaultContentLanguage = "en"
 enableInlineShortcodes = true
@@ -20,6 +20,9 @@ pygmentsCodefences = true
 
 # Disqus Comment System
 #disqusShortname = ""
+
+# RSS
+copyright = '2021 R White Dwarf all rights reserved'
 
 [params]
 # Base color of the website.
