@@ -1,9 +1,9 @@
 ---
 author: "Teoten"
 title: "Functions in R"
-image: ""
+image: "img/Screenshot_functions_in_R_fragment.png"
 draft: false
-date: 2021-11-28
+date: 2021-11-30
 description: "Basic description of functions in R"
 tags: ["R tips", "R basics", "R functions"]
 categories: ["R"]
@@ -14,15 +14,15 @@ archives: ["2021"]
 
 ## Background
 
-This is the first post of R with White Dwarf and I decided to start this blog with a basic tutorial. There is already a lot of information in the web about getting started with R. With a simple google search you can easily find info on how to install it, how to use R studio or other text editor, learn about the basic functions and concepts, what is a vector, a data frame, how to use them, etc. Therefore, I decided to start with a topic that is also basic but slightly less common: Functions.
+This is the first post of R with White Dwarf and I decided to start this blog with a basic tutorial. There is already a lot of information in the web about getting started with R. With a simple google search you can easily find info on how to install it, how to use R studio or other text editor, learn about the basic functions and concepts, what is a vector, a data frame, how to use them, etc. Therefore, I decided to start with a topic that is also basic and fundamental but slightly less common: Functions.
 
-How to create a function is not an easy topic for non-programmers and non-mathematicians, Myself I have a background in ecology and when I started using R for my statistical analysis I was avoiding using functions at all cost, while most of my colleagues where avoiding R fully. Many people has the idea that, as a programming language, R is really difficult to use and it should be left for the initiated ones. They end up using user interface based-software which assumes not only that the user doesn't know about programming, but also about statistics. It limits the possibilities of what you can do with your data and as a result, it limits also what you can learn. 
+How to create a function is not an easy topic for non-programmers and non-mathematicians, Myself I have a background in Ecology and when I started using R for my statistical analysis I was avoiding using functions at all cost, while most of my colleagues where avoiding R fully. Many people has the idea that, as a programming language, R is really difficult to use and it should be left for the initiated ones. They end up using user interface based-software which assumes not only that the user doesn't know about programming, but also about statistics. It makes things easy for the user but also limits the possibilities of what you can do with your data and as a result, it also what you can learn. 
 
-In today's world, it is important to to have at least a basic understanding of programming. **[DEVELOP MORE HERE]**
+In today's world, it is important to to have at least a basic understanding of programming. Learning how to write simple functions in R will widen your perception about R and programming by showing you that it is actually easy. I am writing this post especially for all the people who are not programmers, not statisticians and are thinking to learn R. By the end of the post I hope that you can agree with me that writing functions in R is not difficult. 
 
 ## How to write functions in R
 
-Using R is not difficult and creating functions the same. Basically, when we use R we are using functions all the time. When you want to obtain the summation of values, or the mean or standard deviation, you are simply calling a function to do that. 
+Basically, when we use R we are using functions all the time. When you want to obtain the summation of values, or the mean or standard deviation, you can simply call a function to do that 
 
 ```r
 values <- c(2, 3, 4, 5)
@@ -32,7 +32,7 @@ sum(values)
 ```
 > [1] 14
 ```
-As you should already know from any R tutorial, the example above is storing the values in the vector `value` and the calling the functions `sum` to obtain the summation of the values. One way to create our own function of sum would be:
+As you should already know from any R tutorial, the example above is storing the values in the vector `value` and then calling the function `sum` to obtain the summation of the values. One way to create our own version of sum would be:
 
 ```r
 my_sum <- function(user.values){
@@ -53,9 +53,9 @@ my_sum(values)
 ```
 > [1] 14
 ```
-Let's go piece by piece. Line no. *1* is simply placing the function that we are creating into the object `my_sum` which means that later, we can call our function using that same word: `my_func(some values)`. This is similar to creating a vector or data frame or variables, as you know, if you enter `x <- 12` then each time you type `x` in the console it will return the value `12`, and so it explains line *2*, when we define `cumulative.sum <- user.values[1]` this storage the first value defined by the user into the variable `cumulative.sum`. It means that now we can start by adding the second value to the `cumulative.sum`, then we move forward to the third value, and so on until the end of the table. This is define in the for loop: we move value by value from the second element to the last one: `for(i in 2:length(user.values))`, each time we stored the cumulative value in our variable `cumulative.sum` until we reach the last value. I will not go deep into the for loop, but I understand that it can also be somehow complicated for a beginner, if it is your case I invite you to leave us a comment (you will need a github account for that) and I might cover it in a future issue.
+Let's go piece by piece. Line no. *1* is simply placing the function that we are creating into the object `my_sum` which means that later, we can call our function using that same argument: `my_func(some values)`. This is similar to creating a vector or data frame or variables, as you know, if you enter `x <- 12` then each time you type `x` in the console it will return the value `12`, and so it explains line *2*, when we define `cumulative.sum <- user.values[1]` this places the first value of the vector `user.values` into the variable `cumulative.sum`. It means that now we can start by adding the second value to the `cumulative.sum`, then we move forward to the third value, and so on until the last element in the vector. This process is defined in the for loop: we move value by value from the second element to the last one: `for(i in 2:length(user.values))`, each time we stored the cumulative value in our variable `cumulative.sum` until we reach the last value. I will not go deep into the for loop, but I understand that it can also be somehow complicated for a beginner, if it is your case I invite you to leave us a comment (you will need a github account for that) and I might cover it in a future issue.
 
-Once we are outside the for loop we already have the final value stored in `cumulative.sum`, so we make sure that our function is returning exactly that by using `return(cumulative.sum)`. If you have seen some other tutorials you might have noticed that the `return()` is not always added at the end of the function. And indeed, it is not strictly necessary (more on that later), but as a beginner it is good to start with good habits and defining what exactly you want your function to return is a good habit for your future functions. 
+Once we are outside the for loop we have collected the final value in `cumulative.sum` so, we make sure that our function is returning exactly that by using `return(cumulative.sum)`. If you have seen some other tutorials you might have noticed that the `return()` is not always added at the end of the function. And indeed, it is not strictly necessary (more on that later), but as a beginner it is good to start with good habits and defining what exactly you want your function to return is a good habit for your future functions. 
 
 ### Simple error handling
 
@@ -107,11 +107,11 @@ my_sum(12)
 ```
 > Error in my_sum(12): We cannot sum individual values here!
 ```
-I am sure that with this basic info you can move forward and improve it even more to send an error message when an object other than a vector is entered. Some hints: You can use the function `is.vector()` to test if the value entered by the user is a vector or not; and you can place one if statement inside the other, first to check if it is a vector, and secondly to check its size.
+I am sure that with this basic info you can already move forward and improve it even more to send an error message when an object other than a vector is entered. Try to do it yourself and feel free to leave me a comment below if you get any trouble. Some hints: You can use the function `is.vector()` to test if the value entered by the user is a vector or not; and you can place one if statement inside the other, first to check if it is a vector, and secondly to check its size.
 
 ### Function arguments
 
-You might be wondering what about the argument used as variable `user.values`, where does it come from? how is it defined? how does R knows how to use it? Keeping it simple, all the arguments that you define inside the parenthesis of a function will be searched by R when you execute the function and use them accordingly. You can easily see how we were using the variable `user.values` to tell the rest of the program what to do with it. The function has no idea if the user will enter a single value, a vector or a data frame, this is the reason why we created the errors with `stop()`. As the creator of the function, it is your role to decide what kind of object you need, how to use it and how to ensure that the user knows what is wrong if an unexpected object is entered. 
+You might be wondering what about the argument used as variable `user.values`, where does it come from? how is it defined? how does R knows how to use it? Keeping it simple, all the arguments that you define inside the parenthesis of a function will be searched by R when you execute the function and will be used accordingly. You can easily see how we were using the variable `user.values` to tell the rest of the program what to do with it. The function has no idea if the user will enter a single value, a vector or a data frame, this is the reason why we created the errors with `stop()`. As the creator of the function, it is your role to decide what kind of object you need, how to use it and how to ensure that the user knows what is wrong if an unexpected object is entered. 
 
 You can define as many arguments as you wish for your function, for example
 
@@ -175,7 +175,7 @@ sum_four_nums(c(2, 4, 6, 8))
 ```
 > Error in sum_four_nums(c(2, 4, 6, 8)): argument "num2" is missing, with no default
 ```
-As I mentioned already, R is not aware of what type of object the user should enter, therefore we could as well enter only vector, or vector and numbers, and R will simply apply the `sum()` function to whatever is inside it, because this is how we defined our function
+As I mentioned already, R is not aware of what type of object the user should enter, therefore we could as well enter only a vector, or vector and numbers, and R will simply apply the `sum()` function to whatever is inside it, because this is how we defined our function
 
 
 ```r
@@ -270,52 +270,24 @@ sum_other_vector()
 ```
 here I have created a similar function but this time I did not create the object `my.vector` inside it, therefore R is using the one that I loaded into the working environment as `my.vector <- c(1, 2, 3)`. 
 
-We could consider the objects created inside the function as local variables, and the ones defines outside of the function as global variables. Other programming languages handle this two kinds of variables differently, often by initiating the global variables with special characters, or creating them using special functions, in order to avoid mistakes and confusion. In R you should be very careful on how you name your objects and where you use them when you are creating functions.
+We could consider the objects created inside the function as local variables because they have local effect only, and the ones defined outside of the function as global variables. Other programming languages make a clear difference of this two and handle each of them differently, often by initiating the global variables with special characters, or creating them using special functions, in order to avoid mistakes and confusion. In R you should be very careful on how you name your objects and where you use them when you are creating functions.
 
 On the other hand it has the advantage that it is very easy to create functions that use the same structure of data. For example, I could create a data frame called `elements` that will always contain the columns called `Pb`, `As`, `Cd` and `Zn` and then just make functions that take no arguments to do all my statistics at once by calling the same table and the same columns inside them. 
 
 ## Why to write functions
 
-As mentioned above, I started writing functions when I did my Ph.D. I was working with contaminated soils and basically for all my projects I had to analyze data of concentration of elements. This means that for each project, I had to repeat the same process for each element and then, for the next project do the same for the new data and for other or more elements. Luckily my first project was only about 4 different elements. I did a script for the statistics and visualizations of the first element, organize the workflow, decided what would be variable and what constant, and created two functions, one for the statistics and one for the visualizations, based on the output of the first one, and then just applied the functions to the remaining 3 elements.
+As mentioned above, I started writing functions when I did my Ph.D. I was working with contaminated soils and basically for all my projects I had to analyze data of concentration of elements. This means that for each project, I had to repeat the same process for each element and then, for the next project do the same for the new data and for different or more elements. Luckily my first project was only focused on 4 different elements. I did a script for the statistics and visualizations of the first element, organize the workflow, decided what would be variable and what constant, and created two functions, one for the statistics and one for the visualizations, based on the output of the first one, and then just applied the functions to the remaining 3 elements.
 
-When I got the first results of my second experiment it was about more than 10 different elements, and that only for soils, I knew that later I'd have to do the same for different parts of the plants. Therefore I decided to create a package. I simply googled how to put all together in a package, installed it and then, for each of my next data results I could simply call it in my R environment and do all the statistical analysis way faster than I can even measure. 
+When I got the first results of my second experiment it was related to more than 10 different elements, and that only for soils, I knew that later I'd have to do the same statistics for different parts of the plants. Therefore I decided to create a package. I simply googled how to put all my functions together in a package, installed it and then, for each of my next data results I could simply call my own functions directly in my R environment from any folder and do all the statistical analysis way faster than I can even measure. 
 
-Learning how to write functions in R can save a lot of time in any kind of work you are doing. It can reduce the time you need for your data analysis and the amount of code written in your scripts. As a result it also makes your code more organized and more understandable. It can also help you to understand better how R works, as you need to get more familiar with the type of objects used, the structures of the functions, the application of conditionals and iterative processes, etc. 
+Learning how to write functions in R is not only intended for processes or calculations that don't have a particular function yet (today basically everything is cover in one or another package). It can save a lot of time in any kind of work you are doing. It can reduce the time you need for your data analysis and the amount of code written in your scripts. As a result it also makes your code more organized and more understandable. It can also help you to understand better how R works, as you need to get more familiar with the type of objects used, the structures of the functions, the application of conditionals and iterative processes, etc. 
 
-Functions are a key element of most (probably all) programming languages and thus, learning how to create your own will also develop your programming skills and teach you how to automatize tasks. There is a general informal rule for programming that is called the DRY principle, which means **D**on't **R**epeat **Y**ourself. In other words, if there a process in your code/program/script that has to be repeated at least once, it is worth it to write a function and then call it twice with the different arguments that will be variable rather than coping the whole code from the first case and pasting it where the second case needs it and only changing the arguments that are variable in the second case. The following sections will explain more on that.
+Functions are a key element of most (probably all) programming languages and thus, learning how to create your own will also develop your programming skills and teach you how to automatize tasks. There is a general informal rule for programming that is called the **DRY** principle, which means **D**on't **R**epeat **Y**ourself. In other words, if there is a process in your code/program/script that has to be repeated at least once, it is worth it to write a function and then call it twice with the different arguments that will be variable rather than coping the whole code from the first case and pasting it where the second case needs it and only changing the arguments that are variable in the second case. The next post will be exactly about that.
 
+## Final remarks
 
-## Workflow for writing functions with a practical example
-So far we used silly examples to write functions. Let's write a function that can have more practical use. 
+I hope that this tutorial has reach its goal of showing how easy and useful is to write your own functions in R. I agree that all the functions created here had minimum practical application. It is usually the case when getting started. But right in our next post we are going to write our first complete function with practical application: A function that fills empty rows generated from merged cells imported from excel.
 
-There are different ways how to import data from excel to R. Regardless of its limitations, excel is widely used in data analysis, but if you are used to do data analysis with any software, you should be familiar with the complications of sorting your data imported from excel when there are merged cells in the rows. Usually, an excel file like below
-
-![Excel with merged cells](/post/2021/functions/Screenshot_excel_merged_cells.png)
-results in a table like this
+Stay in touch!
 
 
-Table: Result in R
-
-|Specie |Dup | Treat| Rep| Value|
-|:------|:---|-----:|---:|-----:|
-|A. cap |A   |     0|   1|    34|
-|       |AA  |    NA|  NA|    26|
-|       |A   |    25|  NA|    18|
-|       |AA  |    NA|  NA|    24|
-|       |A   |    50|  NA|    11|
-|       |AA  |    NA|  NA|    12|
-|       |A   |   100|  NA|    15|
-|       |AA  |    NA|  NA|    11|
-|F. rub |F   |     0|  NA|    25|
-|       |FF  |    NA|  NA|    26|
-|       |F   |    25|  NA|    17|
-|       |FF  |    NA|  NA|    11|
-|       |F   |    50|  NA|    13|
-|       |FF  |    NA|  NA|    11|
-|       |F   |   100|  NA|    11|
-
-when the amount of rows to be filled in is small, is no big problem to copy and paste the values. But as the DRY principle says, if we know how to create functions there is no need to do that, we can make a function that will do it automatically. This will specially pay off when you will have a table with hundreds or even thousands of cells merged. You might be thinking that nobody will merge cells for thousands of rows every 3 or 4 lines, but believe me, I have seen such things.
-
-### R function to fill in merged cells from excel
-
-## It's not only about R

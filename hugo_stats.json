@@ -35,10 +35,7 @@
       "strong",
       "style",
       "table",
-      "tbody",
       "td",
-      "th",
-      "thead",
       "time",
       "title",
       "tr"
@@ -160,6 +157,7 @@
       "py-1",
       "py-2",
       "py-3",
+      "py-4",
       "py-5",
       "relative",
       "right-0",
@@ -190,21 +188,19 @@
       "categories",
       "content",
       "date",
+      "final-remarks",
       "function-arguments",
       "functions-without-arguments",
       "hamburgerbtn",
       "how-to-write-functions-in-r",
       "icon",
       "icon2",
-      "its-not-only-about-r",
       "meta",
       "mobileMenu",
-      "r-function-to-fill-in-merged-cells-from-excel",
       "simple-error-handling",
       "tags",
       "thumb",
-      "why-to-write-functions",
-      "workflow-for-writing-functions-with-a-practical-example"
+      "why-to-write-functions"
     ]
   }
 }
