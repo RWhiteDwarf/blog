@@ -45,6 +45,8 @@ tagsLimit = 20
 # Light mode by default : light
 darkmode = "light"
 
+css = ["css/custom.css"]
+
   [params.post]
     # Show thumbnails
     thumbnail = true
