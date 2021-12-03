@@ -27,7 +27,7 @@ copyright = '2021 R White Dwarf all rights reserved'
 [params]
 # Base color of the website.
 # https://tailwindcss.com/docs/background-color
-base_color = "bg-gray-800"
+base_color = "bg-blue-900"#"bg-gray-800"
 
 #Site description
 description = "R tutorials and guides."

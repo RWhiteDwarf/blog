@@ -1,5 +1,5 @@
 ---
-author: "Teoten"
+author: "M. Teodoro Tenango"
 title: "Functions in R"
 image: "img/Screenshot_functions_in_R_fragment.png"
 draft: false
