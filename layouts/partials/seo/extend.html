@@ -1,0 +1,44 @@
+{{/* 
+	Add/Edit SEO Scratch Object
+	
+	@author The New Dynamic
+	
+	@access public
+
+	@context Page 
+
+	User does not load the partial, as the component will. 
+	This allows to overwrite some SEO object keys with project's own.
+	Project's partial should live under `layouts/partials/seo/extend.html`
+
+	@example - In Partial
+		{{- if eq "Type" "recipe" -}}
+		{{- .Scratch.SetInMap "seo" "type" "article" -}}
+		{{- end -}}
+
+		{{- $locales := dict "fr" "fr_FR" "en" "en_US" -}}
+		{{- .Scratch.SetInMap "seo" "locale" (index $locales .Lang) -}}
+
+		{{- if .IsHome -}}
+		{{- .Scratch.SetInMap "seo" "title" "Welcome Home" -}}
+		{{- end -}}
+*/}}
+
+{{ $paginator := .Paginate (where .Site.RegularPages ".Params.post" "!=" false) }}
+
+{{ if .IsHome }}
+	{{ if eq $paginator.PageNumber 1 }}
+		<title>{{ .Title }}</title>
+		<meta name="description" content="{{ .Site.Params.description }}" />
+	{{ else }}
+		<title>{{ .Title }} | Page {{ $paginator.PageNumber }}</title>
+		<meta name="description" content="This is page {{ $paginator.PageNumber }} of our content." />
+	{{ end }}
+{{ else }}
+	{{ if .Params.seoTitle }}
+		<title>{{ .Params.seoTitle }}</title>
+	{{ else }}
+		<title>{{ .Title }}</title>
+	{{ end }}
+	<meta name="description" content="{{ .Description }}" />
+{{ end}}
