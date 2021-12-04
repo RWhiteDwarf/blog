@@ -10,7 +10,10 @@ categories: ["R"]
 archives: ["2021"]
 ---
 
-
+```{r include=FALSE}
+## Print output as in console instead of as comment
+knitr::opts_chunk$set(comment = '>')
+```
 This post is part of our tutorials on [functions in R](https://blog.rwhitedwarf.com/post/2021/functions/). You can see our [previous post](https://blog.rwhitedwarf.com/post/2021/functions/) if you want to understand the basics of functions. However it is not a requirement to get along with the current post. Here we are going to explain more about for loops and if statements which are key elements of functions. We are going to define a process, map it in a step-by-step approach and wrape it in a function that can repeat it automatically. Even if you have a very basic understanding of R you should be able to follow this tutorial with no problem. 
 
 Our outcome will be an R function that by calling it, is able to fill in empty rows generated from imported sheets (like excel) when it contains merged cells. If you are only interested in the function itself you can scroll down to the end of the post and find its final form. 
@@ -25,24 +28,10 @@ There are different ways how to import data from excel to R. Regardless of its l
 
 results in a table like this
 
-
-|Specie |Dup | Treat| Rep| Value|
-|:------|:---|-----:|---:|-----:|
-|A. cap |A   |     0|   1|    34|
-|       |AA  |    NA|  NA|    26|
-|       |A   |    25|  NA|    18|
-|       |AA  |    NA|  NA|    24|
-|       |A   |    50|  NA|    11|
-|       |AA  |    NA|  NA|    12|
-|       |A   |   100|  NA|    15|
-|       |AA  |    NA|  NA|    11|
-|F. rub |F   |     0|  NA|    25|
-|       |FF  |    NA|  NA|    26|
-|       |F   |    25|  NA|    17|
-|       |FF  |    NA|  NA|    11|
-|       |F   |    50|  NA|    13|
-|       |FF  |    NA|  NA|    11|
-|       |F   |   100|  NA|    11|
+```{r r_table_from_excel, echo = FALSE, results = 'asis'}
+hydroponic.results <- read.csv('../../../static/post/2021/functions/Hydroponic_results.csv')
+knitr::kable(head(hydroponic.results, n = 15))
+```
 
 when the amount of rows to be filled in is small, there's no big problem to copy and paste the values. But as the DRY principle says, if we know how to create functions there is no need to do that, we can make a function that will do it automatically. This will specially pay off when you will have a table with hundreds or even thousands of cells merged. You might be thinking that nobody will merge cells for thousands of rows every 3 or 4 lines, but believe me, I have seen such things.
 
@@ -62,24 +51,9 @@ Let's map the process in terms of R steps to complete our task.
 
 Let's start by calling the table. If you have an excel, libre office calc or google sheet file with merged rows as our example above feel free to use it as example. Start by exporting the sheet of interest to csv, then we call it in R using `read.csv`
 
-
-```r
+```{r call_csv}
 my.table <- read.csv('../../../static/post/2021/functions/Hydroponic_results.csv')
 head(my.table, n = 10)
-```
-
-```
->    Specie Dup Treat Rep Value
-> 1  A. cap   A     0   1    34
-> 2          AA    NA  NA    26
-> 3           A    25  NA    18
-> 4          AA    NA  NA    24
-> 5           A    50  NA    11
-> 6          AA    NA  NA    12
-> 7           A   100  NA    15
-> 8          AA    NA  NA    11
-> 9  F. rub   F     0  NA    25
-> 10         FF    NA  NA    26
 ```
 
 Here we can see the first 10 rows containing `NA` for numeric columns and empty string for character columns. Now let's go step by step to fill empty values.
@@ -88,104 +62,43 @@ Here we can see the first 10 rows containing `NA` for numeric columns and empty 
 	
 Let's start with the first column `Specie` (an experiment was run for 3 different species of plants). We want to check if the first row contains a categorical value
 
-
-```r
+```{r first_row}
 no.row <- 1
 my.table[['Specie']][no.row]
-```
-
-```
-> [1] "A. cap"
 ```
 	
 	2. Copy it into the empty rows
 	
 Now we want to paste the value stored in `category` to all empty rows. So we first need to check if the next row is empty
 
-
-```r
+```{r is_empty}
 no.row <- 2
 my.table[['Specie']][no.row]
 ```
-
-```
-> [1] ""
-```
 And when it is, we place the value contained in the previous row to our current row 2
 
-
-```r
+```{r place_cat}
 my.table[['Specie']][no.row] <- my.table[['Specie']][no.row-1]
 head(my.table)
-```
-
-```
->   Specie Dup Treat Rep Value
-> 1 A. cap   A     0   1    34
-> 2 A. cap  AA    NA  NA    26
-> 3          A    25  NA    18
-> 4         AA    NA  NA    24
-> 5          A    50  NA    11
-> 6         AA    NA  NA    12
 ```
 Now row 2 contains it's categorical value, and when we move to row 3 (which is also empty), it can be copied from the previous row 2
 
-
-```r
+```{r row_3}
 no.row <- 3
 my.table[['Specie']][no.row]
-```
-
-```
-> [1] ""
-```
-
-```r
 my.table[['Specie']][no.row] <- my.table[['Specie']][no.row-1]
 head(my.table)
-```
-
-```
->   Specie Dup Treat Rep Value
-> 1 A. cap   A     0   1    34
-> 2 A. cap  AA    NA  NA    26
-> 3 A. cap   A    25  NA    18
-> 4         AA    NA  NA    24
-> 5          A    50  NA    11
-> 6         AA    NA  NA    12
 ```
 	
 	3. When a new factor appears, repeat the process
 	
 We can repeat that process until a new factor appears, as it is the case of row 9. Therefore we should not paste anything in row 9, and continue the process on row 10 which is also empty
 
-
-```r
+```{r row_10}
 no.row <- 10
 my.table[['Specie']][no.row]
-```
-
-```
-> [1] ""
-```
-
-```r
 my.table[['Specie']][no.row] <- my.table[['Specie']][no.row-1]
 head(my.table, n = 10)
-```
-
-```
->    Specie Dup Treat Rep Value
-> 1  A. cap   A     0   1    34
-> 2  A. cap  AA    NA  NA    26
-> 3  A. cap   A    25  NA    18
-> 4          AA    NA  NA    24
-> 5           A    50  NA    11
-> 6          AA    NA  NA    12
-> 7           A   100  NA    15
-> 8          AA    NA  NA    11
-> 9  F. rub   F     0  NA    25
-> 10 F. rub  FF    NA  NA    26
 ```
 
 	4. Repeat steps 1-3 for each column that needs it
@@ -201,41 +114,16 @@ Let's avoid all the technicalities of for loops and if functions and go straight
 
 We will start with a for loop to go row by row in one column and check what is inside. Let's start with only 20 rows as an example
 
-
-```r
+```{r for_20}
 for(no.row in 1:20){
     print(my.table[["Specie"]][no.row])
 }
-```
-
-```
-> [1] "A. cap"
-> [1] "A. cap"
-> [1] "A. cap"
-> [1] ""
-> [1] ""
-> [1] ""
-> [1] ""
-> [1] ""
-> [1] "F. rub"
-> [1] "F. rub"
-> [1] ""
-> [1] ""
-> [1] ""
-> [1] ""
-> [1] ""
-> [1] ""
-> [1] "A. ela"
-> [1] ""
-> [1] ""
-> [1] ""
 ```
 The function `for()`uses the first argument that you define (here `no.row`) and goes one by one `in` the series specified as the second argument, in this case a series of number from 1 to 20 (`1:20`). It means that in the first iteration `no.row` will have the value `1`, in the second iteration the value `2`, and so on, until the last iteration where it will have the value `20`. Each iteration will execute the code inside the curly braces `{}` which in this case is simply to print the value of each row.
 
 Because the first argument in `for()` is define by us, we could as well use any arbitrary argument we want, for example
 
-
-```r
+```{r for_20n, eval = FALSE}
 for(n in 1:20){
     print(my.table[["Specie"]][n])
 }
@@ -244,8 +132,7 @@ would do exactly the same.
 
 It means that we can initialize a function that takes the name of our data frame, the name of the column, and do exactly the same as our code above, but for all the rows contained in the table, no matter how many they are
 
-
-```r
+```{r function_print_row}
 fill_merged <- function(dat, column){
     ## Get value of each row
     for(n in 1:nrow(dat)){
@@ -255,8 +142,7 @@ fill_merged <- function(dat, column){
 ```
 Here our for loop will create a local variable `n` that will take values from 1 until `nrow(dat` which means, number of rows in the table `dat`, and then print each row contain in the column stated in the argument `column`. If we apply it to our data frame
 
-
-```r
+```{r function_print_row_used, eval = FALSE}
 fill_merged(my.table, "Specie")
 ```
 The R console will print, one by one, each of the values contained in the column `Specie` (I have 120 rows, it makes no sense to take space to show it in the post, but you can go ahead and try it yourself).
@@ -266,8 +152,7 @@ The R console will print, one by one, each of the values contained in the column
 
 Printing the values is far from what we want to achieve. As we defined in the first step of the process, we need to check the value inside, if it has a value we leave it alone, if it is empty, we fill it in with the previous value. To check if the value is empty or not we use the `if()` function
 
-
-```r
+```{r if_first}
 fill_merged <- function(dat, column){
     ## Get value of each row
     for(n in 1:nrow(dat)){
@@ -281,66 +166,28 @@ fill_merged <- function(dat, column){
 ```
 The function `if()` checks the expression inside parentheses and if it returns `TRUE` it executes the code inside curly braces `{}`, otherwise it will skip it. Therefore it is crucial that the expression inside `if()` returns either `TRUE` or `FALSE`. You can always test it by sending the exact expression directly to the console
 
-
-```r
+```{r test_boolean}
 my.table[['Specie']][1] == ''
-```
-
-```
-> [1] FALSE
-```
-
-```r
 my.table[['Specie']][5] == ''
-```
-
-```
-> [1] TRUE
 ```
 
 Once we confirm that the value is empty, we enter the if statement and execute the code from step *2*, which inside the function takes the form of `dat[[column]][n] <- dat[[column]][n - 1]`.If the value is not empty, we simply do nothing.
 
 Now we can actually try the function in one of our columns 
-
-```r
+```{r first_try}
 my.filled.table <- fill_merged(my.table, 'Specie')
 head(my.filled.table, n = 15)
 ```
 
-```
->    Specie Dup Treat Rep Value
-> 1  A. cap   A     0   1    34
-> 2  A. cap  AA    NA  NA    26
-> 3  A. cap   A    25  NA    18
-> 4  A. cap  AA    NA  NA    24
-> 5  A. cap   A    50  NA    11
-> 6  A. cap  AA    NA  NA    12
-> 7  A. cap   A   100  NA    15
-> 8  A. cap  AA    NA  NA    11
-> 9  F. rub   F     0  NA    25
-> 10 F. rub  FF    NA  NA    26
-> 11 F. rub   F    25  NA    17
-> 12 F. rub  FF    NA  NA    11
-> 13 F. rub   F    50  NA    13
-> 14 F. rub  FF    NA  NA    11
-> 15 F. rub   F   100  NA    11
-```
-
 **Note** that so far it wors only for columns with character values, not numeric
 
-
-```r
+```{r try_not_num}
 fill_merged(my.table, 'Treat')
-```
-
-```
-> Error in if (dat[[column]][n] == "") {: missing value where TRUE/FALSE needed
 ```
 
 The reason is that only character columns produce empty strings. Numeric columns will produce `NA` values. Therefore, we need to add a condition to our if expression to test also if the value is `NA`. To do that we use the symbol `|` which in R means **OR**
 
-
-```r
+```{r or}
 fill_merged <- function(dat, column){
     ## Get value of each row
     for(n in 1:nrow(dat)){
@@ -356,45 +203,20 @@ Now our if statement is telling to R "**IF** the value is empty (`''`) **OR* is 
 
 `NA` are not exactly values and therefore we cannot test them by using the expression
 
-
-```r
+```{r no_na}
 my.table[['Treat']][2] == NA
-```
-
-```
-> [1] NA
 ```
 Instead of returning `TRUE` or `FALSE` returns `NA` which means **Not Available**. To check if the value is `NA` or really a value we use the function `is.na()`
 
 
-
-```r
+```{r is_na}
 is.na(my.table[['Treat']][2])
 ```
 
-```
-> [1] TRUE
-```
-
 Now we can use our function for columns with numeric values also
-
-```r
+```{r secon_try}
 my.filled.table <- fill_merged(my.table, 'Treat')
 head(my.table, n = 10)
-```
-
-```
->    Specie Dup Treat Rep Value
-> 1  A. cap   A     0   1    34
-> 2  A. cap  AA    NA  NA    26
-> 3  A. cap   A    25  NA    18
-> 4          AA    NA  NA    24
-> 5           A    50  NA    11
-> 6          AA    NA  NA    12
-> 7           A   100  NA    15
-> 8          AA    NA  NA    11
-> 9  F. rub   F     0  NA    25
-> 10 F. rub  FF    NA  NA    26
 ```
 
 
@@ -406,8 +228,7 @@ Since the tutorial is oriented to people getting started with R, we are going to
 
 The implementation is actually easy, we just need to wrap the whole previous process of if and for inside a for loop that goes column by column
 
-
-```r
+```{r wrap_for}
 fill_merged <- function(dat, columns.as.vector){
     ## Go through the columns
     for(column in columns.as.vector){
@@ -426,30 +247,10 @@ I have changed the argument for initiating the function from `column` to `column
 
 Now you can call exactly the same function for each column that needs it
 
-
-```r
+```{r third_try}
 target_cols <- names(my.table)[c(1,3,4)]
 my.filled.table <- fill_merged(my.table, target_cols)
 head(my.filled.table, n = 15)
-```
-
-```
->    Specie Dup Treat Rep Value
-> 1  A. cap   A     0   1    34
-> 2  A. cap  AA     0   1    26
-> 3  A. cap   A    25   1    18
-> 4  A. cap  AA    25   1    24
-> 5  A. cap   A    50   1    11
-> 6  A. cap  AA    50   1    12
-> 7  A. cap   A   100   1    15
-> 8  A. cap  AA   100   1    11
-> 9  F. rub   F     0   1    25
-> 10 F. rub  FF     0   1    26
-> 11 F. rub   F    25   1    17
-> 12 F. rub  FF    25   1    11
-> 13 F. rub   F    50   1    13
-> 14 F. rub  FF    50   1    11
-> 15 F. rub   F   100   1    11
 ```
 Also notice the trick in the first line: `names(my.table)` returns a vector containing all the column names of the data frame and `names(my.table)[c(1,3,4)]` is taking only the columns 1, 3 and 4, which are the ones that need to be fixed. This is extremely useful when you have many columns that need to be fixed
 
@@ -465,8 +266,7 @@ For example, our function is expecting that at least the first row will not have
 An easy way of implementing this is using the function `stop()`. Let's implement our error into our function right before it copies the value from the row `n - 1`.
 
 
-
-```r
+```{r error_1}
 fill_merged <- function(dat, columns.as.vector){
     ## Go through the columns
     for(column in columns.as.vector){
@@ -493,30 +293,15 @@ If the value of the first row is empty, the function will stop, printing a messa
 
 Let's try the error by making a copy of our data frame with the first row empty
 
-
-```r
+```{r test_error1}
 test.error <- my.table[2:10,]
 fill_merged(test.error, 'Specie')
-```
-
-```
->    Specie Dup Treat Rep Value
-> 2  A. cap  AA    NA  NA    26
-> 3  A. cap   A    25  NA    18
-> 4  A. cap  AA    NA  NA    24
-> 5  A. cap   A    50  NA    11
-> 6  A. cap  AA    NA  NA    12
-> 7  A. cap   A   100  NA    15
-> 8  A. cap  AA    NA  NA    11
-> 9  F. rub   F     0  NA    25
-> 10 F. rub  FF    NA  NA    26
 ```
 
 Another misunderstanding that the user can encounter is with the argument `columns.as.vector`. We are expecting that the user will provide a string, or vector of strings with the names of the columns, but the user as well might think that the function is expecting the whole data as vector. We can prevent the user for doing this by adding an error at the beginning of the function.
 
 
-
-```r
+```{r error_2}
 fill_merged <- function(dat, columns.as.vector){
     ## Check if column names are provided as strings
     if(!is.character(columns.as.vector)){
@@ -544,41 +329,25 @@ fill_merged <- function(dat, columns.as.vector){
 ```
 We want to make sure that `columns.as.vector` is character. To test this, we use the function `is.character()`, which will return `TRUE` when the values inside are character, and `FALSE` otherwise.
 
-
-```r
+```{r is.char}
 a <- 'foo'
 is.character(a)
 ```
-
-```
-> [1] TRUE
-```
 However we want to send the error only when the value is NOT character. To tell R to test the opposite, we start the argument with the symbol `!`
 
-
-```r
+```{r is.not.char}
 !is.character(a)
-```
-
-```
-> [1] FALSE
 ```
 
 Now with our new version, when the user might provide any value that is not string, the error will be triggered
 
-
-```r
+```{r test_error2}
 fill_merged(my.table, 1)
-```
-
-```
-> Error in fill_merged(my.table, 1): Column names must be provided as string or vector of strings of class character
 ```
 
 Still if the user provides a vector of strings, or a misspelled name of the column, our function is not aware of it. We can add one more error when `column.as.vector` is string but not a string that we are expecting
 
-
-```r
+```{r error_3}
 fill_merged <- function(dat, columns.as.vector){
     ## Check if column names are provided as strings
     if(!is.character(columns.as.vector)){
@@ -612,13 +381,8 @@ Here we are implementing `if (!column %in% names(dat))`. Again we are using `!` 
 
 Let's test the last error by misspelling the name of one column
 
-
-```r
+```{r test_error3}
 fill_merged(my.table, c('Specie', 'Treatment'))
-```
-
-```
-> Error in fill_merged(my.table, c("Specie", "Treatment")): Column <Treatment> cannot be found in the data frame
 ```
 
 If you can think of more errors feel free to add them as a practice. However you should also try and see what happens with other potential scenarios before adding the errors yourself. Sometimes the default errors from other functions are enough to solve problems. For example, try providing to our function a data frame that does not exist, R will immediately tell you `object 'x' not found`.
@@ -630,16 +394,14 @@ I hope that the post has helped you to have a better understanding of `for()` an
 
 There are many ways how you can call your function now to your future projects. One of the easiest for now would be to save it in an R script, for example `fill_merged_cells.R` and then you can call it from any script or R code by providing the path to your script to the function `source()`
 
-
-```r
+```{r using_source, eval = FALSE}
 source('~/Rscripts/fill_merged_cells.R')
 ```
 changing the path to the exact location of your file. Source will run all the code contained inside the `.R` file in the R session where you call it, making your function available for the current session. 
 
 Here is the final form of the **function for filling in empty rows produced by merged cells**. I hope it will help with your work. Enjoy it!
 
-
-```r
+```{r temporal_final_function}
 fill_merged <- function(dat, columns.as.vector){
     ## Check if column names are provided as strings
     if(!is.character(columns.as.vector)){
