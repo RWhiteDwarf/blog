@@ -1,11 +1,11 @@
 ---
-author: "Teoten"
+author: "M. Teodoro Tenango"
 title: "R function to fill in merged cells"
 image: ""
 draft: true
 date: 2021-11-30
 description: "For loops and if statements to create functions"
-tags: ["R tips", "R functions"]
+tags: ["R tips", "R basics", "R functions"]
 categories: ["R"]
 archives: ["2021"]
 ---
@@ -37,6 +37,7 @@ when the amount of rows to be filled in is small, there's no big problem to copy
 
 Keep in mind that this is mainly a tutorial for writting functions in R. It does not intend to deal with all the issue that migh appear with the importing of data such as merged columns or a mixture of both, among others. But if you have problems with that or are interested in the topic, leave us a comment and we can cover some points in a future post.
 
+
 ## R function to fill in merged cells from excel
 
 With today's technology there are many ways to solve this problem. However sometimes the easiest way to import data to R as data analyst or statistician is by simply taking the working sheet containing the data and exporting it in csv format. 
@@ -45,7 +46,9 @@ This method produces empty rows by default: when some rows are merged because th
 
 Let's map the process in terms of R steps to complete our task.
 
+
 ### Maping the process
+
 Let's start by calling the table. If you have an excel, libre office calc or google sheet file with merged rows as our example above feel free to use it as example. Start by exporting the sheet of interest to csv, then we call it in R using `read.csv`
 
 ```{r call_csv}
@@ -56,6 +59,7 @@ head(my.table, n = 10)
 Here we can see the first 10 rows containing `NA` for numeric columns and empty string for character columns. Now let's go step by step to fill empty values.
 
 	1. Identify and capture the factor
+	
 Let's start with the first column `Specie` (an experiment was run for 3 different species of plants). We want to check if the first row contains a categorical value
 
 ```{r first_row}
@@ -64,6 +68,7 @@ my.table[['Specie']][no.row]
 ```
 	
 	2. Copy it into the empty rows
+	
 Now we want to paste the value stored in `category` to all empty rows. So we first need to check if the next row is empty
 
 ```{r is_empty}
@@ -86,6 +91,7 @@ head(my.table)
 ```
 	
 	3. When a new factor appears, repeat the process
+	
 We can repeat that process until a new factor appears, as it is the case of row 9. Therefore we should not paste anything in row 9, and continue the process on row 10 which is also empty
 
 ```{r row_10}
@@ -96,11 +102,14 @@ head(my.table, n = 10)
 ```
 
 	4. Repeat steps 1-3 for each column that needs it
+	
 The process moves forward in this way until the whole column `Specie` is filled in. Then we can move to the next column with empty values, in my case this is `Treat`.
 
 If you look at the process, we basically need to write an R command for step 2. The rest is just a process of verification and repetition. We are going to automate verification using the function `if()` and the repetition using `for()`.
 
+
 ### For loops
+
 Let's avoid all the technicalities of for loops and if functions and go straight to how you can apply it using our logic above. 
 
 We will start with a for loop to go row by row in one column and check what is inside. Let's start with only 20 rows as an example
@@ -138,7 +147,9 @@ fill_merged(my.table, "Specie")
 ```
 The R console will print, one by one, each of the values contained in the column `Specie` (I have 120 rows, it makes no sense to take space to show it in the post, but you can go ahead and try it yourself).
 
+
 ### If statements 
+
 Printing the values is far from what we want to achieve. As we defined in the first step of the process, we need to check the value inside, if it has a value we leave it alone, if it is empty, we fill it in with the previous value. To check if the value is empty or not we use the `if()` function
 
 ```{r if_first}
@@ -208,6 +219,7 @@ my.filled.table <- fill_merged(my.table, 'Treat')
 head(my.table, n = 10)
 ```
 
+
 ### Check, confirm and repeat
 
 Now we could use our function for each column that presents this issue, but we are actually trying to apply the DRY principle. Instead we could use `for()` to go through all the columns where we want to apply it. There are other functions that can help with this as well such as `map()` and its derived functions from the package [purrr](https://purrr.tidyverse.org/).We could also write a new function that calls our first function to repeat it into each column. Feel free to experiment, for this tutorial we are going to take a different approach.
@@ -242,29 +254,176 @@ head(my.filled.table, n = 15)
 ```
 Also notice the trick in the first line: `names(my.table)` returns a vector containing all the column names of the data frame and `names(my.table)[c(1,3,4)]` is taking only the columns 1, 3 and 4, which are the ones that need to be fixed. This is extremely useful when you have many columns that need to be fixed
 
-### Errors and warnings
+
+### Errors
+
+You might have noticed that I'm adding text preceded by `##` within the function. If you are not familiar with it, this are comments, it means that anything that is written in the same line after one `#` will not be evaluated by R (I use double for technical reasons of my text editor). Although this function is quite small and simple, and we know what exactly we are doing on each line thanks to the explanations, it is a good practice to add comments to your code because after a while, when you will look back at the code you might had forgotten the logic and structure. Adding comments help us to know what each piece is about, making it easier to apply changes in the future.
+
+In the same way, it is a good practice to add errors when the function is expecting something in particular and we can foresee potential problems. Often we don't foresee all the mistakes and problems that the user or we ourselves can have when using our own functions and thus, errors are usually added along the way based on the experience gathered by using the function.
+
+For example, our function is expecting that at least the first row will not have empty values, otherwise it cannot go one row before to find the value to paste on it. Although it is not expected, our table can still present this situation due to human errors, for example, somebody by accident pressed *Delete* button somewhere on the first row in the source file. In such case R will mark some error that will be difficult to understand and track back. We might wonder for hours what we did wrong in our function only to find out that the problem comes from the data table itself. Instead we can mark our own error in advance by sending a message when the value on the first row is empty.
+
+An easy way of implementing this is using the function `stop()`. Let's implement our error into our function right before it copies the value from the row `n - 1`.
 
 
-### Final function
-**This function will be improved along the post**
-```{r temporal_final_function}
-## Fill merged cells producing NAs
-fill_merged <- function(dat, columns.as.string){
-    if(!is.character(columns.as.string)){
-        stop("Column names must be provided as string or vector of strings")
-    }
-    else{
-        for(col in columns.as.string){
-            for(i in 1:length(dat[[col]])){
-                if(is.na(dat[[col]][i])){
-                    if(is.na(dat[[col]][1])){
-                        ## If first col is empty, no ref there is
-                        stop(paste0("Row 1 of column ", col,
+```{r error_1}
+fill_merged <- function(dat, columns.as.vector){
+    ## Go through the columns
+    for(column in columns.as.vector){
+        ## Get value of each row
+        for(n in 1:nrow(dat)){
+            ## Check if it is empty
+            if(dat[[column]][n] == '' | is.na(dat[[column]][n])){
+                ## If it is the row 1, stop with Error
+                if(n == 1){
+                    stop(paste0("Row 1 of column ", column,
                                     " has empty values. Check your data."))
-                    }
-                    else{
-                        dat[[col]][i] <- dat[[col]][i-1]
-                    }
+                }
+                else{
+                    dat[[column]][n] <- dat[[column]][n - 1]
+                }
+            }
+        }
+    }
+    return(dat)
+}
+```
+
+If the value of the first row is empty, the function will stop, printing a message that says in which column the row no. 1 is empty. When the row is not the first, R will evaluate the code next, contained inside `else{}`. `else` is a complement for if that tell R what to do when the `if()` part is not fulfilled. Sometime we can omit it, when the `if()` part is not fulfilled R will simply go to the next part of the code. But when we want to make sure that nothing will happen outside these options, we include `else`. Here we are giving only two options, either `n` equals 1 and the function stops with an error, or else `n` is not one and the function continues.
+
+Let's try the error by making a copy of our data frame with the first row empty
+
+```{r test_error1}
+test.error <- my.table[2:10,]
+fill_merged(test.error, 'Specie')
+```
+
+Another misunderstanding that the user can encounter is with the argument `columns.as.vector`. We are expecting that the user will provide a string, or vector of strings with the names of the columns, but the user as well might think that the function is expecting the whole data as vector. We can prevent the user for doing this by adding an error at the beginning of the function.
+
+
+```{r error_2}
+fill_merged <- function(dat, columns.as.vector){
+    ## Check if column names are provided as strings
+    if(!is.character(columns.as.vector)){
+        stop("Column names must be provided as string or vector of strings of class character")
+    }
+    ## Go through the columns
+    for(column in columns.as.vector){
+        ## Get value of each row
+        for(n in 1:nrow(dat)){
+            ## Check if it is empty
+            if(dat[[column]][n] == '' | is.na(dat[[column]][n])){
+                ## If it is the row 1, stop with Error
+                if(n == 1){
+                    stop(paste0("Row 1 of column ", column,
+                                    " has empty values. Check your data."))
+                }
+                else{
+                    dat[[column]][n] <- dat[[column]][n - 1]
+                }
+            }
+        }
+    }
+    return(dat)
+}
+```
+We want to make sure that `columns.as.vector` is character. To test this, we use the function `is.character()`, which will return `TRUE` when the values inside are character, and `FALSE` otherwise.
+
+```{r is.char}
+a <- 'foo'
+is.character(a)
+```
+However we want to send the error only when the value is NOT character. To tell R to test the opposite, we start the argument with the symbol `!`
+
+```{r is.not.char}
+!is.character(a)
+```
+
+Now with our new version, when the user might provide any value that is not string, the error will be triggered
+
+```{r test_error2}
+fill_merged(my.table, 1)
+```
+
+Still if the user provides a vector of strings, or a misspelled name of the column, our function is not aware of it. We can add one more error when `column.as.vector` is string but not a string that we are expecting
+
+```{r error_3}
+fill_merged <- function(dat, columns.as.vector){
+    ## Check if column names are provided as strings
+    if(!is.character(columns.as.vector)){
+        stop("Column names must be provided as string or vector of strings of class character")
+    }
+    ## Go through the columns
+    for(column in columns.as.vector){
+        ## Check if the column name matches with dat column names
+        if (!column %in% names(dat)){
+            stop(paste0('Column <', column, '> cannot be found in the data frame'))
+        }
+        ## Get value of each row
+        for(n in 1:nrow(dat)){
+            ## Check if it is empty
+            if(dat[[column]][n] == '' | is.na(dat[[column]][n])){
+                ## If it is the row 1, stop with Error
+                if(n == 1){
+                    stop(paste0("Row 1 of column <", column,
+                                    "> has empty values. Check your data."))
+                }
+                else{
+                    dat[[column]][n] <- dat[[column]][n - 1]
+                }
+            }
+        }
+    }
+    return(dat)
+}
+```
+Here we are implementing `if (!column %in% names(dat))`. Again we are using `!` to tell R to test the opposite. `column %in% names(dat)` will search for the value of `column` if it is present in the vector `names(dat)` and return `TRUE`, or `FALSE` when it is not present.
+
+Let's test the last error by misspelling the name of one column
+
+```{r test_error3}
+fill_merged(my.table, c('Specie', 'Treatment'))
+```
+
+If you can think of more errors feel free to add them as a practice. However you should also try and see what happens with other potential scenarios before adding the errors yourself. Sometimes the default errors from other functions are enough to solve problems. For example, try providing to our function a data frame that does not exist, R will immediately tell you `object 'x' not found`.
+
+
+## Final remarks
+
+I hope that the post has helped you to have a better understanding of `for()` and `if()`, and provided you with a good guidance on how you can plan and structure functions. If something was not clear or you still have questions, or something in your code did not work as expected, feel welcome to leave us a comment below (you will need a github account for that).
+
+There are many ways how you can call your function now to your future projects. One of the easiest for now would be to save it in an R script, for example `fill_merged_cells.R` and then you can call it from any script or R code by providing the path to your script to the function `source()`
+
+```{r using_source, eval = FALSE}
+source('~/Rscripts/fill_merged_cells.R')
+```
+changing the path to the exact location of your file. Source will run all the code contained inside the `.R` file in the R session where you call it, making your function available for the current session. 
+
+Here is the final form of the **function for filling in empty rows produced by merged cells**. I hope it will help with your work. Enjoy it!
+
+```{r temporal_final_function}
+fill_merged <- function(dat, columns.as.vector){
+    ## Check if column names are provided as strings
+    if(!is.character(columns.as.vector)){
+        stop("Column names must be provided as string or vector of strings of class character")
+    }
+    ## Go through the columns
+    for(column in columns.as.vector){
+        ## Check if the column name matches with dat column names
+        if (!column %in% names(dat)){
+            stop(paste0('Column <', column, '> cannot be found in the data frame'))
+        }
+        ## Get value of each row
+        for(n in 1:nrow(dat)){
+            ## Check if it is empty
+            if(dat[[column]][n] == '' | is.na(dat[[column]][n])){
+                ## If it is the row 1, stop with Error
+                if(n == 1){
+                    stop(paste0("Row 1 of column <", column,
+                                    "> has empty values. Check your data."))
+                }
+                else{
+                    dat[[column]][n] <- dat[[column]][n - 1]
                 }
             }
         }
