@@ -4,16 +4,16 @@ title: "R function to fill in merged cells"
 image: ""
 draft: true
 date: 2021-11-30
-description: "For loops and if statements to create functions"
+description: "For loops and if statements to create a useful function"
 tags: ["R tips", "R basics", "R functions"]
 categories: ["R"]
 archives: ["2021"]
 ---
 
 
-This post is part of our tutorials on [functions in R](https://blog.rwhitedwarf.com/post/2021/functions/). You can see our [previous post](https://blog.rwhitedwarf.com/post/2021/functions/) if you want to understand the basics of functions. However it is not a requirement to get along with the current post. Here we are going to explain more about for loops and if statements which are key elements of functions. We are going to define a process, map it in a step-by-step approach and wrape it in a function that can repeat it automatically. Even if you have a very basic understanding of R you should be able to follow this tutorial with no problem. 
+This post is part of our series on [functions in R](https://blog.rwhitedwarf.com/post/2021/functions/). You can see our [previous post](https://blog.rwhitedwarf.com/post/2021/functions/) if you want to understand the basics but it is not strictly necessary. Here we will go into detail about for loops and if statements in R, two key elements of any function. We are going to define a process, map it in a step-by-step approach and wrape it in a function that can repeat it automatically. Even if you have a very basic understanding of R you should be able to follow this tutorial without problem. 
 
-Our outcome will be an R function that by calling it, is able to fill in empty rows generated from imported sheets (like excel) when it contains merged cells. If you are only interested in the function itself you can scroll down to the end of the post and find its final form. 
+Our outcome will be an R function that by calling it, is able to fill in empty rows generated from imported sheets (like excel) when it contains merged cells. If you are only **interested in the function itself** you can go to the end of the post and find it in the section [Final remarks].
 
 ### Description of the problem
 
@@ -195,9 +195,9 @@ The process moves forward in this way until the whole column `Specie` is filled 
 If you look at the process, we basically need to write an R command for step 2. The rest is just a process of verification and repetition. We are going to automate verification using the function `if()` and the repetition using `for()`.
 
 
-### For loops
+### Writing my first for loop
 
-Let's avoid all the technicalities of for loops and if functions and go straight to how you can apply it using our logic above. 
+Since the present post is directed to R beginners with not much experience with programming or coding I will avoid all the technicalities of for loops and if functions and dive deeply into them by applying our logic above. Then we are going to use them and explain carefully to obtain a pragmatic understanding of the process. 
 
 We will start with a for loop to go row by row in one column and check what is inside. Let's start with only 20 rows as an example
 
@@ -262,7 +262,7 @@ fill_merged(my.table, "Specie")
 The R console will print, one by one, each of the values contained in the column `Specie` (I have 120 rows, it makes no sense to take space to show it in the post, but you can go ahead and try it yourself).
 
 
-### If statements 
+### How to use If statement in R
 
 Printing the values is far from what we want to achieve. As we defined in the first step of the process, we need to check the value inside, if it has a value we leave it alone, if it is empty, we fill it in with the previous value. To check if the value is empty or not we use the `if()` function
 
@@ -398,7 +398,7 @@ head(my.table, n = 10)
 ```
 
 
-### Check, confirm and repeat
+### Check, confirm and repeat (for and if together)
 
 Now we could use our function for each column that presents this issue, but we are actually trying to apply the DRY principle. Instead we could use `for()` to go through all the columns where we want to apply it. There are other functions that can help with this as well such as `map()` and its derived functions from the package [purrr](https://purrr.tidyverse.org/).We could also write a new function that calls our first function to repeat it into each column. Feel free to experiment, for this tutorial we are going to take a different approach.
 
@@ -454,7 +454,7 @@ head(my.filled.table, n = 15)
 Also notice the trick in the first line: `names(my.table)` returns a vector containing all the column names of the data frame and `names(my.table)[c(1,3,4)]` is taking only the columns 1, 3 and 4, which are the ones that need to be fixed. This is extremely useful when you have many columns that need to be fixed
 
 
-### Errors
+### Marking the errors
 
 You might have noticed that I'm adding text preceded by `##` within the function. If you are not familiar with it, this are comments, it means that anything that is written in the same line after one `#` will not be evaluated by R (I use double for technical reasons of my text editor). Although this function is quite small and simple, and we know what exactly we are doing on each line thanks to the explanations, it is a good practice to add comments to your code because after a while, when you will look back at the code you might had forgotten the logic and structure. Adding comments help us to know what each piece is about, making it easier to apply changes in the future.
 

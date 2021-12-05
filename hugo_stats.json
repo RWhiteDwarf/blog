@@ -203,29 +203,29 @@
     "ids": [
       "background",
       "categories",
-      "check-confirm-and-repeat",
+      "check-confirm-and-repeat-for-and-if-together",
       "content",
       "date",
       "description-of-the-problem",
-      "errors",
       "final-remarks",
-      "for-loops",
       "function-arguments",
       "functions-without-arguments",
       "hamburgerbtn",
+      "how-to-use-if-statement-in-r",
       "how-to-write-functions-in-r",
       "icon",
       "icon2",
-      "if-statements",
       "m-teodoro-tenango",
       "maping-the-process",
+      "marking-the-errors",
       "meta",
       "mobileMenu",
       "r-function-to-fill-in-merged-cells-from-excel",
       "simple-error-handling",
       "tags",
       "thumb",
-      "why-to-write-functions"
+      "why-to-write-functions",
+      "writing-my-first-for-loop"
     ]
   }
 }
