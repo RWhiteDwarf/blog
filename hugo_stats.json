@@ -207,6 +207,7 @@
       "content",
       "date",
       "description-of-the-problem",
+      "final",
       "final-remarks",
       "function-arguments",
       "functions-without-arguments",

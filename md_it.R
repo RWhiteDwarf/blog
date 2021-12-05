@@ -1,3 +1,7 @@
+## Make knit print results from console preceded by >
+knitr::opts_chunk$set(comment = '>')
+
+## Set root folder, folder for posts and folder for images
 mdit.params <- list()
 mdit.params[['root.folder']] = paste0(getwd(), '/')
 mdit.params[['posts.folder']] = '/content/post/'
