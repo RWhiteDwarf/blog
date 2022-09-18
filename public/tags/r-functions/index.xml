@@ -7,7 +7,535 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
     <copyright>2021 R White Dwarf all rights reserved</copyright>
-    <lastBuildDate>Tue, 30 Nov 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.rwhitedwarf.com/tags/r-functions/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 18 Sep 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.rwhitedwarf.com/tags/r-functions/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Minitutorial: make_logical any string</title>
+      <link>https://blog.rwhitedwarf.com/post/2022/minitut_makebool/</link>
+      <pubDate>Sun, 18 Sep 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.rwhitedwarf.com/post/2022/minitut_makebool/</guid>
+      <description>&lt;h2 id=&#34;welcome-to-r-minitutorials-of-r-white-dwarf&#34;&gt;Welcome to R minitutorials of R White Dwarf&lt;/h2&gt;
+&lt;p&gt;Since the beginning of this year I&amp;rsquo;ve been forced to abandon completely the blog for countless and rather abstract personal reasons that include personal health, family matters and changes in my daily activities including volunteer work as well as main job. As part of the last, I finally got hired for a position as R developer, which brings great joy to me.&lt;/p&gt;
+&lt;p&gt;Thus, I&amp;rsquo;ve been using R more lately in all kinds of forms, including review and debug of small or simple code pieces that can result in practical quick hints for other R users, especially beginners or people with not much experience using R.&lt;/p&gt;
+&lt;p&gt;With that aim in mind while regaining a little bit of my free time and a piece of mental stability, and celebrating my new position, I decided to take care of the blog again with simple yet useful posts called &lt;strong&gt;minitutorials&lt;/strong&gt;, starting with a very simple, even silly, but useful example.&lt;/p&gt;
+&lt;p&gt;I hope they can be useful for you or your friends. Enjoy them!&lt;/p&gt;
+&lt;h2 id=&#34;minitutorial-make_logical_any_string&#34;&gt;Minitutorial: make_logical_any_string&lt;/h2&gt;
+&lt;p&gt;A function to make logical any string&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;make_logical_any_string &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#00a000&#34;&gt;function&lt;/span&gt;(a_string){
+    a_string &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#00a000&#34;&gt;as.character&lt;/span&gt;(a_string)
+    logical_result &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#00a000&#34;&gt;as.logical&lt;/span&gt;(a_string)
+    &lt;span style=&#34;color:#00a000&#34;&gt;if&lt;/span&gt;(&lt;span style=&#34;color:#00a000&#34;&gt;is.na&lt;/span&gt;(logical_result)){logical_result &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;FALSE&lt;/span&gt;}
+    &lt;span style=&#34;color:#00a000&#34;&gt;return&lt;/span&gt;(logical_result)
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The function takes any value, convert it to character and returns &lt;code&gt;TRUE&lt;/code&gt; ONLY IF the value takes either of the following forms: &lt;code&gt;&amp;quot;T&amp;quot;&lt;/code&gt;, &lt;code&gt;&amp;quot;TRUE&amp;quot;&lt;/code&gt;, &lt;code&gt;&amp;quot;True&amp;quot;&lt;/code&gt;, &lt;code&gt;&amp;quot;true&amp;quot;&lt;/code&gt; or &lt;code&gt;TRUE&lt;/code&gt;, the last one the logical value, not the string.&lt;/p&gt;
+&lt;h3 id=&#34;logic-of-the-function&#34;&gt;Logic of the function&lt;/h3&gt;
+&lt;p&gt;The function &lt;code&gt;as.character()&lt;/code&gt; will convert any of the true strings listed above into a logical &lt;code&gt;TRUE&lt;/code&gt;. If the string is rather &lt;code&gt;&amp;quot;False&amp;quot;&lt;/code&gt; or its equivalent forms, the function will return &lt;code&gt;FALSE&lt;/code&gt;. If any other character is passed to the function, the result will be &lt;code&gt;NA&lt;/code&gt;. Therefore, we need to tweak the results when NA&amp;rsquo;s are produced since we forcefully need a True/False result. Thus, we implement &lt;code&gt;if(is.na(logical_result)){logical_result &amp;lt;- FALSE}&lt;/code&gt; which will force any other string to return &lt;code&gt;FALSE&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;We are using this code for running R scripts in the terminal which passes a series of arguments for its functioning, some of which are required to be &lt;code&gt;TRUE&lt;/code&gt; only when specified so, and &lt;code&gt;FALSE&lt;/code&gt; in any other case, hence the trick of converting any other value to &lt;code&gt;FALSE&lt;/code&gt; rather than &lt;code&gt;NA&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;Something to keep in mind is that the arguments are always passed to R script as character and thus, I wrote the example for this post converting everything into character in the first line of the function, which is not necessary in our original code executed in the terminal. In this way, if any number is passed to the function, it will also return &lt;code&gt;FALSE&lt;/code&gt;, emulating what would happen if a number is entered into the console. This behavior &lt;strong&gt;is different for the function&lt;/strong&gt; &lt;code&gt;as.logical()&lt;/code&gt; itself, which returns &lt;code&gt;FALSE&lt;/code&gt; if you enter the numerical value &lt;code&gt;0&lt;/code&gt; and &lt;code&gt;TRUE&lt;/code&gt; if any other numerical value is passed.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>R function to fill in merged cells</title>
+      <link>https://blog.rwhitedwarf.com/post/2021/fill_merged_cells/</link>
+      <pubDate>Sun, 05 Dec 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.rwhitedwarf.com/post/2021/fill_merged_cells/</guid>
+      <description>&lt;p&gt;This post is part of our series on &lt;a href=&#34;https://blog.rwhitedwarf.com/tags/r-functions&#34;&gt;functions in R&lt;/a&gt;. You can see our &lt;a href=&#34;https://blog.rwhitedwarf.com/post/2021/functions/&#34;&gt;previous post&lt;/a&gt; if you want to understand the basics but it is not strictly necessary. Here we will go into detail about for loops and if statements in R, two key elements of any function. We are going to define a process, map it in a step-by-step approach and wrape it in a function that can repeat it automatically. Even if you have a very basic understanding of R you should be able to follow this tutorial without problem.&lt;/p&gt;
+&lt;p&gt;Our outcome will be an R function that by calling it, is able to fill in empty rows generated from imported sheets (like excel) when it contains merged cells. If you are only &lt;strong&gt;interested in the function itself&lt;/strong&gt; you can go to the end of the post and find it in the section &lt;a href=&#34;https://blog.rwhitedwarf.com/post/2021/fill_merged_cells/#final&#34;&gt;Final remarks&lt;/a&gt;.&lt;/p&gt;
+&lt;h3 id=&#34;description-of-the-problem&#34;&gt;Description of the problem&lt;/h3&gt;
+&lt;p&gt;In our &lt;a href=&#34;https://blog.rwhitedwarf.com/post/2021/functions/&#34;&gt;previous post&lt;/a&gt; we saw the basics for creating functions, yet using silly examples with not much of practical usage. Now we are ready to write a function that can have more practical use.&lt;/p&gt;
+&lt;p&gt;There are different ways how to import data sheets (i.e. from excel) to R. Regardless of its limitations, these sheets are widely used in data analysis today. If you are used to do data analysis with a different software you should be familiar with the complications of sorting your data imported from sheets when there are merged cells in the rows. Usually, a file like below&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://blog.rwhitedwarf.com/post/2021/fill_merged_cells/Screenshot_excel_merged_cells.png&#34; alt=&#34;Excel with merged cells&#34;&gt;&lt;/p&gt;
+&lt;p&gt;results in a table like this&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:left&#34;&gt;Specie&lt;/th&gt;
+&lt;th style=&#34;text-align:left&#34;&gt;Dup&lt;/th&gt;
+&lt;th style=&#34;text-align:right&#34;&gt;Treat&lt;/th&gt;
+&lt;th style=&#34;text-align:right&#34;&gt;Rep&lt;/th&gt;
+&lt;th style=&#34;text-align:right&#34;&gt;Value&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;A. cap&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;A&lt;/td&gt;
+&lt;td style=&#34;text-align:right&#34;&gt;0&lt;/td&gt;
+&lt;td style=&#34;text-align:right&#34;&gt;1&lt;/td&gt;
+&lt;td style=&#34;text-align:right&#34;&gt;34&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;AA&lt;/td&gt;
+&lt;td style=&#34;text-align:right&#34;&gt;NA&lt;/td&gt;
+&lt;td style=&#34;text-align:right&#34;&gt;NA&lt;/td&gt;
+&lt;td style=&#34;text-align:right&#34;&gt;26&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;A&lt;/td&gt;
+&lt;td style=&#34;text-align:right&#34;&gt;25&lt;/td&gt;
+&lt;td style=&#34;text-align:right&#34;&gt;NA&lt;/td&gt;
+&lt;td style=&#34;text-align:right&#34;&gt;18&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;AA&lt;/td&gt;
+&lt;td style=&#34;text-align:right&#34;&gt;NA&lt;/td&gt;
+&lt;td style=&#34;text-align:right&#34;&gt;NA&lt;/td&gt;
+&lt;td style=&#34;text-align:right&#34;&gt;24&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;A&lt;/td&gt;
+&lt;td style=&#34;text-align:right&#34;&gt;50&lt;/td&gt;
+&lt;td style=&#34;text-align:right&#34;&gt;NA&lt;/td&gt;
+&lt;td style=&#34;text-align:right&#34;&gt;11&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;AA&lt;/td&gt;
+&lt;td style=&#34;text-align:right&#34;&gt;NA&lt;/td&gt;
+&lt;td style=&#34;text-align:right&#34;&gt;NA&lt;/td&gt;
+&lt;td style=&#34;text-align:right&#34;&gt;12&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;A&lt;/td&gt;
+&lt;td style=&#34;text-align:right&#34;&gt;100&lt;/td&gt;
+&lt;td style=&#34;text-align:right&#34;&gt;NA&lt;/td&gt;
+&lt;td style=&#34;text-align:right&#34;&gt;15&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;AA&lt;/td&gt;
+&lt;td style=&#34;text-align:right&#34;&gt;NA&lt;/td&gt;
+&lt;td style=&#34;text-align:right&#34;&gt;NA&lt;/td&gt;
+&lt;td style=&#34;text-align:right&#34;&gt;11&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;F. rub&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;F&lt;/td&gt;
+&lt;td style=&#34;text-align:right&#34;&gt;0&lt;/td&gt;
+&lt;td style=&#34;text-align:right&#34;&gt;NA&lt;/td&gt;
+&lt;td style=&#34;text-align:right&#34;&gt;25&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;FF&lt;/td&gt;
+&lt;td style=&#34;text-align:right&#34;&gt;NA&lt;/td&gt;
+&lt;td style=&#34;text-align:right&#34;&gt;NA&lt;/td&gt;
+&lt;td style=&#34;text-align:right&#34;&gt;26&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;F&lt;/td&gt;
+&lt;td style=&#34;text-align:right&#34;&gt;25&lt;/td&gt;
+&lt;td style=&#34;text-align:right&#34;&gt;NA&lt;/td&gt;
+&lt;td style=&#34;text-align:right&#34;&gt;17&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;FF&lt;/td&gt;
+&lt;td style=&#34;text-align:right&#34;&gt;NA&lt;/td&gt;
+&lt;td style=&#34;text-align:right&#34;&gt;NA&lt;/td&gt;
+&lt;td style=&#34;text-align:right&#34;&gt;11&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;F&lt;/td&gt;
+&lt;td style=&#34;text-align:right&#34;&gt;50&lt;/td&gt;
+&lt;td style=&#34;text-align:right&#34;&gt;NA&lt;/td&gt;
+&lt;td style=&#34;text-align:right&#34;&gt;13&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;FF&lt;/td&gt;
+&lt;td style=&#34;text-align:right&#34;&gt;NA&lt;/td&gt;
+&lt;td style=&#34;text-align:right&#34;&gt;NA&lt;/td&gt;
+&lt;td style=&#34;text-align:right&#34;&gt;11&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;F&lt;/td&gt;
+&lt;td style=&#34;text-align:right&#34;&gt;100&lt;/td&gt;
+&lt;td style=&#34;text-align:right&#34;&gt;NA&lt;/td&gt;
+&lt;td style=&#34;text-align:right&#34;&gt;11&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;when the amount of rows to be filled in is small, there&amp;rsquo;s no big problem in copying and pasting the values. But as the DRY principle says, if we know how to create functions there is no need to do that, we can make a function that will do it automatically. This will specially pay off when you will have a table with hundreds or even thousands of cells merged. You might be thinking that nobody will merge cells for thousands of rows every 3 or 4 lines, but believe me, I have seen such things.&lt;/p&gt;
+&lt;p&gt;Keep in mind that this is mainly a tutorial for writting functions in R. It does not intend to deal with all the issues that migh appear with the importing of data such as merged columns or a mixture of both, among others. But if you have problems with that or are interested in the topic, leave us a comment and we can cover some points in a future post.&lt;/p&gt;
+&lt;h2 id=&#34;r-function-to-fill-in-merged-cells-from-excel&#34;&gt;R function to fill in merged cells from excel&lt;/h2&gt;
+&lt;p&gt;With today&amp;rsquo;s technology there are many ways to solve this problem. However sometimes the easiest way to import data to R as data analyst or statistician is by simply taking the working sheet containing the data and exporting it in csv format.&lt;/p&gt;
+&lt;p&gt;Regardless of the source (excel, libre office, google sheets, etc.) this method produces empty rows by default. When some rows have been merged because they belong to the same group or factor, the csv file will capture the value only on the first row and leave the rest empty until the next factor appear, where it again, will capture the value on the first row and leave the rest empty until the next factor appears. The process continues like this, iteratively until the end of the table. We basically need to copy the value stored on that first row and paste it to the empty rows, until a new factor appears.&lt;/p&gt;
+&lt;p&gt;Let&amp;rsquo;s map the process in terms of R steps to complete our task.&lt;/p&gt;
+&lt;h3 id=&#34;maping-the-process&#34;&gt;Maping the process&lt;/h3&gt;
+&lt;p&gt;We will start by calling the table. If you have an excel, libre office calc or google sheet file with merged rows as our example above feel free to use it. Otherwise you can quickly simulate one similar to the image above. Start by exporting the sheet of interest to csv, then we call it using &lt;code&gt;read.csv&lt;/code&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;my.table &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#00a000&#34;&gt;read.csv&lt;/span&gt;(&lt;span style=&#34;color:#b44&#34;&gt;&amp;#39;../../../static/post/2021/fill_merged_cells/Hydroponic_results.csv&amp;#39;&lt;/span&gt;)
+&lt;span style=&#34;color:#00a000&#34;&gt;head&lt;/span&gt;(my.table, n &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;10&lt;/span&gt;)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&amp;gt;    Specie Dup Treat Rep Value
+&amp;gt; 1  A. cap   A     0   1    34
+&amp;gt; 2          AA    NA  NA    26
+&amp;gt; 3           A    25  NA    18
+&amp;gt; 4          AA    NA  NA    24
+&amp;gt; 5           A    50  NA    11
+&amp;gt; 6          AA    NA  NA    12
+&amp;gt; 7           A   100  NA    15
+&amp;gt; 8          AA    NA  NA    11
+&amp;gt; 9  F. rub   F     0  NA    25
+&amp;gt; 10         FF    NA  NA    26
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Here we can see the first 10 rows containing &lt;code&gt;NA&lt;/code&gt; for numeric columns and empty string for character columns. Now let&amp;rsquo;s go step by step to fill empty values.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;1. Identify and capture the factor
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Let&amp;rsquo;s start with the first column &lt;code&gt;Specie&lt;/code&gt; (an experiment was run for 3 different species of plants). We want to check if the first row contains a categorical value&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;no.row &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;
+my.table[[&lt;span style=&#34;color:#b44&#34;&gt;&amp;#39;Specie&amp;#39;&lt;/span&gt;]][no.row]
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&amp;gt; [1] &amp;#34;A. cap&amp;#34;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;2. Copy it into the empty rows
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Now we want to paste the value stored in &lt;code&gt;category&lt;/code&gt; to all empty rows. So we first need to check if the next row is empty&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;no.row &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;2&lt;/span&gt;
+my.table[[&lt;span style=&#34;color:#b44&#34;&gt;&amp;#39;Specie&amp;#39;&lt;/span&gt;]][no.row]
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&amp;gt; [1] &amp;#34;&amp;#34;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;And when it is, we place the value contained in the previous row to our current row 2&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;my.table[[&lt;span style=&#34;color:#b44&#34;&gt;&amp;#39;Specie&amp;#39;&lt;/span&gt;]][no.row] &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;-&lt;/span&gt; my.table[[&lt;span style=&#34;color:#b44&#34;&gt;&amp;#39;Specie&amp;#39;&lt;/span&gt;]][no.row&lt;span style=&#34;color:#666&#34;&gt;-1&lt;/span&gt;]
+&lt;span style=&#34;color:#00a000&#34;&gt;head&lt;/span&gt;(my.table)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&amp;gt;   Specie Dup Treat Rep Value
+&amp;gt; 1 A. cap   A     0   1    34
+&amp;gt; 2 A. cap  AA    NA  NA    26
+&amp;gt; 3          A    25  NA    18
+&amp;gt; 4         AA    NA  NA    24
+&amp;gt; 5          A    50  NA    11
+&amp;gt; 6         AA    NA  NA    12
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Now row 2 contains it&amp;rsquo;s categorical value, and when we move to row 3 (which is also empty), it can be copied from the previous row 2&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;no.row &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;3&lt;/span&gt;
+my.table[[&lt;span style=&#34;color:#b44&#34;&gt;&amp;#39;Specie&amp;#39;&lt;/span&gt;]][no.row]
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&amp;gt; [1] &amp;#34;&amp;#34;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;my.table[[&lt;span style=&#34;color:#b44&#34;&gt;&amp;#39;Specie&amp;#39;&lt;/span&gt;]][no.row] &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;-&lt;/span&gt; my.table[[&lt;span style=&#34;color:#b44&#34;&gt;&amp;#39;Specie&amp;#39;&lt;/span&gt;]][no.row&lt;span style=&#34;color:#666&#34;&gt;-1&lt;/span&gt;]
+&lt;span style=&#34;color:#00a000&#34;&gt;head&lt;/span&gt;(my.table)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&amp;gt;   Specie Dup Treat Rep Value
+&amp;gt; 1 A. cap   A     0   1    34
+&amp;gt; 2 A. cap  AA    NA  NA    26
+&amp;gt; 3 A. cap   A    25  NA    18
+&amp;gt; 4         AA    NA  NA    24
+&amp;gt; 5          A    50  NA    11
+&amp;gt; 6         AA    NA  NA    12
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;3. When a new factor appears, repeat the process
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;We can repeat this process until a new factor appears, as it is the case of row 9. Therefore we should not paste anything in row 9, and continue the process on row 10 which is also empty&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;no.row &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;10&lt;/span&gt;
+my.table[[&lt;span style=&#34;color:#b44&#34;&gt;&amp;#39;Specie&amp;#39;&lt;/span&gt;]][no.row]
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&amp;gt; [1] &amp;#34;&amp;#34;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;my.table[[&lt;span style=&#34;color:#b44&#34;&gt;&amp;#39;Specie&amp;#39;&lt;/span&gt;]][no.row] &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;-&lt;/span&gt; my.table[[&lt;span style=&#34;color:#b44&#34;&gt;&amp;#39;Specie&amp;#39;&lt;/span&gt;]][no.row&lt;span style=&#34;color:#666&#34;&gt;-1&lt;/span&gt;]
+&lt;span style=&#34;color:#00a000&#34;&gt;head&lt;/span&gt;(my.table, n &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;10&lt;/span&gt;)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&amp;gt;    Specie Dup Treat Rep Value
+&amp;gt; 1  A. cap   A     0   1    34
+&amp;gt; 2  A. cap  AA    NA  NA    26
+&amp;gt; 3  A. cap   A    25  NA    18
+&amp;gt; 4          AA    NA  NA    24
+&amp;gt; 5           A    50  NA    11
+&amp;gt; 6          AA    NA  NA    12
+&amp;gt; 7           A   100  NA    15
+&amp;gt; 8          AA    NA  NA    11
+&amp;gt; 9  F. rub   F     0  NA    25
+&amp;gt; 10 F. rub  FF    NA  NA    26
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;4. Repeat steps 1-3 for each column that needs it
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The process moves forward in this way until the whole column &lt;code&gt;Specie&lt;/code&gt; is filled in. Then we can move to the next column with empty values, in my case this is &lt;code&gt;Treat&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;If you look at the process, we basically need to write an R command for step 2. The rest is just a process of verification and repetition. We are going to automate verification using the function &lt;code&gt;if()&lt;/code&gt; and the repetition using &lt;code&gt;for()&lt;/code&gt;.&lt;/p&gt;
+&lt;h3 id=&#34;writing-my-first-for-loop&#34;&gt;Writing my first for loop&lt;/h3&gt;
+&lt;p&gt;Since the present post is directed to R beginners with not much experience with programming or coding I will avoid all the technicalities of for loops and if statements and instead dive deeply into them by applying our logic above. Then we are going to use them and explain carefully to obtain a pragmatic understanding of the process.&lt;/p&gt;
+&lt;p&gt;We will start with a for loop to go row by row in one column and check what is inside, as described in the step &lt;em&gt;1&lt;/em&gt; of our process. Let&amp;rsquo;s start with only 20 rows as an example&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#00a000&#34;&gt;for&lt;/span&gt;(no.row in &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;:&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;20&lt;/span&gt;){
+    &lt;span style=&#34;color:#00a000&#34;&gt;print&lt;/span&gt;(my.table[[&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;Specie&amp;#34;&lt;/span&gt;]][no.row])
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&amp;gt; [1] &amp;#34;A. cap&amp;#34;
+&amp;gt; [1] &amp;#34;A. cap&amp;#34;
+&amp;gt; [1] &amp;#34;A. cap&amp;#34;
+&amp;gt; [1] &amp;#34;&amp;#34;
+&amp;gt; [1] &amp;#34;&amp;#34;
+&amp;gt; [1] &amp;#34;&amp;#34;
+&amp;gt; [1] &amp;#34;&amp;#34;
+&amp;gt; [1] &amp;#34;&amp;#34;
+&amp;gt; [1] &amp;#34;F. rub&amp;#34;
+&amp;gt; [1] &amp;#34;F. rub&amp;#34;
+&amp;gt; [1] &amp;#34;&amp;#34;
+&amp;gt; [1] &amp;#34;&amp;#34;
+&amp;gt; [1] &amp;#34;&amp;#34;
+&amp;gt; [1] &amp;#34;&amp;#34;
+&amp;gt; [1] &amp;#34;&amp;#34;
+&amp;gt; [1] &amp;#34;&amp;#34;
+&amp;gt; [1] &amp;#34;A. ela&amp;#34;
+&amp;gt; [1] &amp;#34;&amp;#34;
+&amp;gt; [1] &amp;#34;&amp;#34;
+&amp;gt; [1] &amp;#34;&amp;#34;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The function &lt;code&gt;for()&lt;/code&gt;uses the first argument that you define (here &lt;code&gt;no.row&lt;/code&gt;) and goes one by one &lt;code&gt;in&lt;/code&gt; the series specified as the second argument, in this case a series of numbers from 1 to 20 (&lt;code&gt;1:20&lt;/code&gt;). It means that in the first iteration &lt;code&gt;no.row&lt;/code&gt; will take the value &lt;code&gt;1&lt;/code&gt;, in the second iteration the value &lt;code&gt;2&lt;/code&gt;, and so on, until the last iteration where it will have the value &lt;code&gt;20&lt;/code&gt;. Each iteration will execute the code inside the curly braces &lt;code&gt;{}&lt;/code&gt; which, in this case, is simply to print the value of each row.&lt;/p&gt;
+&lt;p&gt;Because the first argument in &lt;code&gt;for()&lt;/code&gt; is defined by us, we could as well use any arbitrary argument we want, for example&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#00a000&#34;&gt;for&lt;/span&gt;(n in &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;:&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;20&lt;/span&gt;){
+    &lt;span style=&#34;color:#00a000&#34;&gt;print&lt;/span&gt;(my.table[[&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;Specie&amp;#34;&lt;/span&gt;]][n])
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;would do exactly the same but now &lt;code&gt;n&lt;/code&gt; is taking the values from 1 to 20.&lt;/p&gt;
+&lt;p&gt;We can then initialize a function that takes the name of our data frame, the name of the column, and do exactly the same as our code above, but for all the rows contained in the table, no matter how many they are&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;fill_merged &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#00a000&#34;&gt;function&lt;/span&gt;(dat, column){
+    &lt;span style=&#34;color:#080;font-style:italic&#34;&gt;## Get value of each row&lt;/span&gt;
+    &lt;span style=&#34;color:#00a000&#34;&gt;for&lt;/span&gt;(n in &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;:&lt;/span&gt;&lt;span style=&#34;color:#00a000&#34;&gt;nrow&lt;/span&gt;(dat)){
+        &lt;span style=&#34;color:#00a000&#34;&gt;print&lt;/span&gt;(my.table[[column]][n])
+        }
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Here our for loop will create a local variable &lt;code&gt;n&lt;/code&gt; that will take values from 1 until &lt;code&gt;nrow(dat)&lt;/code&gt; which means number of rows in the table &lt;code&gt;dat&lt;/code&gt;, and then print each row value contained in the column stated in the argument &lt;code&gt;column&lt;/code&gt;. If we apply it to our data frame&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#00a000&#34;&gt;fill_merged&lt;/span&gt;(my.table, &lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;Specie&amp;#34;&lt;/span&gt;)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The R console will print, one by one, each of the values contained in the column &lt;code&gt;Specie&lt;/code&gt; (I have 120 rows, it makes no sense to take space to show it in the post, but you can go ahead and try it yourself).&lt;/p&gt;
+&lt;p&gt;If the last two pieces of code are not clear for you, I recommend you to read our previous post about &lt;a href=&#34;https://blog.rwhitedwarf.com/post/2021/functions/&#34;&gt;functions in R&lt;/a&gt;.&lt;/p&gt;
+&lt;h3 id=&#34;how-to-use-if-statement-in-r&#34;&gt;How to use If statement in R&lt;/h3&gt;
+&lt;p&gt;Printing the values is far from what we want to achieve. As we defined in the first step of the process, we need to check the value inside, if it has a value we leave it alone, but if it is empty, we fill it in with the previous value. To check if the value is empty or not we use the &lt;code&gt;if()&lt;/code&gt; function&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;fill_merged &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#00a000&#34;&gt;function&lt;/span&gt;(dat, column){
+    &lt;span style=&#34;color:#080;font-style:italic&#34;&gt;## Get value of each row&lt;/span&gt;
+    &lt;span style=&#34;color:#00a000&#34;&gt;for&lt;/span&gt;(n in &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;:&lt;/span&gt;&lt;span style=&#34;color:#00a000&#34;&gt;nrow&lt;/span&gt;(dat)){
+        &lt;span style=&#34;color:#080;font-style:italic&#34;&gt;## Check if it is empty&lt;/span&gt;
+        &lt;span style=&#34;color:#00a000&#34;&gt;if&lt;/span&gt;(dat[[column]][n] &lt;span style=&#34;color:#666&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#b44&#34;&gt;&amp;#39;&amp;#39;&lt;/span&gt;){
+            dat[[column]][n] &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;-&lt;/span&gt; dat[[column]][n &lt;span style=&#34;color:#666&#34;&gt;-&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;]
+        }
+    }
+    &lt;span style=&#34;color:#00a000&#34;&gt;return&lt;/span&gt;(dat)
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The function &lt;code&gt;if()&lt;/code&gt; checks the expression inside parentheses and if it returns &lt;code&gt;TRUE&lt;/code&gt; it executes the code inside curly braces &lt;code&gt;{}&lt;/code&gt;, otherwise it will skip it. Therefore it is crucial that the expression inside &lt;code&gt;if()&lt;/code&gt; returns either &lt;code&gt;TRUE&lt;/code&gt; or &lt;code&gt;FALSE&lt;/code&gt;. You can always test it by sending the exact expression directly to the console&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;my.table[[&lt;span style=&#34;color:#b44&#34;&gt;&amp;#39;Specie&amp;#39;&lt;/span&gt;]][1] &lt;span style=&#34;color:#666&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#b44&#34;&gt;&amp;#39;&amp;#39;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&amp;gt; [1] FALSE
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;my.table[[&lt;span style=&#34;color:#b44&#34;&gt;&amp;#39;Specie&amp;#39;&lt;/span&gt;]][5] &lt;span style=&#34;color:#666&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#b44&#34;&gt;&amp;#39;&amp;#39;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&amp;gt; [1] TRUE
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Once we confirm that the value is empty, we enter the if statement and execute the code from step &lt;em&gt;2&lt;/em&gt;, which inside the function takes the form of &lt;code&gt;dat[[column]][n] &amp;lt;- dat[[column]][n - 1]&lt;/code&gt;.If the value is not empty, we simply do nothing.&lt;/p&gt;
+&lt;p&gt;Now we can actually try the function in one of our columns&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;my.filled.table &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#00a000&#34;&gt;fill_merged&lt;/span&gt;(my.table, &lt;span style=&#34;color:#b44&#34;&gt;&amp;#39;Specie&amp;#39;&lt;/span&gt;)
+&lt;span style=&#34;color:#00a000&#34;&gt;head&lt;/span&gt;(my.filled.table, n &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;15&lt;/span&gt;)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&amp;gt;    Specie Dup Treat Rep Value
+&amp;gt; 1  A. cap   A     0   1    34
+&amp;gt; 2  A. cap  AA    NA  NA    26
+&amp;gt; 3  A. cap   A    25  NA    18
+&amp;gt; 4  A. cap  AA    NA  NA    24
+&amp;gt; 5  A. cap   A    50  NA    11
+&amp;gt; 6  A. cap  AA    NA  NA    12
+&amp;gt; 7  A. cap   A   100  NA    15
+&amp;gt; 8  A. cap  AA    NA  NA    11
+&amp;gt; 9  F. rub   F     0  NA    25
+&amp;gt; 10 F. rub  FF    NA  NA    26
+&amp;gt; 11 F. rub   F    25  NA    17
+&amp;gt; 12 F. rub  FF    NA  NA    11
+&amp;gt; 13 F. rub   F    50  NA    13
+&amp;gt; 14 F. rub  FF    NA  NA    11
+&amp;gt; 15 F. rub   F   100  NA    11
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;strong&gt;Note&lt;/strong&gt; that so far it works only for columns with character values, not numeric&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#00a000&#34;&gt;fill_merged&lt;/span&gt;(my.table, &lt;span style=&#34;color:#b44&#34;&gt;&amp;#39;Treat&amp;#39;&lt;/span&gt;)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&amp;gt; Error in if (dat[[column]][n] == &amp;#34;&amp;#34;) {: missing value where TRUE/FALSE needed
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The reason is that only character columns produce empty strings. Numeric columns will produce &lt;code&gt;NA&lt;/code&gt; values. Therefore, we need to add a condition to our if expression to test also if the value is &lt;code&gt;NA&lt;/code&gt;. To do that we use double &lt;code&gt;|&lt;/code&gt; which in R means &lt;strong&gt;OR&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;fill_merged &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#00a000&#34;&gt;function&lt;/span&gt;(dat, column){
+    &lt;span style=&#34;color:#080;font-style:italic&#34;&gt;## Get value of each row&lt;/span&gt;
+    &lt;span style=&#34;color:#00a000&#34;&gt;for&lt;/span&gt;(n in &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;:&lt;/span&gt;&lt;span style=&#34;color:#00a000&#34;&gt;nrow&lt;/span&gt;(dat)){
+        &lt;span style=&#34;color:#080;font-style:italic&#34;&gt;## Check if it is empty&lt;/span&gt;
+        &lt;span style=&#34;color:#00a000&#34;&gt;if&lt;/span&gt;(dat[[column]][n] &lt;span style=&#34;color:#666&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#b44&#34;&gt;&amp;#39;&amp;#39;&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;||&lt;/span&gt; &lt;span style=&#34;color:#00a000&#34;&gt;is.na&lt;/span&gt;(dat[[column]][n])){
+            dat[[column]][n] &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;-&lt;/span&gt; dat[[column]][n &lt;span style=&#34;color:#666&#34;&gt;-&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;]
+        }
+    }
+    &lt;span style=&#34;color:#00a000&#34;&gt;return&lt;/span&gt;(dat)
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Now our if statement is telling to R &amp;ldquo;&lt;strong&gt;IF&lt;/strong&gt; the value is empty (&lt;code&gt;&#39;&#39;&lt;/code&gt;) &lt;strong&gt;OR&lt;/strong&gt; is NA (&lt;code&gt;is.na()&lt;/code&gt;) then, execute this code&amp;rdquo;, and so we enter to the code inside the if-curly-braces.&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;NA&lt;/code&gt; are not exactly values and therefore we cannot test them by using the expression&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;my.table[[&lt;span style=&#34;color:#b44&#34;&gt;&amp;#39;Treat&amp;#39;&lt;/span&gt;]][2] &lt;span style=&#34;color:#666&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;NA&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&amp;gt; [1] NA
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Instead of returning &lt;code&gt;TRUE&lt;/code&gt; or &lt;code&gt;FALSE&lt;/code&gt; returns &lt;code&gt;NA&lt;/code&gt; which means &lt;strong&gt;Not Available&lt;/strong&gt;. To check if the value is &lt;code&gt;NA&lt;/code&gt; or really a value we use the function &lt;code&gt;is.na()&lt;/code&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#00a000&#34;&gt;is.na&lt;/span&gt;(my.table[[&lt;span style=&#34;color:#b44&#34;&gt;&amp;#39;Treat&amp;#39;&lt;/span&gt;]][2])
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&amp;gt; [1] TRUE
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Now we can use our function for columns with numeric values also&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;my.filled.table &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#00a000&#34;&gt;fill_merged&lt;/span&gt;(my.table, &lt;span style=&#34;color:#b44&#34;&gt;&amp;#39;Treat&amp;#39;&lt;/span&gt;)
+&lt;span style=&#34;color:#00a000&#34;&gt;head&lt;/span&gt;(my.filled.table, n &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;10&lt;/span&gt;)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&amp;gt;    Specie Dup Treat Rep Value
+&amp;gt; 1  A. cap   A     0   1    34
+&amp;gt; 2  A. cap  AA     0  NA    26
+&amp;gt; 3  A. cap   A    25  NA    18
+&amp;gt; 4          AA    25  NA    24
+&amp;gt; 5           A    50  NA    11
+&amp;gt; 6          AA    50  NA    12
+&amp;gt; 7           A   100  NA    15
+&amp;gt; 8          AA   100  NA    11
+&amp;gt; 9  F. rub   F     0  NA    25
+&amp;gt; 10 F. rub  FF     0  NA    26
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;check-confirm-and-repeat-for-and-if-together&#34;&gt;Check, confirm and repeat (for and if together)&lt;/h3&gt;
+&lt;p&gt;Now we could use our function for each column that presents this issue, but we are actually trying to apply the DRY principle. Instead we could use &lt;code&gt;for()&lt;/code&gt; to go through all the columns where we want to apply it. There are other functions that can help with this as well such as &lt;code&gt;map()&lt;/code&gt; and its derived functions from the package &lt;a href=&#34;https://purrr.tidyverse.org/&#34;&gt;purrr&lt;/a&gt;.We could also write a new function that calls our first function to repeat it into each column. Feel free to experiment, for this tutorial we are going to take a different approach.&lt;/p&gt;
+&lt;p&gt;We are going to improve the same old function and add yet one more for loop that iterates from each column of interest and repeats the same process. This will cover the step 4 of our mapped process.&lt;/p&gt;
+&lt;p&gt;The implementation is actually easy, we just need to wrap the whole previous process of if&amp;rsquo;s and for&amp;rsquo;s inside a for loop that goes column by column&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;fill_merged &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#00a000&#34;&gt;function&lt;/span&gt;(dat, columns.as.vector){
+    &lt;span style=&#34;color:#080;font-style:italic&#34;&gt;## Go through the columns&lt;/span&gt;
+    &lt;span style=&#34;color:#00a000&#34;&gt;for&lt;/span&gt;(column in columns.as.vector){
+        &lt;span style=&#34;color:#080;font-style:italic&#34;&gt;## Get value of each row&lt;/span&gt;
+        &lt;span style=&#34;color:#00a000&#34;&gt;for&lt;/span&gt;(n in &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;:&lt;/span&gt;&lt;span style=&#34;color:#00a000&#34;&gt;nrow&lt;/span&gt;(dat)){
+            &lt;span style=&#34;color:#080;font-style:italic&#34;&gt;## Check if it is empty&lt;/span&gt;
+            &lt;span style=&#34;color:#00a000&#34;&gt;if&lt;/span&gt;(dat[[column]][n] &lt;span style=&#34;color:#666&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#b44&#34;&gt;&amp;#39;&amp;#39;&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;||&lt;/span&gt; &lt;span style=&#34;color:#00a000&#34;&gt;is.na&lt;/span&gt;(dat[[column]][n])){
+                dat[[column]][n] &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;-&lt;/span&gt; dat[[column]][n &lt;span style=&#34;color:#666&#34;&gt;-&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;]
+            }
+        }
+    }
+    &lt;span style=&#34;color:#00a000&#34;&gt;return&lt;/span&gt;(dat)
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;I have changed the argument for initiating the function from &lt;code&gt;column&lt;/code&gt; to &lt;code&gt;columns.as.vector&lt;/code&gt;. Now this will take a vector containing all the names of the columns that should be treated. Notice that in our new for loop I am declaring &lt;code&gt;column&lt;/code&gt; to iterate over each value of &lt;code&gt;column.as.vector&lt;/code&gt; therefore, the variable &lt;code&gt;column&lt;/code&gt; will contain each string in the vector for each iteration. In this way we don&amp;rsquo;t need to change the rest of the code.&lt;/p&gt;
+&lt;p&gt;Now you can call exactly the same function for each column that needs it&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;target_cols &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#00a000&#34;&gt;names&lt;/span&gt;(my.table)&lt;span style=&#34;color:#00a000&#34;&gt;[c&lt;/span&gt;(&lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;,&lt;span style=&#34;color:#666&#34;&gt;3&lt;/span&gt;,&lt;span style=&#34;color:#666&#34;&gt;4&lt;/span&gt;)]
+my.filled.table &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#00a000&#34;&gt;fill_merged&lt;/span&gt;(my.table, target_cols)
+&lt;span style=&#34;color:#00a000&#34;&gt;head&lt;/span&gt;(my.filled.table, n &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;15&lt;/span&gt;)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&amp;gt;    Specie Dup Treat Rep Value
+&amp;gt; 1  A. cap   A     0   1    34
+&amp;gt; 2  A. cap  AA     0   1    26
+&amp;gt; 3  A. cap   A    25   1    18
+&amp;gt; 4  A. cap  AA    25   1    24
+&amp;gt; 5  A. cap   A    50   1    11
+&amp;gt; 6  A. cap  AA    50   1    12
+&amp;gt; 7  A. cap   A   100   1    15
+&amp;gt; 8  A. cap  AA   100   1    11
+&amp;gt; 9  F. rub   F     0   1    25
+&amp;gt; 10 F. rub  FF     0   1    26
+&amp;gt; 11 F. rub   F    25   1    17
+&amp;gt; 12 F. rub  FF    25   1    11
+&amp;gt; 13 F. rub   F    50   1    13
+&amp;gt; 14 F. rub  FF    50   1    11
+&amp;gt; 15 F. rub   F   100   1    11
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Also notice the trick in the first line: &lt;code&gt;names(my.table)&lt;/code&gt; returns a vector containing all the column names of the data frame and &lt;code&gt;names(my.table)[c(1,3,4)]&lt;/code&gt; is taking only the columns 1, 3 and 4, which are the ones that need to be fixed. This is extremely useful when you have many columns that need to be fixed&lt;/p&gt;
+&lt;h3 id=&#34;marking-the-errors&#34;&gt;Marking the errors&lt;/h3&gt;
+&lt;p&gt;You might have noticed that I&amp;rsquo;m adding text preceded by &lt;code&gt;##&lt;/code&gt; within the function. If you are not familiar with it, this are comments, it means that anything that is written in the same line after one &lt;code&gt;#&lt;/code&gt; will not be evaluated by R (I use double for technical reasons of my text editor). Although this function is quite small and simple, and we know what exactly we are doing on each line thanks to the explanations, it is a good practice to add comments to your code because after a while, when you will look back at the code you might had forgotten the logic and structure. Adding comments help us to know what each piece is about, making it easier to apply changes in the future.&lt;/p&gt;
+&lt;p&gt;In the same way, it is a good practice to add errors when the function is expecting something in particular and we can foresee potential problems. Often we don&amp;rsquo;t foresee all the mistakes and problems that the user or we ourselves can have when using our own functions and thus, errors are usually added along the way based on the experience gathered by using the function.&lt;/p&gt;
+&lt;p&gt;For example, our function is expecting that at least the first row will not have empty values, otherwise it cannot go one row before to find the value to paste on it. Although it is not expected, our table can still present this situation due to human errors, for example, somebody by accident pressed &lt;em&gt;Delete&lt;/em&gt; button somewhere on the first row in the source file. In such case R will mark some error that will be difficult to understand and track back. We might wonder for hours what we did wrong in our function only to find out that the problem comes from the data table itself. Instead we can mark our own error in advance by sending a message when the value on the first row is missing.&lt;/p&gt;
+&lt;p&gt;An easy way of implementing this is using the function &lt;code&gt;stop()&lt;/code&gt;. Let&amp;rsquo;s implement our error into our function right before it copies the value from the row &lt;code&gt;n - 1&lt;/code&gt;.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;fill_merged &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#00a000&#34;&gt;function&lt;/span&gt;(dat, columns.as.vector){
+    &lt;span style=&#34;color:#080;font-style:italic&#34;&gt;## Go through the columns&lt;/span&gt;
+    &lt;span style=&#34;color:#00a000&#34;&gt;for&lt;/span&gt;(column in columns.as.vector){
+        &lt;span style=&#34;color:#080;font-style:italic&#34;&gt;## Get value of each row&lt;/span&gt;
+        &lt;span style=&#34;color:#00a000&#34;&gt;for&lt;/span&gt;(n in &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;:&lt;/span&gt;&lt;span style=&#34;color:#00a000&#34;&gt;nrow&lt;/span&gt;(dat)){
+            &lt;span style=&#34;color:#080;font-style:italic&#34;&gt;## Check if it is empty&lt;/span&gt;
+            &lt;span style=&#34;color:#00a000&#34;&gt;if&lt;/span&gt;(dat[[column]][n] &lt;span style=&#34;color:#666&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#b44&#34;&gt;&amp;#39;&amp;#39;&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;||&lt;/span&gt; &lt;span style=&#34;color:#00a000&#34;&gt;is.na&lt;/span&gt;(dat[[column]][n])){
+                &lt;span style=&#34;color:#080;font-style:italic&#34;&gt;## If it is the row 1, stop with Error&lt;/span&gt;
+                &lt;span style=&#34;color:#00a000&#34;&gt;if&lt;/span&gt;(n &lt;span style=&#34;color:#666&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;){
+                    &lt;span style=&#34;color:#00a000&#34;&gt;stop&lt;/span&gt;(&lt;span style=&#34;color:#00a000&#34;&gt;paste0&lt;/span&gt;(&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;Row 1 of column &amp;#34;&lt;/span&gt;, column,
+                                    &lt;span style=&#34;color:#b44&#34;&gt;&amp;#34; has empty values. Check your data.&amp;#34;&lt;/span&gt;))
+                }
+                else{
+                    dat[[column]][n] &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;-&lt;/span&gt; dat[[column]][n &lt;span style=&#34;color:#666&#34;&gt;-&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;]
+                }
+            }
+        }
+    }
+    &lt;span style=&#34;color:#00a000&#34;&gt;return&lt;/span&gt;(dat)
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;If the value of the first row is empty, the function will stop, printing a message that says in which column the row no. 1 is empty. When the row is not the first, R will evaluate the code next, contained inside &lt;code&gt;else{}&lt;/code&gt;. &lt;code&gt;else&lt;/code&gt; is a complement for if that tell R what to do when the &lt;code&gt;if()&lt;/code&gt; part is not fulfilled. Sometimes we can omit it, when the &lt;code&gt;if()&lt;/code&gt; part is not fulfilled R will simply go to the next part of the code. But when we want to make sure that nothing will happen outside these options, we include &lt;code&gt;else&lt;/code&gt;. Here we are giving only two options, either &lt;code&gt;n&lt;/code&gt; equals 1 and the function stops with an error, or else &lt;code&gt;n&lt;/code&gt; is not one and the function continues.&lt;/p&gt;
+&lt;p&gt;Let&amp;rsquo;s try the error by making a copy of our data frame with the first row empty&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;test.error &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;-&lt;/span&gt; my.table[2&lt;span style=&#34;color:#666&#34;&gt;:&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;10&lt;/span&gt;,]
+&lt;span style=&#34;color:#00a000&#34;&gt;fill_merged&lt;/span&gt;(test.error, &lt;span style=&#34;color:#b44&#34;&gt;&amp;#39;Rep&amp;#39;&lt;/span&gt;)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&amp;gt; Error in fill_merged(test.error, &amp;#34;Rep&amp;#34;): Row 1 of column Rep has empty values. Check your data.
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Another misunderstanding that the user can encounter is with the argument &lt;code&gt;columns.as.vector&lt;/code&gt;. We are expecting that the user will provide a string, or vector of strings with the names of the columns, but the user as well might think that the function is expecting the whole data as vector. We can prevent the user for doing this by adding an error at the beginning of the function.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;fill_merged &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#00a000&#34;&gt;function&lt;/span&gt;(dat, columns.as.vector){
+    &lt;span style=&#34;color:#080;font-style:italic&#34;&gt;## Check if column names are provided as strings&lt;/span&gt;
+    &lt;span style=&#34;color:#00a000&#34;&gt;if&lt;/span&gt;(&lt;span style=&#34;color:#666&#34;&gt;!&lt;/span&gt;&lt;span style=&#34;color:#00a000&#34;&gt;is.character&lt;/span&gt;(columns.as.vector)){
+        &lt;span style=&#34;color:#00a000&#34;&gt;stop&lt;/span&gt;(&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;Column names must be provided as string or vector of strings of class character&amp;#34;&lt;/span&gt;)
+    }
+    &lt;span style=&#34;color:#080;font-style:italic&#34;&gt;## Go through the columns&lt;/span&gt;
+    &lt;span style=&#34;color:#00a000&#34;&gt;for&lt;/span&gt;(column in columns.as.vector){
+        &lt;span style=&#34;color:#080;font-style:italic&#34;&gt;## Get value of each row&lt;/span&gt;
+        &lt;span style=&#34;color:#00a000&#34;&gt;for&lt;/span&gt;(n in &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;:&lt;/span&gt;&lt;span style=&#34;color:#00a000&#34;&gt;nrow&lt;/span&gt;(dat)){
+            &lt;span style=&#34;color:#080;font-style:italic&#34;&gt;## Check if it is empty&lt;/span&gt;
+            &lt;span style=&#34;color:#00a000&#34;&gt;if&lt;/span&gt;(dat[[column]][n] &lt;span style=&#34;color:#666&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#b44&#34;&gt;&amp;#39;&amp;#39;&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;||&lt;/span&gt; &lt;span style=&#34;color:#00a000&#34;&gt;is.na&lt;/span&gt;(dat[[column]][n])){
+                &lt;span style=&#34;color:#080;font-style:italic&#34;&gt;## If it is the row 1, stop with Error&lt;/span&gt;
+                &lt;span style=&#34;color:#00a000&#34;&gt;if&lt;/span&gt;(n &lt;span style=&#34;color:#666&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;){
+                    &lt;span style=&#34;color:#00a000&#34;&gt;stop&lt;/span&gt;(&lt;span style=&#34;color:#00a000&#34;&gt;paste0&lt;/span&gt;(&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;Row 1 of column &amp;#34;&lt;/span&gt;, column,
+                                    &lt;span style=&#34;color:#b44&#34;&gt;&amp;#34; has empty values. Check your data.&amp;#34;&lt;/span&gt;))
+                }
+                else{
+                    dat[[column]][n] &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;-&lt;/span&gt; dat[[column]][n &lt;span style=&#34;color:#666&#34;&gt;-&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;]
+                }
+            }
+        }
+    }
+    &lt;span style=&#34;color:#00a000&#34;&gt;return&lt;/span&gt;(dat)
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We want to make sure that &lt;code&gt;columns.as.vector&lt;/code&gt; is character. To test this, we use the function &lt;code&gt;is.character()&lt;/code&gt;, which will return &lt;code&gt;TRUE&lt;/code&gt; when the values inside are character, and &lt;code&gt;FALSE&lt;/code&gt; otherwise.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;a &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#b44&#34;&gt;&amp;#39;foo&amp;#39;&lt;/span&gt;
+&lt;span style=&#34;color:#00a000&#34;&gt;is.character&lt;/span&gt;(a)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&amp;gt; [1] TRUE
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;However we want to send the error only when the value is NOT character. To tell R to test the opposite, we start the argument with the symbol &lt;code&gt;!&lt;/code&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#666&#34;&gt;!&lt;/span&gt;&lt;span style=&#34;color:#00a000&#34;&gt;is.character&lt;/span&gt;(a)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&amp;gt; [1] FALSE
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Now with our new version, when the user might provide any value that is not string, the error will be triggered&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#00a000&#34;&gt;fill_merged&lt;/span&gt;(my.table, &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&amp;gt; Error in fill_merged(my.table, 1): Column names must be provided as string or vector of strings of class character
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Still if the user provides a vector of strings, or a misspelled name of the column, our function is not aware of it. We can add one more error when &lt;code&gt;column.as.vector&lt;/code&gt; is string but not a string that we are expecting&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;fill_merged &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#00a000&#34;&gt;function&lt;/span&gt;(dat, columns.as.vector){
+    &lt;span style=&#34;color:#080;font-style:italic&#34;&gt;## Check if column names are provided as strings&lt;/span&gt;
+    &lt;span style=&#34;color:#00a000&#34;&gt;if&lt;/span&gt;(&lt;span style=&#34;color:#666&#34;&gt;!&lt;/span&gt;&lt;span style=&#34;color:#00a000&#34;&gt;is.character&lt;/span&gt;(columns.as.vector)){
+        &lt;span style=&#34;color:#00a000&#34;&gt;stop&lt;/span&gt;(&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;Column names must be provided as string or vector of strings of class character&amp;#34;&lt;/span&gt;)
+    }
+    &lt;span style=&#34;color:#080;font-style:italic&#34;&gt;## Go through the columns&lt;/span&gt;
+    &lt;span style=&#34;color:#00a000&#34;&gt;for&lt;/span&gt;(column in columns.as.vector){
+        &lt;span style=&#34;color:#080;font-style:italic&#34;&gt;## Check if the column name matches with dat column names&lt;/span&gt;
+        &lt;span style=&#34;color:#00a000&#34;&gt;if &lt;/span&gt;(&lt;span style=&#34;color:#666&#34;&gt;!&lt;/span&gt;column &lt;span style=&#34;color:#666&#34;&gt;%in%&lt;/span&gt; &lt;span style=&#34;color:#00a000&#34;&gt;names&lt;/span&gt;(dat)){
+            &lt;span style=&#34;color:#00a000&#34;&gt;stop&lt;/span&gt;(&lt;span style=&#34;color:#00a000&#34;&gt;paste0&lt;/span&gt;(&lt;span style=&#34;color:#b44&#34;&gt;&amp;#39;Column &amp;lt;&amp;#39;&lt;/span&gt;, column, &lt;span style=&#34;color:#b44&#34;&gt;&amp;#39;&amp;gt; cannot be found in the data frame&amp;#39;&lt;/span&gt;))
+        }
+        &lt;span style=&#34;color:#080;font-style:italic&#34;&gt;## Get value of each row&lt;/span&gt;
+        &lt;span style=&#34;color:#00a000&#34;&gt;for&lt;/span&gt;(n in &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;:&lt;/span&gt;&lt;span style=&#34;color:#00a000&#34;&gt;nrow&lt;/span&gt;(dat)){
+            &lt;span style=&#34;color:#080;font-style:italic&#34;&gt;## Check if it is empty&lt;/span&gt;
+            &lt;span style=&#34;color:#00a000&#34;&gt;if&lt;/span&gt;(dat[[column]][n] &lt;span style=&#34;color:#666&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#b44&#34;&gt;&amp;#39;&amp;#39;&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;||&lt;/span&gt; &lt;span style=&#34;color:#00a000&#34;&gt;is.na&lt;/span&gt;(dat[[column]][n])){
+                &lt;span style=&#34;color:#080;font-style:italic&#34;&gt;## If it is the row 1, stop with Error&lt;/span&gt;
+                &lt;span style=&#34;color:#00a000&#34;&gt;if&lt;/span&gt;(n &lt;span style=&#34;color:#666&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;){
+                    &lt;span style=&#34;color:#00a000&#34;&gt;stop&lt;/span&gt;(&lt;span style=&#34;color:#00a000&#34;&gt;paste0&lt;/span&gt;(&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;Row 1 of column &amp;lt;&amp;#34;&lt;/span&gt;, column,
+                                    &lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&amp;gt; has empty values. Check your data.&amp;#34;&lt;/span&gt;))
+                }
+                else{
+                    dat[[column]][n] &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;-&lt;/span&gt; dat[[column]][n &lt;span style=&#34;color:#666&#34;&gt;-&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;]
+                }
+            }
+        }
+    }
+    &lt;span style=&#34;color:#00a000&#34;&gt;return&lt;/span&gt;(dat)
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Here we are implementing &lt;code&gt;if (!column %in% names(dat))&lt;/code&gt;. Again we are using &lt;code&gt;!&lt;/code&gt; to tell R to test the opposite. &lt;code&gt;column %in% names(dat)&lt;/code&gt; will take the value of &lt;code&gt;column&lt;/code&gt; and check if it is present in the vector &lt;code&gt;names(dat)&lt;/code&gt; (which has the names of the columns).&lt;/p&gt;
+&lt;p&gt;Let&amp;rsquo;s test the last error by misspelling the name of one column&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#00a000&#34;&gt;fill_merged&lt;/span&gt;(my.table, &lt;span style=&#34;color:#00a000&#34;&gt;c&lt;/span&gt;(&lt;span style=&#34;color:#b44&#34;&gt;&amp;#39;Specie&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#b44&#34;&gt;&amp;#39;Treatment&amp;#39;&lt;/span&gt;))
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&amp;gt; Error in fill_merged(my.table, c(&amp;#34;Specie&amp;#34;, &amp;#34;Treatment&amp;#34;)): Column &amp;lt;Treatment&amp;gt; cannot be found in the data frame
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;If you can think of more errors feel free to add them, it will be good for you  as a practice. However you should also try and see what happens with other potential scenarios before adding the errors yourself. Sometimes the default errors from other functions are enough to solve problems. For example, try providing to our function a data frame that does not exist, R will immediately tell you &lt;code&gt;object &#39;x&#39; not found&lt;/code&gt;.&lt;/p&gt;
+&lt;h2 id=&#34;final&#34;&gt;Final remarks&lt;/h2&gt;
+&lt;p&gt;I hope that the post has helped you to have a better understanding of &lt;code&gt;for()&lt;/code&gt; and &lt;code&gt;if()&lt;/code&gt;, and provided you with a good guidance on how you can plan and structure functions. If something was not clear or you still have questions, or something in your code did not work as expected, feel welcome to leave us a comment below (you will need a github account for that).&lt;/p&gt;
+&lt;p&gt;There are many ways how you can call your function now to your future projects. One of the easiest for now would be to save it in an R script, for example &lt;code&gt;fill_merged_cells.R&lt;/code&gt; and then you can call it from any script or R code by providing the path to your script to the function &lt;code&gt;source()&lt;/code&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#00a000&#34;&gt;source&lt;/span&gt;(&lt;span style=&#34;color:#b44&#34;&gt;&amp;#39;~/Rscripts/fill_merged_cells.R&amp;#39;&lt;/span&gt;)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;changing the path to the exact location of your file. Source will run all the code contained inside the &lt;code&gt;.R&lt;/code&gt; file in the R session where you call it, making your function available for the current session.&lt;/p&gt;
+&lt;p&gt;Here is the final form of the &lt;strong&gt;function for filling in empty rows produced by merged cells&lt;/strong&gt;. I hope it will help with your work. Enjoy it!&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;fill_merged &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#00a000&#34;&gt;function&lt;/span&gt;(dat, columns.as.vector){
+    &lt;span style=&#34;color:#080;font-style:italic&#34;&gt;## Check if column names are provided as strings&lt;/span&gt;
+    &lt;span style=&#34;color:#00a000&#34;&gt;if&lt;/span&gt;(&lt;span style=&#34;color:#666&#34;&gt;!&lt;/span&gt;&lt;span style=&#34;color:#00a000&#34;&gt;is.character&lt;/span&gt;(columns.as.vector)){
+        &lt;span style=&#34;color:#00a000&#34;&gt;stop&lt;/span&gt;(&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;Column names must be provided as string or vector of strings of class character&amp;#34;&lt;/span&gt;)
+    }
+    &lt;span style=&#34;color:#080;font-style:italic&#34;&gt;## Go through the columns&lt;/span&gt;
+    &lt;span style=&#34;color:#00a000&#34;&gt;for&lt;/span&gt;(column in columns.as.vector){
+        &lt;span style=&#34;color:#080;font-style:italic&#34;&gt;## Check if the column name matches with dat column names&lt;/span&gt;
+        &lt;span style=&#34;color:#00a000&#34;&gt;if &lt;/span&gt;(&lt;span style=&#34;color:#666&#34;&gt;!&lt;/span&gt;column &lt;span style=&#34;color:#666&#34;&gt;%in%&lt;/span&gt; &lt;span style=&#34;color:#00a000&#34;&gt;names&lt;/span&gt;(dat)){
+            &lt;span style=&#34;color:#00a000&#34;&gt;stop&lt;/span&gt;(&lt;span style=&#34;color:#00a000&#34;&gt;paste0&lt;/span&gt;(&lt;span style=&#34;color:#b44&#34;&gt;&amp;#39;Column &amp;lt;&amp;#39;&lt;/span&gt;, column, &lt;span style=&#34;color:#b44&#34;&gt;&amp;#39;&amp;gt; cannot be found in the data frame&amp;#39;&lt;/span&gt;))
+        }
+        &lt;span style=&#34;color:#080;font-style:italic&#34;&gt;## Get value of each row&lt;/span&gt;
+        &lt;span style=&#34;color:#00a000&#34;&gt;for&lt;/span&gt;(n in &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;:&lt;/span&gt;&lt;span style=&#34;color:#00a000&#34;&gt;nrow&lt;/span&gt;(dat)){
+            &lt;span style=&#34;color:#080;font-style:italic&#34;&gt;## Check if it is empty&lt;/span&gt;
+            &lt;span style=&#34;color:#00a000&#34;&gt;if&lt;/span&gt;(dat[[column]][n] &lt;span style=&#34;color:#666&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#b44&#34;&gt;&amp;#39;&amp;#39;&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;||&lt;/span&gt; &lt;span style=&#34;color:#00a000&#34;&gt;is.na&lt;/span&gt;(dat[[column]][n])){
+                &lt;span style=&#34;color:#080;font-style:italic&#34;&gt;## If it is the row 1, stop with Error&lt;/span&gt;
+                &lt;span style=&#34;color:#00a000&#34;&gt;if&lt;/span&gt;(n &lt;span style=&#34;color:#666&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;){
+                    &lt;span style=&#34;color:#00a000&#34;&gt;stop&lt;/span&gt;(&lt;span style=&#34;color:#00a000&#34;&gt;paste0&lt;/span&gt;(&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;Row 1 of column &amp;lt;&amp;#34;&lt;/span&gt;, column,
+                                    &lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&amp;gt; has empty values. Check your data.&amp;#34;&lt;/span&gt;))
+                }
+                else{
+                    dat[[column]][n] &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;-&lt;/span&gt; dat[[column]][n &lt;span style=&#34;color:#666&#34;&gt;-&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;]
+                }
+            }
+        }
+    }
+    &lt;span style=&#34;color:#00a000&#34;&gt;return&lt;/span&gt;(dat)
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</description>
+    </item>
+    
     <item>
       <title>Functions in R</title>
       <link>https://blog.rwhitedwarf.com/post/2021/functions/</link>
