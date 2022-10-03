@@ -12,18 +12,33 @@ archives: ["2022"]
 
 ## Scope of this post
 
-Have you ever had issues when making maps because you don't have the exact coordinates of the region or country that you need? Do you need to do maps with pure R without the use of third party elements such as google maps? - If so, I have the right tutorial for you.
+When you prepare for a job interview one of the questions they always tell you to prepare is "What are you most proud of?". Personally I've never been asked that question in a job interview but it kept me thinking. Some years ago I developed the R code for the creation of maps of infrastructure for a Political Sciences project, and I can say that this is one of the project I'm most proud of. However, it is also true whet they say to developers, that **nobody cares about how you did it**. The final user only cared about what was done, while the research team about what are the possibilities. Due to the confidentiality agreement of the client, I also cannot share a git repository.
 
-Today there are a lot of ways for making maps in R. Explain the strategy.
+The project taught me so much in terms of technical skills that I have decided to **share the how** in case it can help somebody else. It is also my way to contribute to the R community since I myself learned R and programming thanks to the kind people who post their experience on the web (and to the ones who have the patience to answer questions in StackOverflow too).
 
-This is the first of 3 posts to learn **how to map any region in the world with R** using this technique. Here is the list of topics:
-	1) The basic map
-	2) Web scrapping with nominatim open street maps
-	3) Maps with cities
-	4) Making a single script for fast replication
-	5) Making the code interactive in a shiny app
+We created maps of data showing changes over a span of time for different countries and pointing at all kinds of cities. That basically means that we need to **map any region of the world with R**. Today there are all kinds of packages and techniques to do that. I will share the strategy I used with `ggplot2` and `maps` packages, using support of OpenStreetMaps to obtain the coordinates of cities and finally making it interactive with `shiny`. The project is quite long for a single post, so my idea is to split it into a few smaller blog posts. The list can still change but I thought something like this:
+	1. The basic map
+	2. Web scrapping with nominatim open street maps
+	3. Maps with cities
+	4. Dynamic maps in time
+	5. Making a single script for fast replication
+	6. Making the code interactive in a shiny app
+	
+I hope you all enjoy it. Feel free to leave any kind of comment and/or question at the end.
 
-## How to create a map of any country in R with library maps
+## Background
+
+When I joined the team all they knew is that the wanted to make maps of infrastructure (say hospitals, cafes, churches, public offices, etc., but the project can basically be applied to anything countable per city). The maps should change in time according to the data (usually growth) and it should be possible to apply it for any country and thus, any kind of city of that particular country can be listed there. This last point represents a challenge because to make a map you need the coordinates of a particular point to map, but instead we got address in the best scenario, or only city name in the worst. Therefore, we left it to the level of city and decided to work with that.
+
+Most R packages to make maps have granularity up to some regions and major cities per country, and we are talking about countries where somebody has develop some R package for that. However, even the best packages would miss some cities or some countries some times. We needed to standardize everything without the need of changing packages according to the particular country. Before I joined, the team attempted to use Google Maps and excel, but the amount of data became messy and the flexibility to edit the maps was pretty limited. And they didn't want to add copyright issues to the list of limitations. Therefore I proposed to use R. Of course, nobody in the team had ever heard about it before. We could had used any other tool, I learned that both, Python and JavaScript have some decent possibilities. But R is what I have been using for the last 10 years and is what I wanted to use for this project. And so I started to code.
+
+The first couple of maps were custom code for a particular country with decent styles. But it quickly evolved into a set of functions and arguments to maintain the same standards for each map. The support of graphic designers also took the styles to a very professional level. After a few months we had very professional maps that could be done in couple of hrs (or less) with a couple of lines of code. Each map per each country with the desired span of years to be printed.
+
+I don't think I will share every single detail of it, but at least I want to show you how we went from the basic map to its dynamic form over a span of time, and how I wrapped it all together in a couple of functions to make it quickly replicable for any given data set. Let me know what you think.
+
+## How to create a map of any country in R using the library maps
+
+The first step is to create the basic map of a country. Here is the function to achieve exactly that.
 
 
 ```r
