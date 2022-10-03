@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>R shiny on R with White Dwarf</title>
+    <link>https://blog.rwhitedwarf.com/tags/r-shiny/</link>
+    <description>Recent content in R shiny on R with White Dwarf</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <copyright>2021 R White Dwarf all rights reserved</copyright>
+    <lastBuildDate>Mon, 20 Dec 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.rwhitedwarf.com/tags/r-shiny/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>My first shiny app</title>
+      <link>https://blog.rwhitedwarf.com/post/2021/first_shiny_app/</link>
+      <pubDate>Mon, 20 Dec 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.rwhitedwarf.com/post/2021/first_shiny_app/</guid>
+      <description>&lt;p&gt;I am happy and excited as I have just deployed my first shiny app on the web. You can find it running at &lt;a href=&#34;http://shiny.rwhitedwarf.com&#34;&gt;shiny.rwhitedwarf.com&lt;/a&gt; (NOTE: I don&amp;rsquo;t have ssl certificate so, your browser might tell you that is not secure, but you can trust me that there&amp;rsquo;s no risk). I have created a few shiny apps in the past but I never deployed one, especially in an owned domain.&lt;/p&gt;
+&lt;p&gt;The app can create a map of all cities listed in a table for a given country. The idea is to simulate a table with a list of organizations, franchises, shops, etc. However, columns for name of organization or ID are missing in order to ensure data protection. In this way the user only needs to provide to the table name of the city, country, region (optional) and year of opening. The app creates the map, placing bigger dots in cities with more organizations. The year is interactive.&lt;/p&gt;
+&lt;p&gt;&lt;br&gt;
+&lt;img src=&#34;https://blog.rwhitedwarf.com/post/2021/first_shiny_app/03-italy.png&#34; alt=&#34;Map of Italy&#34;&gt;
+&lt;img src=&#34;https://blog.rwhitedwarf.com/post/2021/first_shiny_app/04-log.png&#34; alt=&#34;Log&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;br&gt;
+The app uses the package &lt;a href=&#34;https://github.com/duncantl/RJSONIO&#34;&gt;RJSONIO&lt;/a&gt; to do a simple web scrapping on &lt;a href=&#34;https://www.openstreetmap.org/&#34;&gt;Open Street Maps&lt;/a&gt; using its API &lt;a href=&#34;https://nominatim.org/&#34;&gt;Nominatim&lt;/a&gt; to obtain the coordinates (latitude and longitude), in this way any city that can be found in open street maps can be pointed in the map. The data is then sorted and cleaned with some basic R functions and some &lt;a href=&#34;https://www.tidyverse.org/&#34;&gt;Tidyverse&lt;/a&gt; and finally the map is made with &lt;a href=&#34;https://ggplot2.tidyverse.org/&#34;&gt;ggplot2&lt;/a&gt; and &lt;a href=&#34;https://cran.r-project.org/web/packages/maps/index.html&#34;&gt;maps&lt;/a&gt;. The front end is created of course with &lt;a href=&#34;https://shiny.rstudio.com/&#34;&gt;shiny&lt;/a&gt; and &lt;a href=&#34;https://www.w3schools.com/css/&#34;&gt;css&lt;/a&gt; but I have to mention also the use of &lt;a href=&#34;https://jrowen.github.io/rhandsontable/&#34;&gt;rhandsontable&lt;/a&gt;, a wonderful package that allows the user to interact with the tables and therefore, the data. The app was very easily deployed in &lt;a href=&#34;https://www.heroku.com/&#34;&gt;heroku&lt;/a&gt; thanks to the wonderful work of Chris Stefano who did all the hard work of creating a &lt;a href=&#34;https://github.com/virtualstaticvoid/heroku-buildpack-r&#34;&gt;buildpack&lt;/a&gt; for applications written in R. The buildpack recognizes shiny and plumber apps. For shiny, it builds based on the &lt;code&gt;run.R&lt;/code&gt; file and installs all the packages listed in &lt;code&gt;init.R&lt;/code&gt;, making the deployment in heroku extremely easy.&lt;/p&gt;
+&lt;p&gt;The app is still in a raw state but already functional. The plan is to improve both, the functionality and the view in the following days. If you are interested in the source code to get inspiration or create your own, you can find it on github under the MIT license: &lt;a href=&#34;https://github.com/teotenn/dynamic_maps_shiny&#34;&gt;teotenn/dynamic_maps_shiny&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;If you want to learn how to make a similar shiny app, stay connected for a 3-4 part tutorial to get full details step by step.&lt;/p&gt;
+&lt;p&gt;&lt;br&gt;
+&lt;img src=&#34;https://blog.rwhitedwarf.com/post/2021/first_shiny_app/01-empty-app.png&#34; alt=&#34;Empty app&#34;&gt;&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

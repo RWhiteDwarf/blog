@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-4BW3ZE1JE8"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-4BW3ZE1JE8');
+</script>
+
+<title>R function to fill in merged cells | R with White Dwarf</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/favicon/RWD-apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon/RWD-favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon/RWD-favicon-16x16.png">
+    <link rel="manifest" href="/favicon/site.webmanifest" />
+    <link rel="mask-icon" href="/favicon/safari-pinned-tab.svg" color="#5bbad5" />
+    <link rel="shortcut icon" href="/favicon/RWD-favicon.ico" />
+    <meta name="theme-color" content="#ffffff">
+    <meta property="og:title" content="R with White Dwarf | R function to fill in merged cells" />
+    
+    
+        
+        <link rel="stylesheet" href="https://blog.rwhitedwarf.com/css/styles.min.e6ae6b5ab7178a9872cec39597f3ca522b6efab7d2605fc36b5d3ede12a4c9c3.css">
+    
+    <link href="/css/blonde.min.css" rel="stylesheet" type="text/css" media="print"
+          onload="this.media='all'">
+    
+
+
+
+<meta name="description" content="For loops and if statements to create a useful function">
+<meta property="og:site_name" content="R with White Dwarf">
+<meta property="og:description" content="For loops and if statements to create a useful function">
+<meta property="og:url" content="https://blog.rwhitedwarf.com/post/2021/fill_merged_cells/">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="en_US">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="">
+
+<link rel="canonical" href="https://blog.rwhitedwarf.com/post/2021/fill_merged_cells/">
+
+<meta name="twitter:description" content="For loops and if statements to create a useful function">
+<meta property="article:published_time" content="2021-12-05T00:00:00&#43;00:00">
+<meta property="article:updated_time" content="2021-12-05T00:00:00&#43;00:00">
+
+
+
+
+
+    
+<meta property="og:image" content="https://blog.rwhitedwarf.com/post/2021/fill_merged_cells/Screenshot_fill_merged_cells.png">
+<meta property="og:image:url" content="https://blog.rwhitedwarf.com/post/2021/fill_merged_cells/Screenshot_fill_merged_cells.png">
+    
+
+    
+    <link rel="stylesheet" href="/css/custom.css">
+    <i class="dark hidden"></i>
+    </head>
+<body class="font-sans">
+    <div class="min-h-screen flex flex-col bg-gray-100 dark:bg-warmgray-800"><div class="bg-blue-900">
+    <div class="container max-w-screen-xl mr-auto ml-auto">
+        <nav class="flex items-center justify-between flex-wrap bg-blue-900 p-6">
+            <div class="flex items-center flex-no-shrink bg-blue-900 text-white mr-6">
+                <a href="https://blog.rwhitedwarf.com"><span class="font-semibold text-2xl tracking-tight">R with White Dwarf</span></a>
+            </div>
+            <div class="flex md:hidden">
+                <div class="py-2">
+                    <button onclick="toggleDarkMode()" class="focus:outline-none mr-1" aria-label="Darkmode Toggle Button"><i id="icon"
+                            class="icon-moon inline-flex align-middle leading-normal text-lg text-white"></i></button>
+                    <span class="text-white">|</span>
+                </div>
+                <button id="hamburgerbtn" class="flex items-center px-3 py-1 text-white hover:opacity-50" aria-label="Hamburger Button">
+                    <span class="icon-menu text-2xl"></span>
+                </button>
+            </div>
+            <div class="hidden w-full md:flex md:flex-row sm:items-center md:w-auto" id="mobileMenu">
+                <div class="text-sm lg:flex-grow">
+                </div>
+                <div class="navmenu">
+                    
+                    <a href="/"
+                        class="no-underline duration-200 block mt-4 sm:inline-block sm:mt-0 text-white hover:opacity-50 mr-4">
+                        Home
+                    </a>
+                    
+                    <a href="/about/"
+                        class="no-underline duration-200 block mt-4 sm:inline-block sm:mt-0 text-white hover:opacity-50 mr-4">
+                        About
+                    </a>
+                    
+                    <a href="/archives/"
+                        class="no-underline duration-200 block mt-4 sm:inline-block sm:mt-0 text-white hover:opacity-50 mr-4">
+                        Archives
+                    </a>
+                    
+                </div>
+                <div class="text-white invisible md:visible">
+                    <span>|</span>
+                    <button onclick="toggleDarkMode()" class="focus:outline-none" aria-label="Darkmode Toggle Button"><i id="icon2"
+                            class="icon-moon hover:opacity-50 duration-200 inline-flex align-middle leading-normal text-lg ml-2"></i></button>
+                </div>
+            </div>
+        </nav>
+    </div>
+</div>
+<style>
+    .active {
+        display: block;
+    }
+</style>
+
+<script>
+    let hamburger = document.getElementById('hamburgerbtn');
+
+    let mobileMenu = document.getElementById('mobileMenu');
+
+    hamburger.addEventListener('click', function () {
+        mobileMenu.classList.toggle('active');
+    });
+</script>
+<div class="container max-w-screen-xl mx-auto mt-4 flex-grow px-5 lg:px-0" id="content">
+            <div class="lg:mx-5">
+<div class="grid grid-cols-3 gap-4">
+    
+    <div class="col-span-3 lg:col-span-2 dark:text-white">
+    
+        <div class="bg-white dark:bg-warmgray-900 p-5 my-4">
+            <h1 class="title text-4xl">R function to fill in merged cells</h1>
+            <hr class="my-2">
+            <aside id="meta">
+                <div>
+                    <section>
+                        <h4 id="date"><span class="icon-access_time mr-2"></span>2021/12/05 </h4>
+                    </section>
+                    
+                    <div id="tags">
+                        <span class="icon-local_offer mr-1"></span>
+                        
+                        <a href="https://blog.rwhitedwarf.com/tags/r-tips">R tips</a> |
+                        
+                        <a href="https://blog.rwhitedwarf.com/tags/r-basics">R basics</a> |
+                        
+                        <a href="https://blog.rwhitedwarf.com/tags/r-functions">R functions</a> |
+                        
+                    </div>
+                    
+                </div>
+            </aside>
+            <hr class="my-2">
+            
+            <img class="py-4" src="https://blog.rwhitedwarf.com/post/2021/fill_merged_cells/Screenshot_fill_merged_cells.png">
+            
+            <div class="content mt-5"><p>This post is part of our series on <a href="https://blog.rwhitedwarf.com/tags/r-functions">functions in R</a>. You can see our <a href="https://blog.rwhitedwarf.com/post/2021/functions/">previous post</a> if you want to understand the basics but it is not strictly necessary. Here we will go into detail about for loops and if statements in R, two key elements of any function. We are going to define a process, map it in a step-by-step approach and wrape it in a function that can repeat it automatically. Even if you have a very basic understanding of R you should be able to follow this tutorial without problem.</p>
+<p>Our outcome will be an R function that by calling it, is able to fill in empty rows generated from imported sheets (like excel) when it contains merged cells. If you are only <strong>interested in the function itself</strong> you can go to the end of the post and find it in the section <a href="https://blog.rwhitedwarf.com/post/2021/fill_merged_cells/#final">Final remarks</a>.</p>
+<h3 id="description-of-the-problem">Description of the problem</h3>
+<p>In our <a href="https://blog.rwhitedwarf.com/post/2021/functions/">previous post</a> we saw the basics for creating functions, yet using silly examples with not much of practical usage. Now we are ready to write a function that can have more practical use.</p>
+<p>There are different ways how to import data sheets (i.e. from excel) to R. Regardless of its limitations, these sheets are widely used in data analysis today. If you are used to do data analysis with a different software you should be familiar with the complications of sorting your data imported from sheets when there are merged cells in the rows. Usually, a file like below</p>
+<p><img src="/post/2021/fill_merged_cells/Screenshot_excel_merged_cells.png" alt="Excel with merged cells"></p>
+<p>results in a table like this</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Specie</th>
+<th style="text-align:left">Dup</th>
+<th style="text-align:right">Treat</th>
+<th style="text-align:right">Rep</th>
+<th style="text-align:right">Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">A. cap</td>
+<td style="text-align:left">A</td>
+<td style="text-align:right">0</td>
+<td style="text-align:right">1</td>
+<td style="text-align:right">34</td>
+</tr>
+<tr>
+<td style="text-align:left"></td>
+<td style="text-align:left">AA</td>
+<td style="text-align:right">NA</td>
+<td style="text-align:right">NA</td>
+<td style="text-align:right">26</td>
+</tr>
+<tr>
+<td style="text-align:left"></td>
+<td style="text-align:left">A</td>
+<td style="text-align:right">25</td>
+<td style="text-align:right">NA</td>
+<td style="text-align:right">18</td>
+</tr>
+<tr>
+<td style="text-align:left"></td>
+<td style="text-align:left">AA</td>
+<td style="text-align:right">NA</td>
+<td style="text-align:right">NA</td>
+<td style="text-align:right">24</td>
+</tr>
+<tr>
+<td style="text-align:left"></td>
+<td style="text-align:left">A</td>
+<td style="text-align:right">50</td>
+<td style="text-align:right">NA</td>
+<td style="text-align:right">11</td>
+</tr>
+<tr>
+<td style="text-align:left"></td>
+<td style="text-align:left">AA</td>
+<td style="text-align:right">NA</td>
+<td style="text-align:right">NA</td>
+<td style="text-align:right">12</td>
+</tr>
+<tr>
+<td style="text-align:left"></td>
+<td style="text-align:left">A</td>
+<td style="text-align:right">100</td>
+<td style="text-align:right">NA</td>
+<td style="text-align:right">15</td>
+</tr>
+<tr>
+<td style="text-align:left"></td>
+<td style="text-align:left">AA</td>
+<td style="text-align:right">NA</td>
+<td style="text-align:right">NA</td>
+<td style="text-align:right">11</td>
+</tr>
+<tr>
+<td style="text-align:left">F. rub</td>
+<td style="text-align:left">F</td>
+<td style="text-align:right">0</td>
+<td style="text-align:right">NA</td>
+<td style="text-align:right">25</td>
+</tr>
+<tr>
+<td style="text-align:left"></td>
+<td style="text-align:left">FF</td>
+<td style="text-align:right">NA</td>
+<td style="text-align:right">NA</td>
+<td style="text-align:right">26</td>
+</tr>
+<tr>
+<td style="text-align:left"></td>
+<td style="text-align:left">F</td>
+<td style="text-align:right">25</td>
+<td style="text-align:right">NA</td>
+<td style="text-align:right">17</td>
+</tr>
+<tr>
+<td style="text-align:left"></td>
+<td style="text-align:left">FF</td>
+<td style="text-align:right">NA</td>
+<td style="text-align:right">NA</td>
+<td style="text-align:right">11</td>
+</tr>
+<tr>
+<td style="text-align:left"></td>
+<td style="text-align:left">F</td>
+<td style="text-align:right">50</td>
+<td style="text-align:right">NA</td>
+<td style="text-align:right">13</td>
+</tr>
+<tr>
+<td style="text-align:left"></td>
+<td style="text-align:left">FF</td>
+<td style="text-align:right">NA</td>
+<td style="text-align:right">NA</td>
+<td style="text-align:right">11</td>
+</tr>
+<tr>
+<td style="text-align:left"></td>
+<td style="text-align:left">F</td>
+<td style="text-align:right">100</td>
+<td style="text-align:right">NA</td>
+<td style="text-align:right">11</td>
+</tr>
+</tbody>
+</table>
+<p>when the amount of rows to be filled in is small, there&rsquo;s no big problem in copying and pasting the values. But as the DRY principle says, if we know how to create functions there is no need to do that, we can make a function that will do it automatically. This will specially pay off when you will have a table with hundreds or even thousands of cells merged. You might be thinking that nobody will merge cells for thousands of rows every 3 or 4 lines, but believe me, I have seen such things.</p>
+<p>Keep in mind that this is mainly a tutorial for writting functions in R. It does not intend to deal with all the issues that migh appear with the importing of data such as merged columns or a mixture of both, among others. But if you have problems with that or are interested in the topic, leave us a comment and we can cover some points in a future post.</p>
+<h2 id="r-function-to-fill-in-merged-cells-from-excel">R function to fill in merged cells from excel</h2>
+<p>With today&rsquo;s technology there are many ways to solve this problem. However sometimes the easiest way to import data to R as data analyst or statistician is by simply taking the working sheet containing the data and exporting it in csv format.</p>
+<p>Regardless of the source (excel, libre office, google sheets, etc.) this method produces empty rows by default. When some rows have been merged because they belong to the same group or factor, the csv file will capture the value only on the first row and leave the rest empty until the next factor appear, where it again, will capture the value on the first row and leave the rest empty until the next factor appears. The process continues like this, iteratively until the end of the table. We basically need to copy the value stored on that first row and paste it to the empty rows, until a new factor appears.</p>
+<p>Let&rsquo;s map the process in terms of R steps to complete our task.</p>
+<h3 id="maping-the-process">Maping the process</h3>
+<p>We will start by calling the table. If you have an excel, libre office calc or google sheet file with merged rows as our example above feel free to use it. Otherwise you can quickly simulate one similar to the image above. Start by exporting the sheet of interest to csv, then we call it using <code>read.csv</code></p>
+<div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r">my.table <span style="color:#666">&lt;-</span> <span style="color:#00a000">read.csv</span>(<span style="color:#b44">&#39;../../../static/post/2021/fill_merged_cells/Hydroponic_results.csv&#39;</span>)
+<span style="color:#00a000">head</span>(my.table, n <span style="color:#666">=</span> <span style="color:#666">10</span>)
+</code></pre></div><div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">&gt;    Specie Dup Treat Rep Value
+&gt; 1  A. cap   A     0   1    34
+&gt; 2          AA    NA  NA    26
+&gt; 3           A    25  NA    18
+&gt; 4          AA    NA  NA    24
+&gt; 5           A    50  NA    11
+&gt; 6          AA    NA  NA    12
+&gt; 7           A   100  NA    15
+&gt; 8          AA    NA  NA    11
+&gt; 9  F. rub   F     0  NA    25
+&gt; 10         FF    NA  NA    26
+</code></pre></div><p>Here we can see the first 10 rows containing <code>NA</code> for numeric columns and empty string for character columns. Now let&rsquo;s go step by step to fill empty values.</p>
+<pre><code>1. Identify and capture the factor
+</code></pre>
+<p>Let&rsquo;s start with the first column <code>Specie</code> (an experiment was run for 3 different species of plants). We want to check if the first row contains a categorical value</p>
+<div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r">no.row <span style="color:#666">&lt;-</span> <span style="color:#666">1</span>
+my.table[[<span style="color:#b44">&#39;Specie&#39;</span>]][no.row]
+</code></pre></div><div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">&gt; [1] &#34;A. cap&#34;
+</code></pre></div><pre><code>2. Copy it into the empty rows
+</code></pre>
+<p>Now we want to paste the value stored in <code>category</code> to all empty rows. So we first need to check if the next row is empty</p>
+<div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r">no.row <span style="color:#666">&lt;-</span> <span style="color:#666">2</span>
+my.table[[<span style="color:#b44">&#39;Specie&#39;</span>]][no.row]
+</code></pre></div><div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">&gt; [1] &#34;&#34;
+</code></pre></div><p>And when it is, we place the value contained in the previous row to our current row 2</p>
+<div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r">my.table[[<span style="color:#b44">&#39;Specie&#39;</span>]][no.row] <span style="color:#666">&lt;-</span> my.table[[<span style="color:#b44">&#39;Specie&#39;</span>]][no.row<span style="color:#666">-1</span>]
+<span style="color:#00a000">head</span>(my.table)
+</code></pre></div><div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">&gt;   Specie Dup Treat Rep Value
+&gt; 1 A. cap   A     0   1    34
+&gt; 2 A. cap  AA    NA  NA    26
+&gt; 3          A    25  NA    18
+&gt; 4         AA    NA  NA    24
+&gt; 5          A    50  NA    11
+&gt; 6         AA    NA  NA    12
+</code></pre></div><p>Now row 2 contains it&rsquo;s categorical value, and when we move to row 3 (which is also empty), it can be copied from the previous row 2</p>
+<div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r">no.row <span style="color:#666">&lt;-</span> <span style="color:#666">3</span>
+my.table[[<span style="color:#b44">&#39;Specie&#39;</span>]][no.row]
+</code></pre></div><div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">&gt; [1] &#34;&#34;
+</code></pre></div><div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r">my.table[[<span style="color:#b44">&#39;Specie&#39;</span>]][no.row] <span style="color:#666">&lt;-</span> my.table[[<span style="color:#b44">&#39;Specie&#39;</span>]][no.row<span style="color:#666">-1</span>]
+<span style="color:#00a000">head</span>(my.table)
+</code></pre></div><div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">&gt;   Specie Dup Treat Rep Value
+&gt; 1 A. cap   A     0   1    34
+&gt; 2 A. cap  AA    NA  NA    26
+&gt; 3 A. cap   A    25  NA    18
+&gt; 4         AA    NA  NA    24
+&gt; 5          A    50  NA    11
+&gt; 6         AA    NA  NA    12
+</code></pre></div><pre><code>3. When a new factor appears, repeat the process
+</code></pre>
+<p>We can repeat this process until a new factor appears, as it is the case of row 9. Therefore we should not paste anything in row 9, and continue the process on row 10 which is also empty</p>
+<div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r">no.row <span style="color:#666">&lt;-</span> <span style="color:#666">10</span>
+my.table[[<span style="color:#b44">&#39;Specie&#39;</span>]][no.row]
+</code></pre></div><div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">&gt; [1] &#34;&#34;
+</code></pre></div><div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r">my.table[[<span style="color:#b44">&#39;Specie&#39;</span>]][no.row] <span style="color:#666">&lt;-</span> my.table[[<span style="color:#b44">&#39;Specie&#39;</span>]][no.row<span style="color:#666">-1</span>]
+<span style="color:#00a000">head</span>(my.table, n <span style="color:#666">=</span> <span style="color:#666">10</span>)
+</code></pre></div><div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">&gt;    Specie Dup Treat Rep Value
+&gt; 1  A. cap   A     0   1    34
+&gt; 2  A. cap  AA    NA  NA    26
+&gt; 3  A. cap   A    25  NA    18
+&gt; 4          AA    NA  NA    24
+&gt; 5           A    50  NA    11
+&gt; 6          AA    NA  NA    12
+&gt; 7           A   100  NA    15
+&gt; 8          AA    NA  NA    11
+&gt; 9  F. rub   F     0  NA    25
+&gt; 10 F. rub  FF    NA  NA    26
+</code></pre></div><pre><code>4. Repeat steps 1-3 for each column that needs it
+</code></pre>
+<p>The process moves forward in this way until the whole column <code>Specie</code> is filled in. Then we can move to the next column with empty values, in my case this is <code>Treat</code>.</p>
+<p>If you look at the process, we basically need to write an R command for step 2. The rest is just a process of verification and repetition. We are going to automate verification using the function <code>if()</code> and the repetition using <code>for()</code>.</p>
+<h3 id="writing-my-first-for-loop">Writing my first for loop</h3>
+<p>Since the present post is directed to R beginners with not much experience with programming or coding I will avoid all the technicalities of for loops and if statements and instead dive deeply into them by applying our logic above. Then we are going to use them and explain carefully to obtain a pragmatic understanding of the process.</p>
+<p>We will start with a for loop to go row by row in one column and check what is inside, as described in the step <em>1</em> of our process. Let&rsquo;s start with only 20 rows as an example</p>
+<div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r"><span style="color:#00a000">for</span>(no.row in <span style="color:#666">1</span><span style="color:#666">:</span><span style="color:#666">20</span>){
+    <span style="color:#00a000">print</span>(my.table[[<span style="color:#b44">&#34;Specie&#34;</span>]][no.row])
+}
+</code></pre></div><div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">&gt; [1] &#34;A. cap&#34;
+&gt; [1] &#34;A. cap&#34;
+&gt; [1] &#34;A. cap&#34;
+&gt; [1] &#34;&#34;
+&gt; [1] &#34;&#34;
+&gt; [1] &#34;&#34;
+&gt; [1] &#34;&#34;
+&gt; [1] &#34;&#34;
+&gt; [1] &#34;F. rub&#34;
+&gt; [1] &#34;F. rub&#34;
+&gt; [1] &#34;&#34;
+&gt; [1] &#34;&#34;
+&gt; [1] &#34;&#34;
+&gt; [1] &#34;&#34;
+&gt; [1] &#34;&#34;
+&gt; [1] &#34;&#34;
+&gt; [1] &#34;A. ela&#34;
+&gt; [1] &#34;&#34;
+&gt; [1] &#34;&#34;
+&gt; [1] &#34;&#34;
+</code></pre></div><p>The function <code>for()</code>uses the first argument that you define (here <code>no.row</code>) and goes one by one <code>in</code> the series specified as the second argument, in this case a series of numbers from 1 to 20 (<code>1:20</code>). It means that in the first iteration <code>no.row</code> will take the value <code>1</code>, in the second iteration the value <code>2</code>, and so on, until the last iteration where it will have the value <code>20</code>. Each iteration will execute the code inside the curly braces <code>{}</code> which, in this case, is simply to print the value of each row.</p>
+<p>Because the first argument in <code>for()</code> is defined by us, we could as well use any arbitrary argument we want, for example</p>
+<div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r"><span style="color:#00a000">for</span>(n in <span style="color:#666">1</span><span style="color:#666">:</span><span style="color:#666">20</span>){
+    <span style="color:#00a000">print</span>(my.table[[<span style="color:#b44">&#34;Specie&#34;</span>]][n])
+}
+</code></pre></div><p>would do exactly the same but now <code>n</code> is taking the values from 1 to 20.</p>
+<p>We can then initialize a function that takes the name of our data frame, the name of the column, and do exactly the same as our code above, but for all the rows contained in the table, no matter how many they are</p>
+<div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r">fill_merged <span style="color:#666">&lt;-</span> <span style="color:#00a000">function</span>(dat, column){
+    <span style="color:#080;font-style:italic">## Get value of each row</span>
+    <span style="color:#00a000">for</span>(n in <span style="color:#666">1</span><span style="color:#666">:</span><span style="color:#00a000">nrow</span>(dat)){
+        <span style="color:#00a000">print</span>(my.table[[column]][n])
+        }
+}
+</code></pre></div><p>Here our for loop will create a local variable <code>n</code> that will take values from 1 until <code>nrow(dat)</code> which means number of rows in the table <code>dat</code>, and then print each row value contained in the column stated in the argument <code>column</code>. If we apply it to our data frame</p>
+<div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r"><span style="color:#00a000">fill_merged</span>(my.table, <span style="color:#b44">&#34;Specie&#34;</span>)
+</code></pre></div><p>The R console will print, one by one, each of the values contained in the column <code>Specie</code> (I have 120 rows, it makes no sense to take space to show it in the post, but you can go ahead and try it yourself).</p>
+<p>If the last two pieces of code are not clear for you, I recommend you to read our previous post about <a href="https://blog.rwhitedwarf.com/post/2021/functions/">functions in R</a>.</p>
+<h3 id="how-to-use-if-statement-in-r">How to use If statement in R</h3>
+<p>Printing the values is far from what we want to achieve. As we defined in the first step of the process, we need to check the value inside, if it has a value we leave it alone, but if it is empty, we fill it in with the previous value. To check if the value is empty or not we use the <code>if()</code> function</p>
+<div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r">fill_merged <span style="color:#666">&lt;-</span> <span style="color:#00a000">function</span>(dat, column){
+    <span style="color:#080;font-style:italic">## Get value of each row</span>
+    <span style="color:#00a000">for</span>(n in <span style="color:#666">1</span><span style="color:#666">:</span><span style="color:#00a000">nrow</span>(dat)){
+        <span style="color:#080;font-style:italic">## Check if it is empty</span>
+        <span style="color:#00a000">if</span>(dat[[column]][n] <span style="color:#666">==</span> <span style="color:#b44">&#39;&#39;</span>){
+            dat[[column]][n] <span style="color:#666">&lt;-</span> dat[[column]][n <span style="color:#666">-</span> <span style="color:#666">1</span>]
+        }
+    }
+    <span style="color:#00a000">return</span>(dat)
+}
+</code></pre></div><p>The function <code>if()</code> checks the expression inside parentheses and if it returns <code>TRUE</code> it executes the code inside curly braces <code>{}</code>, otherwise it will skip it. Therefore it is crucial that the expression inside <code>if()</code> returns either <code>TRUE</code> or <code>FALSE</code>. You can always test it by sending the exact expression directly to the console</p>
+<div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r">my.table[[<span style="color:#b44">&#39;Specie&#39;</span>]][1] <span style="color:#666">==</span> <span style="color:#b44">&#39;&#39;</span>
+</code></pre></div><div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">&gt; [1] FALSE
+</code></pre></div><div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r">my.table[[<span style="color:#b44">&#39;Specie&#39;</span>]][5] <span style="color:#666">==</span> <span style="color:#b44">&#39;&#39;</span>
+</code></pre></div><div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">&gt; [1] TRUE
+</code></pre></div><p>Once we confirm that the value is empty, we enter the if statement and execute the code from step <em>2</em>, which inside the function takes the form of <code>dat[[column]][n] &lt;- dat[[column]][n - 1]</code>.If the value is not empty, we simply do nothing.</p>
+<p>Now we can actually try the function in one of our columns</p>
+<div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r">my.filled.table <span style="color:#666">&lt;-</span> <span style="color:#00a000">fill_merged</span>(my.table, <span style="color:#b44">&#39;Specie&#39;</span>)
+<span style="color:#00a000">head</span>(my.filled.table, n <span style="color:#666">=</span> <span style="color:#666">15</span>)
+</code></pre></div><div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">&gt;    Specie Dup Treat Rep Value
+&gt; 1  A. cap   A     0   1    34
+&gt; 2  A. cap  AA    NA  NA    26
+&gt; 3  A. cap   A    25  NA    18
+&gt; 4  A. cap  AA    NA  NA    24
+&gt; 5  A. cap   A    50  NA    11
+&gt; 6  A. cap  AA    NA  NA    12
+&gt; 7  A. cap   A   100  NA    15
+&gt; 8  A. cap  AA    NA  NA    11
+&gt; 9  F. rub   F     0  NA    25
+&gt; 10 F. rub  FF    NA  NA    26
+&gt; 11 F. rub   F    25  NA    17
+&gt; 12 F. rub  FF    NA  NA    11
+&gt; 13 F. rub   F    50  NA    13
+&gt; 14 F. rub  FF    NA  NA    11
+&gt; 15 F. rub   F   100  NA    11
+</code></pre></div><p><strong>Note</strong> that so far it works only for columns with character values, not numeric</p>
+<div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r"><span style="color:#00a000">fill_merged</span>(my.table, <span style="color:#b44">&#39;Treat&#39;</span>)
+</code></pre></div><div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">&gt; Error in if (dat[[column]][n] == &#34;&#34;) {: missing value where TRUE/FALSE needed
+</code></pre></div><p>The reason is that only character columns produce empty strings. Numeric columns will produce <code>NA</code> values. Therefore, we need to add a condition to our if expression to test also if the value is <code>NA</code>. To do that we use double <code>|</code> which in R means <strong>OR</strong></p>
+<div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r">fill_merged <span style="color:#666">&lt;-</span> <span style="color:#00a000">function</span>(dat, column){
+    <span style="color:#080;font-style:italic">## Get value of each row</span>
+    <span style="color:#00a000">for</span>(n in <span style="color:#666">1</span><span style="color:#666">:</span><span style="color:#00a000">nrow</span>(dat)){
+        <span style="color:#080;font-style:italic">## Check if it is empty</span>
+        <span style="color:#00a000">if</span>(dat[[column]][n] <span style="color:#666">==</span> <span style="color:#b44">&#39;&#39;</span> <span style="color:#666">||</span> <span style="color:#00a000">is.na</span>(dat[[column]][n])){
+            dat[[column]][n] <span style="color:#666">&lt;-</span> dat[[column]][n <span style="color:#666">-</span> <span style="color:#666">1</span>]
+        }
+    }
+    <span style="color:#00a000">return</span>(dat)
+}
+</code></pre></div><p>Now our if statement is telling to R &ldquo;<strong>IF</strong> the value is empty (<code>''</code>) <strong>OR</strong> is NA (<code>is.na()</code>) then, execute this code&rdquo;, and so we enter to the code inside the if-curly-braces.</p>
+<p><code>NA</code> are not exactly values and therefore we cannot test them by using the expression</p>
+<div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r">my.table[[<span style="color:#b44">&#39;Treat&#39;</span>]][2] <span style="color:#666">==</span> <span style="color:#a2f;font-weight:bold">NA</span>
+</code></pre></div><div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">&gt; [1] NA
+</code></pre></div><p>Instead of returning <code>TRUE</code> or <code>FALSE</code> returns <code>NA</code> which means <strong>Not Available</strong>. To check if the value is <code>NA</code> or really a value we use the function <code>is.na()</code></p>
+<div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r"><span style="color:#00a000">is.na</span>(my.table[[<span style="color:#b44">&#39;Treat&#39;</span>]][2])
+</code></pre></div><div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">&gt; [1] TRUE
+</code></pre></div><p>Now we can use our function for columns with numeric values also</p>
+<div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r">my.filled.table <span style="color:#666">&lt;-</span> <span style="color:#00a000">fill_merged</span>(my.table, <span style="color:#b44">&#39;Treat&#39;</span>)
+<span style="color:#00a000">head</span>(my.filled.table, n <span style="color:#666">=</span> <span style="color:#666">10</span>)
+</code></pre></div><div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">&gt;    Specie Dup Treat Rep Value
+&gt; 1  A. cap   A     0   1    34
+&gt; 2  A. cap  AA     0  NA    26
+&gt; 3  A. cap   A    25  NA    18
+&gt; 4          AA    25  NA    24
+&gt; 5           A    50  NA    11
+&gt; 6          AA    50  NA    12
+&gt; 7           A   100  NA    15
+&gt; 8          AA   100  NA    11
+&gt; 9  F. rub   F     0  NA    25
+&gt; 10 F. rub  FF     0  NA    26
+</code></pre></div><h3 id="check-confirm-and-repeat-for-and-if-together">Check, confirm and repeat (for and if together)</h3>
+<p>Now we could use our function for each column that presents this issue, but we are actually trying to apply the DRY principle. Instead we could use <code>for()</code> to go through all the columns where we want to apply it. There are other functions that can help with this as well such as <code>map()</code> and its derived functions from the package <a href="https://purrr.tidyverse.org/">purrr</a>.We could also write a new function that calls our first function to repeat it into each column. Feel free to experiment, for this tutorial we are going to take a different approach.</p>
+<p>We are going to improve the same old function and add yet one more for loop that iterates from each column of interest and repeats the same process. This will cover the step 4 of our mapped process.</p>
+<p>The implementation is actually easy, we just need to wrap the whole previous process of if&rsquo;s and for&rsquo;s inside a for loop that goes column by column</p>
+<div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r">fill_merged <span style="color:#666">&lt;-</span> <span style="color:#00a000">function</span>(dat, columns.as.vector){
+    <span style="color:#080;font-style:italic">## Go through the columns</span>
+    <span style="color:#00a000">for</span>(column in columns.as.vector){
+        <span style="color:#080;font-style:italic">## Get value of each row</span>
+        <span style="color:#00a000">for</span>(n in <span style="color:#666">1</span><span style="color:#666">:</span><span style="color:#00a000">nrow</span>(dat)){
+            <span style="color:#080;font-style:italic">## Check if it is empty</span>
+            <span style="color:#00a000">if</span>(dat[[column]][n] <span style="color:#666">==</span> <span style="color:#b44">&#39;&#39;</span> <span style="color:#666">||</span> <span style="color:#00a000">is.na</span>(dat[[column]][n])){
+                dat[[column]][n] <span style="color:#666">&lt;-</span> dat[[column]][n <span style="color:#666">-</span> <span style="color:#666">1</span>]
+            }
+        }
+    }
+    <span style="color:#00a000">return</span>(dat)
+}
+</code></pre></div><p>I have changed the argument for initiating the function from <code>column</code> to <code>columns.as.vector</code>. Now this will take a vector containing all the names of the columns that should be treated. Notice that in our new for loop I am declaring <code>column</code> to iterate over each value of <code>column.as.vector</code> therefore, the variable <code>column</code> will contain each string in the vector for each iteration. In this way we don&rsquo;t need to change the rest of the code.</p>
+<p>Now you can call exactly the same function for each column that needs it</p>
+<div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r">target_cols <span style="color:#666">&lt;-</span> <span style="color:#00a000">names</span>(my.table)<span style="color:#00a000">[c</span>(<span style="color:#666">1</span>,<span style="color:#666">3</span>,<span style="color:#666">4</span>)]
+my.filled.table <span style="color:#666">&lt;-</span> <span style="color:#00a000">fill_merged</span>(my.table, target_cols)
+<span style="color:#00a000">head</span>(my.filled.table, n <span style="color:#666">=</span> <span style="color:#666">15</span>)
+</code></pre></div><div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">&gt;    Specie Dup Treat Rep Value
+&gt; 1  A. cap   A     0   1    34
+&gt; 2  A. cap  AA     0   1    26
+&gt; 3  A. cap   A    25   1    18
+&gt; 4  A. cap  AA    25   1    24
+&gt; 5  A. cap   A    50   1    11
+&gt; 6  A. cap  AA    50   1    12
+&gt; 7  A. cap   A   100   1    15
+&gt; 8  A. cap  AA   100   1    11
+&gt; 9  F. rub   F     0   1    25
+&gt; 10 F. rub  FF     0   1    26
+&gt; 11 F. rub   F    25   1    17
+&gt; 12 F. rub  FF    25   1    11
+&gt; 13 F. rub   F    50   1    13
+&gt; 14 F. rub  FF    50   1    11
+&gt; 15 F. rub   F   100   1    11
+</code></pre></div><p>Also notice the trick in the first line: <code>names(my.table)</code> returns a vector containing all the column names of the data frame and <code>names(my.table)[c(1,3,4)]</code> is taking only the columns 1, 3 and 4, which are the ones that need to be fixed. This is extremely useful when you have many columns that need to be fixed</p>
+<h3 id="marking-the-errors">Marking the errors</h3>
+<p>You might have noticed that I&rsquo;m adding text preceded by <code>##</code> within the function. If you are not familiar with it, this are comments, it means that anything that is written in the same line after one <code>#</code> will not be evaluated by R (I use double for technical reasons of my text editor). Although this function is quite small and simple, and we know what exactly we are doing on each line thanks to the explanations, it is a good practice to add comments to your code because after a while, when you will look back at the code you might had forgotten the logic and structure. Adding comments help us to know what each piece is about, making it easier to apply changes in the future.</p>
+<p>In the same way, it is a good practice to add errors when the function is expecting something in particular and we can foresee potential problems. Often we don&rsquo;t foresee all the mistakes and problems that the user or we ourselves can have when using our own functions and thus, errors are usually added along the way based on the experience gathered by using the function.</p>
+<p>For example, our function is expecting that at least the first row will not have empty values, otherwise it cannot go one row before to find the value to paste on it. Although it is not expected, our table can still present this situation due to human errors, for example, somebody by accident pressed <em>Delete</em> button somewhere on the first row in the source file. In such case R will mark some error that will be difficult to understand and track back. We might wonder for hours what we did wrong in our function only to find out that the problem comes from the data table itself. Instead we can mark our own error in advance by sending a message when the value on the first row is missing.</p>
+<p>An easy way of implementing this is using the function <code>stop()</code>. Let&rsquo;s implement our error into our function right before it copies the value from the row <code>n - 1</code>.</p>
+<div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r">fill_merged <span style="color:#666">&lt;-</span> <span style="color:#00a000">function</span>(dat, columns.as.vector){
+    <span style="color:#080;font-style:italic">## Go through the columns</span>
+    <span style="color:#00a000">for</span>(column in columns.as.vector){
+        <span style="color:#080;font-style:italic">## Get value of each row</span>
+        <span style="color:#00a000">for</span>(n in <span style="color:#666">1</span><span style="color:#666">:</span><span style="color:#00a000">nrow</span>(dat)){
+            <span style="color:#080;font-style:italic">## Check if it is empty</span>
+            <span style="color:#00a000">if</span>(dat[[column]][n] <span style="color:#666">==</span> <span style="color:#b44">&#39;&#39;</span> <span style="color:#666">||</span> <span style="color:#00a000">is.na</span>(dat[[column]][n])){
+                <span style="color:#080;font-style:italic">## If it is the row 1, stop with Error</span>
+                <span style="color:#00a000">if</span>(n <span style="color:#666">==</span> <span style="color:#666">1</span>){
+                    <span style="color:#00a000">stop</span>(<span style="color:#00a000">paste0</span>(<span style="color:#b44">&#34;Row 1 of column &#34;</span>, column,
+                                    <span style="color:#b44">&#34; has empty values. Check your data.&#34;</span>))
+                }
+                else{
+                    dat[[column]][n] <span style="color:#666">&lt;-</span> dat[[column]][n <span style="color:#666">-</span> <span style="color:#666">1</span>]
+                }
+            }
+        }
+    }
+    <span style="color:#00a000">return</span>(dat)
+}
+</code></pre></div><p>If the value of the first row is empty, the function will stop, printing a message that says in which column the row no. 1 is empty. When the row is not the first, R will evaluate the code next, contained inside <code>else{}</code>. <code>else</code> is a complement for if that tell R what to do when the <code>if()</code> part is not fulfilled. Sometimes we can omit it, when the <code>if()</code> part is not fulfilled R will simply go to the next part of the code. But when we want to make sure that nothing will happen outside these options, we include <code>else</code>. Here we are giving only two options, either <code>n</code> equals 1 and the function stops with an error, or else <code>n</code> is not one and the function continues.</p>
+<p>Let&rsquo;s try the error by making a copy of our data frame with the first row empty</p>
+<div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r">test.error <span style="color:#666">&lt;-</span> my.table[2<span style="color:#666">:</span><span style="color:#666">10</span>,]
+<span style="color:#00a000">fill_merged</span>(test.error, <span style="color:#b44">&#39;Rep&#39;</span>)
+</code></pre></div><div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">&gt; Error in fill_merged(test.error, &#34;Rep&#34;): Row 1 of column Rep has empty values. Check your data.
+</code></pre></div><p>Another misunderstanding that the user can encounter is with the argument <code>columns.as.vector</code>. We are expecting that the user will provide a string, or vector of strings with the names of the columns, but the user as well might think that the function is expecting the whole data as vector. We can prevent the user for doing this by adding an error at the beginning of the function.</p>
+<div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r">fill_merged <span style="color:#666">&lt;-</span> <span style="color:#00a000">function</span>(dat, columns.as.vector){
+    <span style="color:#080;font-style:italic">## Check if column names are provided as strings</span>
+    <span style="color:#00a000">if</span>(<span style="color:#666">!</span><span style="color:#00a000">is.character</span>(columns.as.vector)){
+        <span style="color:#00a000">stop</span>(<span style="color:#b44">&#34;Column names must be provided as string or vector of strings of class character&#34;</span>)
+    }
+    <span style="color:#080;font-style:italic">## Go through the columns</span>
+    <span style="color:#00a000">for</span>(column in columns.as.vector){
+        <span style="color:#080;font-style:italic">## Get value of each row</span>
+        <span style="color:#00a000">for</span>(n in <span style="color:#666">1</span><span style="color:#666">:</span><span style="color:#00a000">nrow</span>(dat)){
+            <span style="color:#080;font-style:italic">## Check if it is empty</span>
+            <span style="color:#00a000">if</span>(dat[[column]][n] <span style="color:#666">==</span> <span style="color:#b44">&#39;&#39;</span> <span style="color:#666">||</span> <span style="color:#00a000">is.na</span>(dat[[column]][n])){
+                <span style="color:#080;font-style:italic">## If it is the row 1, stop with Error</span>
+                <span style="color:#00a000">if</span>(n <span style="color:#666">==</span> <span style="color:#666">1</span>){
+                    <span style="color:#00a000">stop</span>(<span style="color:#00a000">paste0</span>(<span style="color:#b44">&#34;Row 1 of column &#34;</span>, column,
+                                    <span style="color:#b44">&#34; has empty values. Check your data.&#34;</span>))
+                }
+                else{
+                    dat[[column]][n] <span style="color:#666">&lt;-</span> dat[[column]][n <span style="color:#666">-</span> <span style="color:#666">1</span>]
+                }
+            }
+        }
+    }
+    <span style="color:#00a000">return</span>(dat)
+}
+</code></pre></div><p>We want to make sure that <code>columns.as.vector</code> is character. To test this, we use the function <code>is.character()</code>, which will return <code>TRUE</code> when the values inside are character, and <code>FALSE</code> otherwise.</p>
+<div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r">a <span style="color:#666">&lt;-</span> <span style="color:#b44">&#39;foo&#39;</span>
+<span style="color:#00a000">is.character</span>(a)
+</code></pre></div><div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">&gt; [1] TRUE
+</code></pre></div><p>However we want to send the error only when the value is NOT character. To tell R to test the opposite, we start the argument with the symbol <code>!</code></p>
+<div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r"><span style="color:#666">!</span><span style="color:#00a000">is.character</span>(a)
+</code></pre></div><div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">&gt; [1] FALSE
+</code></pre></div><p>Now with our new version, when the user might provide any value that is not string, the error will be triggered</p>
+<div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r"><span style="color:#00a000">fill_merged</span>(my.table, <span style="color:#666">1</span>)
+</code></pre></div><div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">&gt; Error in fill_merged(my.table, 1): Column names must be provided as string or vector of strings of class character
+</code></pre></div><p>Still if the user provides a vector of strings, or a misspelled name of the column, our function is not aware of it. We can add one more error when <code>column.as.vector</code> is string but not a string that we are expecting</p>
+<div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r">fill_merged <span style="color:#666">&lt;-</span> <span style="color:#00a000">function</span>(dat, columns.as.vector){
+    <span style="color:#080;font-style:italic">## Check if column names are provided as strings</span>
+    <span style="color:#00a000">if</span>(<span style="color:#666">!</span><span style="color:#00a000">is.character</span>(columns.as.vector)){
+        <span style="color:#00a000">stop</span>(<span style="color:#b44">&#34;Column names must be provided as string or vector of strings of class character&#34;</span>)
+    }
+    <span style="color:#080;font-style:italic">## Go through the columns</span>
+    <span style="color:#00a000">for</span>(column in columns.as.vector){
+        <span style="color:#080;font-style:italic">## Check if the column name matches with dat column names</span>
+        <span style="color:#00a000">if </span>(<span style="color:#666">!</span>column <span style="color:#666">%in%</span> <span style="color:#00a000">names</span>(dat)){
+            <span style="color:#00a000">stop</span>(<span style="color:#00a000">paste0</span>(<span style="color:#b44">&#39;Column &lt;&#39;</span>, column, <span style="color:#b44">&#39;&gt; cannot be found in the data frame&#39;</span>))
+        }
+        <span style="color:#080;font-style:italic">## Get value of each row</span>
+        <span style="color:#00a000">for</span>(n in <span style="color:#666">1</span><span style="color:#666">:</span><span style="color:#00a000">nrow</span>(dat)){
+            <span style="color:#080;font-style:italic">## Check if it is empty</span>
+            <span style="color:#00a000">if</span>(dat[[column]][n] <span style="color:#666">==</span> <span style="color:#b44">&#39;&#39;</span> <span style="color:#666">||</span> <span style="color:#00a000">is.na</span>(dat[[column]][n])){
+                <span style="color:#080;font-style:italic">## If it is the row 1, stop with Error</span>
+                <span style="color:#00a000">if</span>(n <span style="color:#666">==</span> <span style="color:#666">1</span>){
+                    <span style="color:#00a000">stop</span>(<span style="color:#00a000">paste0</span>(<span style="color:#b44">&#34;Row 1 of column &lt;&#34;</span>, column,
+                                    <span style="color:#b44">&#34;&gt; has empty values. Check your data.&#34;</span>))
+                }
+                else{
+                    dat[[column]][n] <span style="color:#666">&lt;-</span> dat[[column]][n <span style="color:#666">-</span> <span style="color:#666">1</span>]
+                }
+            }
+        }
+    }
+    <span style="color:#00a000">return</span>(dat)
+}
+</code></pre></div><p>Here we are implementing <code>if (!column %in% names(dat))</code>. Again we are using <code>!</code> to tell R to test the opposite. <code>column %in% names(dat)</code> will take the value of <code>column</code> and check if it is present in the vector <code>names(dat)</code> (which has the names of the columns).</p>
+<p>Let&rsquo;s test the last error by misspelling the name of one column</p>
+<div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r"><span style="color:#00a000">fill_merged</span>(my.table, <span style="color:#00a000">c</span>(<span style="color:#b44">&#39;Specie&#39;</span>, <span style="color:#b44">&#39;Treatment&#39;</span>))
+</code></pre></div><div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">&gt; Error in fill_merged(my.table, c(&#34;Specie&#34;, &#34;Treatment&#34;)): Column &lt;Treatment&gt; cannot be found in the data frame
+</code></pre></div><p>If you can think of more errors feel free to add them, it will be good for you  as a practice. However you should also try and see what happens with other potential scenarios before adding the errors yourself. Sometimes the default errors from other functions are enough to solve problems. For example, try providing to our function a data frame that does not exist, R will immediately tell you <code>object 'x' not found</code>.</p>
+<h2 id="final">Final remarks</h2>
+<p>I hope that the post has helped you to have a better understanding of <code>for()</code> and <code>if()</code>, and provided you with a good guidance on how you can plan and structure functions. If something was not clear or you still have questions, or something in your code did not work as expected, feel welcome to leave us a comment below (you will need a github account for that).</p>
+<p>There are many ways how you can call your function now to your future projects. One of the easiest for now would be to save it in an R script, for example <code>fill_merged_cells.R</code> and then you can call it from any script or R code by providing the path to your script to the function <code>source()</code></p>
+<div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r"><span style="color:#00a000">source</span>(<span style="color:#b44">&#39;~/Rscripts/fill_merged_cells.R&#39;</span>)
+</code></pre></div><p>changing the path to the exact location of your file. Source will run all the code contained inside the <code>.R</code> file in the R session where you call it, making your function available for the current session.</p>
+<p>Here is the final form of the <strong>function for filling in empty rows produced by merged cells</strong>. I hope it will help with your work. Enjoy it!</p>
+<div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r">fill_merged <span style="color:#666">&lt;-</span> <span style="color:#00a000">function</span>(dat, columns.as.vector){
+    <span style="color:#080;font-style:italic">## Check if column names are provided as strings</span>
+    <span style="color:#00a000">if</span>(<span style="color:#666">!</span><span style="color:#00a000">is.character</span>(columns.as.vector)){
+        <span style="color:#00a000">stop</span>(<span style="color:#b44">&#34;Column names must be provided as string or vector of strings of class character&#34;</span>)
+    }
+    <span style="color:#080;font-style:italic">## Go through the columns</span>
+    <span style="color:#00a000">for</span>(column in columns.as.vector){
+        <span style="color:#080;font-style:italic">## Check if the column name matches with dat column names</span>
+        <span style="color:#00a000">if </span>(<span style="color:#666">!</span>column <span style="color:#666">%in%</span> <span style="color:#00a000">names</span>(dat)){
+            <span style="color:#00a000">stop</span>(<span style="color:#00a000">paste0</span>(<span style="color:#b44">&#39;Column &lt;&#39;</span>, column, <span style="color:#b44">&#39;&gt; cannot be found in the data frame&#39;</span>))
+        }
+        <span style="color:#080;font-style:italic">## Get value of each row</span>
+        <span style="color:#00a000">for</span>(n in <span style="color:#666">1</span><span style="color:#666">:</span><span style="color:#00a000">nrow</span>(dat)){
+            <span style="color:#080;font-style:italic">## Check if it is empty</span>
+            <span style="color:#00a000">if</span>(dat[[column]][n] <span style="color:#666">==</span> <span style="color:#b44">&#39;&#39;</span> <span style="color:#666">||</span> <span style="color:#00a000">is.na</span>(dat[[column]][n])){
+                <span style="color:#080;font-style:italic">## If it is the row 1, stop with Error</span>
+                <span style="color:#00a000">if</span>(n <span style="color:#666">==</span> <span style="color:#666">1</span>){
+                    <span style="color:#00a000">stop</span>(<span style="color:#00a000">paste0</span>(<span style="color:#b44">&#34;Row 1 of column &lt;&#34;</span>, column,
+                                    <span style="color:#b44">&#34;&gt; has empty values. Check your data.&#34;</span>))
+                }
+                else{
+                    dat[[column]][n] <span style="color:#666">&lt;-</span> dat[[column]][n <span style="color:#666">-</span> <span style="color:#666">1</span>]
+                }
+            }
+        }
+    }
+    <span style="color:#00a000">return</span>(dat)
+}
+</code></pre></div></div>
+            <aside id="meta">
+                
+                <hr class="py-2">
+                <div id="categories">
+                    <span class="icon-folder text-xl mr-1"></span>
+                    
+                    <span
+                        class="inline-flex py-2 leading-4 mr-2 mb-2 content-center bg-gray-200 justify-center h-8 px-3 text-blue-500 duration-200 hover:text-black dark:bg-warmgray-800"><a
+                            href="https://blog.rwhitedwarf.com/categories/r">R</a></span>
+                    
+                </div>
+                
+            </aside>
+            </div>
+        <div class="bg-white dark:bg-warmgray-900 p-5 my-4">
+            <div class="grid grid-cols-2">
+                <div class="col-span-1">
+                    
+                    <a class="previous lg:text-2xl" href="https://blog.rwhitedwarf.com/post/2021/functions/">
+                        <div
+                            class="transition-colors duration-300 border border-gray-600 hover:border-black h-auto m-3 text-center py-3 lg:py-1">
+                            <span class="icon-keyboard_arrow_left"></span> Functions in R
+                        </div>
+                    </a>
+                    
+                </div>
+                
+                <a class="next lg:text-2xl" href="https://blog.rwhitedwarf.com/post/2021/first_shiny_app/">
+                    <div
+                        class="transition-colors duration-300 col-span-1 border border-gray-600 hover:border-black h-auto m-3 text-center py-3 lg:py-1">
+                        My first shiny app <span class="icon-keyboard_arrow_right"></span>
+                    </div>
+                </a>
+                
+            </div>
+        </div>
+        <div class="bg-white dark:bg-warmgray-900 p-5 my-4">
+          <div class="mb-3">
+              <script src="https://utteranc.es/client.js"
+        repo="RWhiteDwarf/blog"
+        issue-term="pathname"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+</script>
+
+            </div>
+        </div>
+    </div>
+    
+    <div class="hidden lg:block lg:col-span-1">
+        <div class="mb-3">
+    <form class="widget-search__form" role="search" method="get" action="https://google.com/search">
+        <label>
+            <input class="w-full p-3 focus:outline-none dark:bg-warmgray-900 dark:text-white placeholder-gray-700 dark:placeholder-gray-300" type="search"
+                placeholder="Search..." value="" name="q" aria-label="Search">
+        </label>
+        <input class="hidden" type="submit" value="Search">
+        <input type="hidden" name="sitesearch" value="https://blog.rwhitedwarf.com" />
+    </form>
+</div>
+        
+<div class="bg-white panel mb-3 dark:bg-warmgray-900">
+    <p class="text-xl text-center text-gray-700 py-3 pl-3 dark:text-gray-300">Tags</p>
+    <div class="panel-block p-2">
+        <a href="/tags/minitutorial">
+            <span
+                class="duration-100 inline-flex py-2 leading-4 mr-2 mb-2 content-center bg-gray-100 justify-center h-8 px-3 text-blue-500 hover:text-blue-900 dark:bg-warmgray-800">
+                minitutorial
+            </span></a>
+        <a href="/tags/r-basics">
+            <span
+                class="duration-100 inline-flex py-2 leading-4 mr-2 mb-2 content-center bg-gray-100 justify-center h-8 px-3 text-blue-500 hover:text-blue-900 dark:bg-warmgray-800">
+                r-basics
+            </span></a>
+        <a href="/tags/r-functions">
+            <span
+                class="duration-100 inline-flex py-2 leading-4 mr-2 mb-2 content-center bg-gray-100 justify-center h-8 px-3 text-blue-500 hover:text-blue-900 dark:bg-warmgray-800">
+                r-functions
+            </span></a>
+        <a href="/tags/r-shiny">
+            <span
+                class="duration-100 inline-flex py-2 leading-4 mr-2 mb-2 content-center bg-gray-100 justify-center h-8 px-3 text-blue-500 hover:text-blue-900 dark:bg-warmgray-800">
+                r-shiny
+            </span></a>
+        <a href="/tags/r-tips">
+            <span
+                class="duration-100 inline-flex py-2 leading-4 mr-2 mb-2 content-center bg-gray-100 justify-center h-8 px-3 text-blue-500 hover:text-blue-900 dark:bg-warmgray-800">
+                r-tips
+            </span></a>
+    </div>
+</div>
+
+        
+
+<div class="bg-white panel mb-3 pb-5 dark:bg-warmgray-900">
+    <p class="text-xl text-center text-gray-700 py-5 dark:text-gray-300">Recent Posts</p>
+    <div class="mx-6">
+        
+        <a href="/post/2022/minitut_makebool/" class="">
+            <div class="w-full block mt-3 bg-white hover:bg-gray-100 duration-200 dark:bg-warmgray-900 dark:text-gray-200 dark:hover:bg-warmgray-800">
+                <div class="px-2">
+                    <div class="text-gray-900 font-bold text-xl dark:text-white">Minitutorial: make_logical any string</div>
+                    <p class="text-sm text-gray-600 flex items-center pb-1 dark:text-gray-400">
+                        <time><span class="icon-access_time mr-1"></span>2022/09/18</time>
+                    </p>
+                </div>
+            </div>
+        <a href="/post/2021/fill_merged_cells/" class="">
+            <div class="w-full block mt-3 bg-white hover:bg-gray-100 duration-200 dark:bg-warmgray-900 dark:text-gray-200 dark:hover:bg-warmgray-800">
+                <div class="px-2">
+                    <div class="text-gray-900 font-bold text-xl dark:text-white">R function to fill in merged cells</div>
+                    <p class="text-sm text-gray-600 flex items-center pb-1 dark:text-gray-400">
+                        <time><span class="icon-access_time mr-1"></span>2021/12/05</time>
+                    </p>
+                </div>
+            </div>
+        <a href="/post/2021/functions/" class="">
+            <div class="w-full block mt-3 bg-white hover:bg-gray-100 duration-200 dark:bg-warmgray-900 dark:text-gray-200 dark:hover:bg-warmgray-800">
+                <div class="px-2">
+                    <div class="text-gray-900 font-bold text-xl dark:text-white">Functions in R</div>
+                    <p class="text-sm text-gray-600 flex items-center pb-1 dark:text-gray-400">
+                        <time><span class="icon-access_time mr-1"></span>2021/11/30</time>
+                    </p>
+                </div>
+            </div>
+        <a href="/post/2021/first_shiny_app/" class="">
+            <div class="w-full block mt-3 bg-white hover:bg-gray-100 duration-200 dark:bg-warmgray-900 dark:text-gray-200 dark:hover:bg-warmgray-800">
+                <div class="px-2">
+                    <div class="text-gray-900 font-bold text-xl dark:text-white">My first shiny app</div>
+                    <p class="text-sm text-gray-600 flex items-center pb-1 dark:text-gray-400">
+                        <time><span class="icon-access_time mr-1"></span>2021/12/20</time>
+                    </p>
+                </div>
+            </div>
+        </a>
+    </div>
+</div>
+	<div class="bg-white panel mb-3 pb-5 dark:bg-warmgray-900">
+  <p class="text-xl text-center text-gray-700 py-5 dark:text-gray-300">External links</p>
+  
+    <a href="https://www.r-project.org/" class="">
+      <div class="w-full block mt-3 bg-white hover:bg-gray-100 duration-200 dark:bg-warmgray-900 dark:text-gray-200 dark:hover:bg-warmgray-800">
+        <div class="px-2">
+          <div class="text-gray-900 font-bold text-xl dark:text-white">R-project</div>
+          <p class="text-sm text-gray-600 flex items-center pb-1 dark:text-gray-400">Official website of R
+          </p>
+        </div>
+      </div>
+    </a>
+
+    <a href="https://www.r-bloggers.com/" class="">
+      <div class="w-full block mt-3 bg-white hover:bg-gray-100 duration-200 dark:bg-warmgray-900 dark:text-gray-200 dark:hover:bg-warmgray-800">
+        <div class="px-2">
+          <div class="text-gray-900 font-bold text-xl dark:text-white">R-bloggers</div>
+          <p class="text-sm text-gray-600 flex items-center pb-1 dark:text-gray-400">Hundreds of bloggers empowering R users
+          </p>
+        </div>
+      </div>
+    </a>
+
+    <a href="https://github.com/" class="">
+      <div class="w-full block mt-3 bg-white hover:bg-gray-100 duration-200 dark:bg-warmgray-900 dark:text-gray-200 dark:hover:bg-warmgray-800">
+        <div class="px-2">
+          <div class="text-gray-900 font-bold text-xl dark:text-white">Github</div>
+          <p class="text-sm text-gray-600 flex items-center pb-1 dark:text-gray-400">Platform to build, ship, maintain and share code and software
+          </p>
+        </div>
+      </div>
+    </a>
+</div>
+
+	<div class="bg-white panel mb-3 pb-5 dark:bg-warmgray-900">
+    <p class="text-xl text-center text-gray-700 py-3 px-3 dark:text-gray-300">Archives</p>
+    
+    
+    <a class="text-center block duration-100 py-2 px-4 mx-4 hover:bg-gray-100 text-gray-800 dark:text-gray-200 dark:hover:bg-warmgray-800"
+        href="https://blog.rwhitedwarf.com/archives/2021">2021 (3)</a>
+    
+    <a class="text-center block duration-100 py-2 px-4 mx-4 hover:bg-gray-100 text-gray-800 dark:text-gray-200 dark:hover:bg-warmgray-800"
+        href="https://blog.rwhitedwarf.com/archives/2022">2022 (1)</a>
+    
+    
+</div>
+        
+<div class="bg-white panel mb-3 pb-5 dark:bg-warmgray-900">
+    <p class="text-xl text-center text-gray-700 py-5 dark:text-gray-300">Categories</p>
+    
+    <a class="text-center block duration-100 py-2 px-4 mx-4 hover:bg-gray-100 text-gray-800 dark:text-gray-200 dark:hover:bg-warmgray-800"
+        href="https://blog.rwhitedwarf.com/categories/r">R</a>
+
+    
+</div>
+
+    </div>
+    
+</div>
+
+            </div>
+        </div><footer class="bg-blue-900 text-white p-6">
+    
+    <div class="container max-w-screen-xl mr-auto ml-auto">
+        <p>&copy; 2022 <a href="https://blog.rwhitedwarf.com" class="duration-200 hover:opacity-50">R with White Dwarf</a></p>
+        <p>Powered by <a href="https://gohugo.io/" class="duration-200 hover:opacity-50">Hugo</a>, Theme <a
+                href="https://github.com/opera7133/Blonde" class="duration-200 hover:opacity-50">Blonde</a>.</p>
+    </div>
+    <script>
+        var icon = document.getElementById("icon");
+        var icon2 = document.getElementById("icon2");
+        
+        if (document.documentElement.classList.contains("dark") || localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+          icon.classList.remove("icon-moon");
+          icon.classList.add("icon-sun");
+          icon2.classList.remove("icon-moon");
+          icon2.classList.add("icon-sun");
+          document.documentElement.classList.add('dark')
+        } else {
+          document.documentElement.classList.remove('dark')
+        }
+        function toggleDarkMode() {
+        if (document.documentElement.classList.contains('dark')) {
+            icon.classList.remove("icon-sun");
+            icon.classList.add("icon-moon");
+            icon2.classList.remove("icon-sun");
+            icon2.classList.add("icon-moon");
+            document.documentElement.classList.remove('dark')
+            localStorage.theme = 'light'
+        } else {
+            icon.classList.remove("icon-moon");
+            icon.classList.add("icon-sun");
+            icon2.classList.remove("icon-moon");
+            icon2.classList.add("icon-sun");
+            document.documentElement.classList.add('dark')
+            localStorage.theme = 'dark'
+        }
+    }
+    </script>
+</footer>
+</div>
+</body>
+
+</html>
