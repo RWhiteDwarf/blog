@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-4BW3ZE1JE8"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-4BW3ZE1JE8');
+</script>
+
+<title>Map any region in the world with R - Part I: The basic map | R with White Dwarf</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/favicon/RWD-apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon/RWD-favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon/RWD-favicon-16x16.png">
+    <link rel="manifest" href="/favicon/site.webmanifest" />
+    <link rel="mask-icon" href="/favicon/safari-pinned-tab.svg" color="#5bbad5" />
+    <link rel="shortcut icon" href="/favicon/RWD-favicon.ico" />
+    <meta name="theme-color" content="#ffffff">
+    <meta property="og:title" content="R with White Dwarf | Map any region in the world with R - Part I: The basic map" />
+    
+    
+        
+        <link rel="stylesheet" href="https://blog.rwhitedwarf.com/css/styles.min.e6ae6b5ab7178a9872cec39597f3ca522b6efab7d2605fc36b5d3ede12a4c9c3.css">
+    
+    <link href="/css/blonde.min.css" rel="stylesheet" type="text/css" media="print"
+          onload="this.media='all'">
+    
+
+
+
+<meta name="description" content="Part I of making maps of any region in the world with R using ggplot2 and maps packages">
+<meta property="og:site_name" content="R with White Dwarf">
+<meta property="og:description" content="Part I of making maps of any region in the world with R using ggplot2 and maps packages">
+<meta property="og:url" content="https://blog.rwhitedwarf.com/post/2022/map_any_region_with_ggplot2_part_i/">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="en_US">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="">
+
+<link rel="canonical" href="https://blog.rwhitedwarf.com/post/2022/map_any_region_with_ggplot2_part_i/">
+
+<meta name="twitter:description" content="Part I of making maps of any region in the world with R using ggplot2 and maps packages">
+<meta property="article:published_time" content="2022-10-04T00:00:00&#43;00:00">
+<meta property="article:updated_time" content="2022-10-04T00:00:00&#43;00:00">
+
+
+
+
+
+    
+<meta property="og:image" content="https://blog.rwhitedwarf.com/post/2022/map_any_region_with_ggplot2_part_I/maps_DrawingMap.png">
+<meta property="og:image:url" content="https://blog.rwhitedwarf.com/post/2022/map_any_region_with_ggplot2_part_I/maps_DrawingMap.png">
+    
+
+    
+    <link rel="stylesheet" href="/css/custom.css">
+    <i class="dark hidden"></i>
+    </head>
+<body class="font-sans">
+    <div class="min-h-screen flex flex-col bg-gray-100 dark:bg-warmgray-800"><div class="bg-blue-900">
+    <div class="container max-w-screen-xl mr-auto ml-auto">
+        <nav class="flex items-center justify-between flex-wrap bg-blue-900 p-6">
+            <div class="flex items-center flex-no-shrink bg-blue-900 text-white mr-6">
+                <a href="https://blog.rwhitedwarf.com"><span class="font-semibold text-2xl tracking-tight">R with White Dwarf</span></a>
+            </div>
+            <div class="flex md:hidden">
+                <div class="py-2">
+                    <button onclick="toggleDarkMode()" class="focus:outline-none mr-1" aria-label="Darkmode Toggle Button"><i id="icon"
+                            class="icon-moon inline-flex align-middle leading-normal text-lg text-white"></i></button>
+                    <span class="text-white">|</span>
+                </div>
+                <button id="hamburgerbtn" class="flex items-center px-3 py-1 text-white hover:opacity-50" aria-label="Hamburger Button">
+                    <span class="icon-menu text-2xl"></span>
+                </button>
+            </div>
+            <div class="hidden w-full md:flex md:flex-row sm:items-center md:w-auto" id="mobileMenu">
+                <div class="text-sm lg:flex-grow">
+                </div>
+                <div class="navmenu">
+                    
+                    <a href="/"
+                        class="no-underline duration-200 block mt-4 sm:inline-block sm:mt-0 text-white hover:opacity-50 mr-4">
+                        Home
+                    </a>
+                    
+                    <a href="/about/"
+                        class="no-underline duration-200 block mt-4 sm:inline-block sm:mt-0 text-white hover:opacity-50 mr-4">
+                        About
+                    </a>
+                    
+                    <a href="/archives/"
+                        class="no-underline duration-200 block mt-4 sm:inline-block sm:mt-0 text-white hover:opacity-50 mr-4">
+                        Archives
+                    </a>
+                    
+                </div>
+                <div class="text-white invisible md:visible">
+                    <span>|</span>
+                    <button onclick="toggleDarkMode()" class="focus:outline-none" aria-label="Darkmode Toggle Button"><i id="icon2"
+                            class="icon-moon hover:opacity-50 duration-200 inline-flex align-middle leading-normal text-lg ml-2"></i></button>
+                </div>
+            </div>
+        </nav>
+    </div>
+</div>
+<style>
+    .active {
+        display: block;
+    }
+</style>
+
+<script>
+    let hamburger = document.getElementById('hamburgerbtn');
+
+    let mobileMenu = document.getElementById('mobileMenu');
+
+    hamburger.addEventListener('click', function () {
+        mobileMenu.classList.toggle('active');
+    });
+</script>
+<div class="container max-w-screen-xl mx-auto mt-4 flex-grow px-5 lg:px-0" id="content">
+            <div class="lg:mx-5">
+<div class="grid grid-cols-3 gap-4">
+    
+    <div class="col-span-3 lg:col-span-2 dark:text-white">
+    
+        <div class="bg-white dark:bg-warmgray-900 p-5 my-4">
+            <h1 class="title text-4xl">Map any region in the world with R - Part I: The basic map</h1>
+            <hr class="my-2">
+            <aside id="meta">
+                <div>
+                    <section>
+                        <h4 id="date"><span class="icon-access_time mr-2"></span>2022/10/04 </h4>
+                    </section>
+                    
+                    <div id="tags">
+                        <span class="icon-local_offer mr-1"></span>
+                        
+                        <a href="https://blog.rwhitedwarf.com/tags/r-maps">R maps</a> |
+                        
+                        <a href="https://blog.rwhitedwarf.com/tags/ggplot2">ggplot2</a> |
+                        
+                        <a href="https://blog.rwhitedwarf.com/tags/code-visuals">Code Visuals</a> |
+                        
+                        <a href="https://blog.rwhitedwarf.com/tags/r-functions">R functions</a> |
+                        
+                    </div>
+                    
+                </div>
+            </aside>
+            <hr class="my-2">
+            
+            <img class="py-4" src="https://blog.rwhitedwarf.com/post/2022/map_any_region_with_ggplot2_part_I/maps_DrawingMap.png">
+            
+            <div class="content mt-5"><h2 id="scope-of-this-post">Scope of this post</h2>
+<p>When you prepare for a job interview one of the questions they always tell you to prepare is &ldquo;What are you most proud of?&rdquo;. Personally I&rsquo;ve never been asked that question in a job interview but it kept me thinking. Some years ago I developed the R code for the creation of maps of infrastructure for a Political Sciences project, and I can say that this is one of the projects I&rsquo;m most proud of. However, it is also true what they say to developers, that <strong>nobody cares about how you did it</strong>. The final user only cared about what was done, while the research team about what are the possibilities. Due to the confidentiality agreement of the client, I also cannot share a git repository.</p>
+<p>The project taught me so much in terms of technical skills that I have decided to <strong>share the how</strong> in case it can help somebody else. It is also my way to contribute to the R community since I myself learned R and programming thanks to the kind people who post their experience on the web (and to the ones who have the patience to answer questions in StackOverflow too).</p>
+<p>We created maps of data showing changes over a span of time for different countries and pointing at all kinds of cities. That basically means that we need to <strong>map any region of the world with R</strong>. Today there are all kinds of packages and techniques to do that. I will share the strategy I used with <a href="https://cran.r-project.org/web/packages/ggplot2/index.html">ggplot2</a> and <a href="https://cran.r-project.org/web/packages/maps/index.html">maps</a> packages, using support of <a href="https://www.openstreetmap.org/">Open Street Map</a> to obtain the coordinates of cities and finally making it interactive with <a href="https://shiny.rstudio.com/">shiny</a>. The project is quite long for a single post, so my idea is to split it into a few smaller blog posts. The list can still change but I thought something like this:</p>
+<pre><code>1. The basic map
+2. Web scrapping with nominatim open street maps
+3. Maps with cities
+4. Dynamic maps in time
+5. Making a single script for fast replication
+6. Making the code interactive in a shiny app
+</code></pre>
+<p>I hope you all enjoy it. Feel free to leave any kind of comment and/or question at the end.</p>
+<h2 id="background">Background</h2>
+<p>When I joined the team all what they knew is that the wanted to make maps of infrastructure (say hospitals, cafes, churches, public offices, etc., but the project can basically be applied to anything countable per city). The maps should change in time according to the data (usually growth) and it should be possible to apply it for any country and thus, any kind of city of that particular country can be listed there. This last point represents a challenge because to make a map you need the coordinates of a particular point to map, but instead we got address in the best scenario, or only city name in the worst. Therefore, we left it to the level of city and decided to work with that.</p>
+<p>Most R packages to make maps have granularity up to some regions and major cities per country, and we are talking about countries where somebody has develop some R package for that. However, even the best packages would miss some cities or some countries some times. We needed to standardize everything without the need of changing packages according to the particular country. Before I joined, the team attempted to use Google Maps and excel, but the amount of data became messy and the flexibility to edit the maps was pretty limited. And they didn&rsquo;t want to add copyright issues to the list of limitations. Therefore I proposed to use R. Of course, nobody in the team had ever heard about it before. We could had used any other tool, I learned that both, Python and JavaScript have some decent possibilities. But R is what I have been using for the last 10 years and is what I wanted to use for this project. And so I started to code.</p>
+<p>The first couple of maps were custom code for a particular country with decent styles. But it quickly evolved into a set of functions and arguments to maintain the same standards for each map. The support of graphic designers also took the styles to a very professional level. After a few months we had very professional maps that could be done in couple of hrs (or less) with a couple of lines of code. Each map per each country with the desired span of years to be printed.</p>
+<p>I don&rsquo;t think I will share every single detail of it, but at least I want to show how we went from the basic map to its dynamic form mapping over a span of time, and how I wrapped it all together in a couple of functions to make it quickly replicable for any given data set. Let me know what you think.</p>
+<h2 id="how-to-create-a-map-of-any-country-in-r-using-the-library-maps">How to create a map of any country in R using the library maps</h2>
+<p>The first step is to create the basic map of a country. Here is the function to achieve exactly that.</p>
+<div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r"><span style="color:#00a000">library</span>(maps)
+<span style="color:#00a000">library</span>(ggplot2)
+
+<span style="color:#080;font-style:italic">## make a df with only the country to overlap</span>
+map_data_es <span style="color:#666">&lt;-</span> <span style="color:#00a000">map_data</span>(<span style="color:#b44">&#39;world&#39;</span>)<span style="color:#00a000">[map_data</span>(<span style="color:#b44">&#39;world&#39;</span>)<span style="color:#666">$</span>region <span style="color:#666">==</span> <span style="color:#b44">&#34;Spain&#34;</span>,]
+
+<span style="color:#080;font-style:italic">## The map (maps + ggplot2 )</span>
+<span style="color:#00a000">ggplot</span>() <span style="color:#666">+</span>
+    <span style="color:#080;font-style:italic">## First layer: worldwide map</span>
+    <span style="color:#00a000">geom_polygon</span>(data <span style="color:#666">=</span> <span style="color:#00a000">map_data</span>(<span style="color:#b44">&#34;world&#34;</span>),
+                 <span style="color:#00a000">aes</span>(x<span style="color:#666">=</span>long, y<span style="color:#666">=</span>lat, group <span style="color:#666">=</span> group),
+                 color <span style="color:#666">=</span> <span style="color:#b44">&#39;#9c9c9c&#39;</span>, fill <span style="color:#666">=</span> <span style="color:#b44">&#39;#f3f3f3&#39;</span>) <span style="color:#666">+</span>
+    <span style="color:#080;font-style:italic">## Second layer: Country map</span>
+    <span style="color:#00a000">geom_polygon</span>(data <span style="color:#666">=</span> map_data_es,
+                 <span style="color:#00a000">aes</span>(x<span style="color:#666">=</span>long, y<span style="color:#666">=</span>lat, group <span style="color:#666">=</span> group),
+                 color <span style="color:#666">=</span> <span style="color:#b44">&#39;red&#39;</span>, fill <span style="color:#666">=</span> <span style="color:#b44">&#39;pink&#39;</span>) <span style="color:#666">+</span>
+    <span style="color:#00a000">coord_map</span>() <span style="color:#666">+</span>
+    <span style="color:#00a000">coord_fixed</span>(<span style="color:#666">1.3</span>,
+                xlim <span style="color:#666">=</span> <span style="color:#00a000">c</span>(<span style="color:#666">-13.5</span>, <span style="color:#666">8.5</span>),
+                ylim <span style="color:#666">=</span> <span style="color:#00a000">c</span>(<span style="color:#666">34</span>, <span style="color:#666">45</span>)) <span style="color:#666">+</span>
+    <span style="color:#00a000">ggtitle</span>(<span style="color:#b44">&#34;A map of Spain&#34;</span>) <span style="color:#666">+</span>
+    <span style="color:#00a000">theme</span>(panel.background <span style="color:#666">=</span><span style="color:#00a000">element_rect</span>(fill <span style="color:#666">=</span> <span style="color:#b44">&#39;blue&#39;</span>))
+</code></pre></div><p><img src="/post/2022/map_any_region_with_ggplot2_part_I/basic_map-1.png" alt="plot of chunk basic_map"></p>
+<p>We are using the library <a href="https://cran.r-project.org/web/packages/maps/index.html">maps</a> in combination with <a href="https://cran.r-project.org/web/packages/ggplot2/index.html">ggplot2</a>. The <code>maps</code> package contains coordinates system for a map of the whole world separated by countries (although political borders might not be fully up to date). It can as well do the maps, but for that we are making use of <code>ggplot2</code> support here.</p>
+<p>We start by extracting the data relevant to the country we want to map, in this case <code>Spain</code>. It is of course important to pass the name of the country in the same way that it is written in <code>map_data('world')$region</code>. You can use the function <code>unique()</code> to find the exact names of all the countries included in the packages (<code>unique(map_data('world')$region)</code> gives 252 countries at the moment of writing this post).</p>
+<p>Once we have the data for the one particular country, we could simply map it directly using <code>geom_polygon()</code> however, that would map Spain surrounded by empty space around it. To place it in the context of its neighborhood, we apply two layers of <code>geom_polygon()</code>: first one with the map of the whole world and secondly the map of the country only.</p>
+<p><img src="/post/2022/map_any_region_with_ggplot2_part_I/maps_BasicMap.png" alt="The basic map code explained"></p>
+<p>Then we need to tell <code>ggplot</code> to use a coordinates system to create maps instead of just polygons. For that we use <a href="https://ggplot2.tidyverse.org/reference/coord_map.html">coord_map()</a> function and then we pass the details of the map ratio, and limits in X and Y to the function <code>coord_fixed()</code>.</p>
+<p>Up to here we can have our map. <code>ggplot</code> is basically plotting what we are specifying inside the coordinates system, everything around it (the oceans) will be just empty and it will be filled in by the default grids and gray colors of <code>ggplot()</code>. Thus, we need to define the color of the Oceans as the background color for the whole plot. That&rsquo;s what the last line of code does.</p>
+<p>Of course there are a lot of improvements to do. So far I have given exaggerated colors to make obvious for the reader which piece of code controls what. In that sense you can see that you can simply pass the names of the colors, which applies the defaults, or you can be more specific and provide the html notation of the color (i.e., <code>'#9c9c9c'</code>). So, let&rsquo;s now improve the visuals and at the same time create a function to plot any country we want to.</p>
+<h2 id="function-to-create-the-basic-map-in-r">Function to create the basic map in R</h2>
+<div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r">map_country <span style="color:#666">&lt;-</span> <span style="color:#00a000">function</span>(country, x_limits <span style="color:#666">=</span> <span style="color:#a2f;font-weight:bold">NULL</span>, y_limits <span style="color:#666">=</span> <span style="color:#a2f;font-weight:bold">NULL</span>){
+    <span style="color:#080;font-style:italic">## Verifying the arguments passed to the function</span>
+    <span style="color:#00a000">if</span>(<span style="color:#666">!</span><span style="color:#00a000">is.character</span>(country)) <span style="color:#00a000">stop</span>(<span style="color:#b44">&#34;Name of the country should be character&#34;</span>)
+    <span style="color:#00a000">if</span>(<span style="color:#00a000">length</span>(country) <span style="color:#666">!=</span> <span style="color:#666">1</span>) <span style="color:#00a000">stop</span>(<span style="color:#b44">&#34;Function supports only one country per map&#34;</span>)
+    <span style="color:#080;font-style:italic">## Load libraries</span>
+    <span style="color:#00a000">require</span>(maps)
+    <span style="color:#00a000">require</span>(ggplot2)
+    <span style="color:#00a000">if</span>(<span style="color:#666">!</span>country <span style="color:#666">%in%</span> <span style="color:#00a000">map_data</span>(<span style="color:#b44">&#39;world&#39;</span>)<span style="color:#666">$</span>region) <span style="color:#00a000">stop</span>(<span style="color:#b44">&#39;Country name not recognized\nTo see a list of recognized countries run &lt;unique(maps::map_data(&#34;world&#34;)$region)&gt;&#39;</span>)
+    <span style="color:#080;font-style:italic">## If coords limits missing, print worldwide map with coordinates system to allow</span>
+    <span style="color:#080;font-style:italic">## User observe coords for reference</span>
+    <span style="color:#00a000">if</span>(<span style="color:#00a000">missing</span>(x_limits) <span style="color:#666">||</span> <span style="color:#00a000">missing</span>(y_limits)) {
+        <span style="color:#00a000">warning</span>(<span style="color:#b44">&#34;X and/or Y limits not provided.\nPrinting worldwide map.&#34;</span>)
+        map_country_theme <span style="color:#666">&lt;-</span> <span style="color:#00a000">theme</span>(panel.background <span style="color:#666">=</span> <span style="color:#00a000">element_rect</span>(fill <span style="color:#666">=</span> <span style="color:#b44">&#39;#4e91d2&#39;</span>))
+    }
+    else {
+        <span style="color:#00a000">if</span>(<span style="color:#00a000">length</span>(x_limits) <span style="color:#666">!=</span> <span style="color:#666">2</span> <span style="color:#666">||</span> <span style="color:#00a000">length</span>(y_limits) <span style="color:#666">!=</span> <span style="color:#666">2</span> <span style="color:#666">||</span>
+           <span style="color:#666">!</span><span style="color:#00a000">all</span>(<span style="color:#00a000">grepl</span>(<span style="color:#b44">&#39;^-?[0-9.]+$&#39;</span>, <span style="color:#00a000">c</span>(x_limits, y_limits)))){
+            <span style="color:#00a000">stop</span>(<span style="color:#b44">&#34;Limits for X and Y coords should be provided as vectors with two numeric values&#34;</span>)
+        }
+        else {
+            <span style="color:#080;font-style:italic">## All the received inputs are correct.</span>
+            <span style="color:#080;font-style:italic">## Let&#39;s define our custom theme for the final map </span>
+            map_country_theme <span style="color:#666">&lt;-</span> <span style="color:#00a000">theme_bw</span>() <span style="color:#666">+</span>
+                <span style="color:#00a000">theme</span>(panel.background <span style="color:#666">=</span> <span style="color:#00a000">element_rect</span>(fill <span style="color:#666">=</span> <span style="color:#b44">&#39;#4e91d2&#39;</span>),
+                      legend.position <span style="color:#666">=</span> <span style="color:#b44">&#39;none&#39;</span>,
+                      panel.grid.major <span style="color:#666">=</span> <span style="color:#00a000">element_blank</span>(),
+                      panel.grid.minor <span style="color:#666">=</span> <span style="color:#00a000">element_blank</span>(),
+                      axis.line <span style="color:#666">=</span> <span style="color:#00a000">element_line</span>(colour <span style="color:#666">=</span> <span style="color:#b44">&#34;black&#34;</span>),
+                      axis.title.x<span style="color:#666">=</span><span style="color:#00a000">element_blank</span>(),
+                      axis.text.x<span style="color:#666">=</span><span style="color:#00a000">element_blank</span>(),
+                      axis.ticks.x<span style="color:#666">=</span><span style="color:#00a000">element_blank</span>(),
+                      axis.title.y<span style="color:#666">=</span><span style="color:#00a000">element_blank</span>(),
+                      axis.text.y<span style="color:#666">=</span><span style="color:#00a000">element_blank</span>(),
+                      axis.ticks.y<span style="color:#666">=</span><span style="color:#00a000">element_blank</span>())
+        }
+    }
+    <span style="color:#080;font-style:italic">## make a df with only the country to overlap</span>
+    map_data_country <span style="color:#666">&lt;-</span> <span style="color:#00a000">map_data</span>(<span style="color:#b44">&#39;world&#39;</span>)<span style="color:#00a000">[map_data</span>(<span style="color:#b44">&#39;world&#39;</span>)<span style="color:#666">$</span>region <span style="color:#666">==</span> country,]
+    <span style="color:#080;font-style:italic">## The map (maps + ggplot2 )</span>
+    <span style="color:#00a000">ggplot</span>() <span style="color:#666">+</span>
+        <span style="color:#080;font-style:italic">## First layer: worldwide map</span>
+        <span style="color:#00a000">geom_polygon</span>(data <span style="color:#666">=</span> <span style="color:#00a000">map_data</span>(<span style="color:#b44">&#34;world&#34;</span>),
+                     <span style="color:#00a000">aes</span>(x<span style="color:#666">=</span>long, y<span style="color:#666">=</span>lat, group <span style="color:#666">=</span> group),
+                     color <span style="color:#666">=</span> <span style="color:#b44">&#39;#9c9c9c&#39;</span>, fill <span style="color:#666">=</span> <span style="color:#b44">&#39;#f3f3f3&#39;</span>) <span style="color:#666">+</span>
+        <span style="color:#080;font-style:italic">## Second layer: Country map</span>
+        <span style="color:#00a000">geom_polygon</span>(data <span style="color:#666">=</span> map_data_country,
+                     <span style="color:#00a000">aes</span>(x<span style="color:#666">=</span>long, y<span style="color:#666">=</span>lat, group <span style="color:#666">=</span> group),
+                     color <span style="color:#666">=</span> <span style="color:#b44">&#39;#4d696e&#39;</span>, fill <span style="color:#666">=</span> <span style="color:#b44">&#39;#8caeb4&#39;</span>) <span style="color:#666">+</span>
+        <span style="color:#00a000">coord_map</span>() <span style="color:#666">+</span>
+        <span style="color:#00a000">coord_fixed</span>(<span style="color:#666">1.3</span>,
+                    xlim <span style="color:#666">=</span> x_limits,
+                    ylim <span style="color:#666">=</span> y_limits) <span style="color:#666">+</span>
+        <span style="color:#00a000">ggtitle</span>(<span style="color:#00a000">paste0</span>(<span style="color:#b44">&#34;A map of &#34;</span>, country)) <span style="color:#666">+</span>
+        <span style="color:#00a000">scale_x_continuous</span>(n.breaks <span style="color:#666">=</span> <span style="color:#666">20</span>) <span style="color:#666">+</span>
+        <span style="color:#00a000">scale_y_continuous</span>(n.breaks <span style="color:#666">=</span> <span style="color:#666">20</span>) <span style="color:#666">+</span>
+        map_country_theme
+}
+
+<span style="color:#080;font-style:italic">## Test the function with a different country</span>
+<span style="color:#00a000">map_country</span>(<span style="color:#b44">&#34;Germany&#34;</span>, <span style="color:#00a000">c</span>(<span style="color:#666">-2</span>, <span style="color:#666">22</span>), <span style="color:#00a000">c</span>(<span style="color:#666">47</span>, <span style="color:#666">55</span>))
+</code></pre></div><p><img src="/post/2022/map_any_region_with_ggplot2_part_I/function_map-1.png" alt="plot of chunk function_map"></p>
+<p>Although the function might seem complicated at first, it is in fact the same code as we used to create the map, but instead of typing directly the name of the country or the limits for X and Y, we replace them with the arguments <code>country</code>, <code>x_limits</code> and <code>y_limits</code> respectively; in that way all the parts were we had the string <code>&quot;Spain&quot;</code> we now have the argument <code>country</code>, and so on. These are the only arguments that we need to change when we want to map a different country. You can define more arguments in case you want to have more possibilities to be editable, for example, we could define an argument <code>country_color</code> to specify the color we want for the target country. In our case we wanted to keep the same standards for all the maps due to branding reasons and thus, we rather wanted to have the exact same colors and styles for all of our maps.</p>
+<p>There are also some additions on the top before the actual code to make the maps, all the <code>if</code> and <code>else</code> statements that are simply used to validate that the information passed by the user is the info that we actually need to make the function work. If any incorrect argument is passed to the function, we stop the process and write a message of what is wrong using the function <code>stop()</code>. For the case that no limits of either X or Y are defined, I send a warning message using <code>warning()</code>. In that case the process continues but we define a <code>theme()</code> that allows the user to see the country in the context of the worldwide map, with excess of values in the X and Y axes to provide the points of reference and give an idea of where to set the limits. By the end, when we ensure that all the values are fine, we define the final theme that we actually want to apply. About that, probably I should make special mention of <code>!all(grepl('^-?[0-9.]+$', c(x_limits, y_limits))))</code>: it is used to ensure that X and Y limits are of type numeric. See the visualization of the code below together with the help of the function(s) you don&rsquo;t understand for a more detail explanation. Feel free to test the errors and warnings by providing to the function no country names or letters where there should be numbers, etc.</p>
+<p><img src="/post/2022/map_any_region_with_ggplot2_part_I/maps_FunctionMap.png" alt="Code of the function explained"></p>
+<p>The lower part of the function is exactly the same as our first map, replacing the actual values for the arguments. We also have changed the colors for more specific ones. Almost by the end of the function we have added <code>scale_x_continuous(n.breaks = 20)</code> which will add 20 marks of the X axis scale (same for Y). We want to use it to ensure that, in case the user doesn&rsquo;t have idea of which limit values to choose, it can have a good approach regarding the position of the target country. In case that both limits for X and Y are passed to the function, our other theme will mask this 20 breaks with <code>axis.text.x = element_blank()</code> and <code>axis.ticks.x = element_blank()</code>.</p>
+<p>The final line is the test that our function can plot a map other than Spain, in this case I chose Germany. We can basically choose any country included in the <code>maps</code> package and now make the map with the same standards in one line of R code.</p>
+<h2 id="final-remarks">Final remarks</h2>
+<p>Here I am somehow showing one of the methods I use to create functions: I basically write first the code of what I want to achieve and once it does exactly what I want, I wrap it in a function, replacing the arguments that the user will need to modify later. Then I think what could go wrong and create the corresponding warnings an errors. It is a good practice to do that not only for the user to know better how to use the function, but also for yourself, it proves very useful when we need to debug code. Another good practice in R functions is the call to the libraries inside the function using <code>require()</code>. Even if you are writing many functions that use the same libraries, is good to repeat it on each function to make it self contained and again, help yourself in the debugging process. Not long ago I started collaborating in a project where there was no call to the libraries per function, but rather only at the top level when the main action of the program was called. This made almost impossible for me to test and debug code so, the first activity I did as a new member of the team was to spend 2 full working days adding <code>require()</code> where necessary.</p>
+<p><img src="/post/2022/map_any_region_with_ggplot2_part_I/maps_CompareCode.png" alt="Code of the function explained"></p>
+<p>I hope you get some fun mapping different countries. Because different countries have different sizes and shapes, one way to improve the visuals related to this is by adjusting the ratio, for example, my own map of Germany looks out of shape, but it improves considerably if instead of 1.3 we give a ratio of 1.4, check the documentation to learn more about it.</p>
+<p>Once that we have the basic map, we could add the cities were we want to add data values. Unfortunately, for cities there are many limitations, specially for countries where no special packages has been created to be mapped, and even there, most packages of particular countries don&rsquo;t contain all the cities, especially minor ones. Thus, in our second part I will show how I tackled this problem doing some web scrapping to open street maps.</p>
+</div>
+            <aside id="meta">
+                
+                <hr class="py-2">
+                <div id="categories">
+                    <span class="icon-folder text-xl mr-1"></span>
+                    
+                    <span
+                        class="inline-flex py-2 leading-4 mr-2 mb-2 content-center bg-gray-200 justify-center h-8 px-3 text-blue-500 duration-200 hover:text-black dark:bg-warmgray-800"><a
+                            href="https://blog.rwhitedwarf.com/categories/r">R</a></span>
+                    
+                </div>
+                
+            </aside>
+            </div>
+        <div class="bg-white dark:bg-warmgray-900 p-5 my-4">
+            <div class="grid grid-cols-2">
+                <div class="col-span-1">
+                    
+                    <a class="previous lg:text-2xl" href="https://blog.rwhitedwarf.com/post/2022/minitut_makebool/">
+                        <div
+                            class="transition-colors duration-300 border border-gray-600 hover:border-black h-auto m-3 text-center py-3 lg:py-1">
+                            <span class="icon-keyboard_arrow_left"></span> Minitutorial: make_logical any string
+                        </div>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        <div class="bg-white dark:bg-warmgray-900 p-5 my-4">
+          <div class="mb-3">
+              <script src="https://utteranc.es/client.js"
+        repo="RWhiteDwarf/blog"
+        issue-term="pathname"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+</script>
+
+            </div>
+        </div>
+    </div>
+    
+    <div class="hidden lg:block lg:col-span-1">
+        <div class="mb-3">
+    <form class="widget-search__form" role="search" method="get" action="https://google.com/search">
+        <label>
+            <input class="w-full p-3 focus:outline-none dark:bg-warmgray-900 dark:text-white placeholder-gray-700 dark:placeholder-gray-300" type="search"
+                placeholder="Search..." value="" name="q" aria-label="Search">
+        </label>
+        <input class="hidden" type="submit" value="Search">
+        <input type="hidden" name="sitesearch" value="https://blog.rwhitedwarf.com" />
+    </form>
+</div>
+        
+<div class="bg-white panel mb-3 dark:bg-warmgray-900">
+    <p class="text-xl text-center text-gray-700 py-3 pl-3 dark:text-gray-300">Tags</p>
+    <div class="panel-block p-2">
+        <a href="/tags/code-visuals">
+            <span
+                class="duration-100 inline-flex py-2 leading-4 mr-2 mb-2 content-center bg-gray-100 justify-center h-8 px-3 text-blue-500 hover:text-blue-900 dark:bg-warmgray-800">
+                code-visuals
+            </span></a>
+        <a href="/tags/ggplot2">
+            <span
+                class="duration-100 inline-flex py-2 leading-4 mr-2 mb-2 content-center bg-gray-100 justify-center h-8 px-3 text-blue-500 hover:text-blue-900 dark:bg-warmgray-800">
+                ggplot2
+            </span></a>
+        <a href="/tags/minitutorial">
+            <span
+                class="duration-100 inline-flex py-2 leading-4 mr-2 mb-2 content-center bg-gray-100 justify-center h-8 px-3 text-blue-500 hover:text-blue-900 dark:bg-warmgray-800">
+                minitutorial
+            </span></a>
+        <a href="/tags/r-basics">
+            <span
+                class="duration-100 inline-flex py-2 leading-4 mr-2 mb-2 content-center bg-gray-100 justify-center h-8 px-3 text-blue-500 hover:text-blue-900 dark:bg-warmgray-800">
+                r-basics
+            </span></a>
+        <a href="/tags/r-functions">
+            <span
+                class="duration-100 inline-flex py-2 leading-4 mr-2 mb-2 content-center bg-gray-100 justify-center h-8 px-3 text-blue-500 hover:text-blue-900 dark:bg-warmgray-800">
+                r-functions
+            </span></a>
+        <a href="/tags/r-maps">
+            <span
+                class="duration-100 inline-flex py-2 leading-4 mr-2 mb-2 content-center bg-gray-100 justify-center h-8 px-3 text-blue-500 hover:text-blue-900 dark:bg-warmgray-800">
+                r-maps
+            </span></a>
+        <a href="/tags/r-shiny">
+            <span
+                class="duration-100 inline-flex py-2 leading-4 mr-2 mb-2 content-center bg-gray-100 justify-center h-8 px-3 text-blue-500 hover:text-blue-900 dark:bg-warmgray-800">
+                r-shiny
+            </span></a>
+        <a href="/tags/r-tips">
+            <span
+                class="duration-100 inline-flex py-2 leading-4 mr-2 mb-2 content-center bg-gray-100 justify-center h-8 px-3 text-blue-500 hover:text-blue-900 dark:bg-warmgray-800">
+                r-tips
+            </span></a>
+    </div>
+</div>
+
+        
+
+<div class="bg-white panel mb-3 pb-5 dark:bg-warmgray-900">
+    <p class="text-xl text-center text-gray-700 py-5 dark:text-gray-300">Recent Posts</p>
+    <div class="mx-6">
+        
+        <a href="/post/2022/map_any_region_with_ggplot2_part_i/" class="">
+            <div class="w-full block mt-3 bg-white hover:bg-gray-100 duration-200 dark:bg-warmgray-900 dark:text-gray-200 dark:hover:bg-warmgray-800">
+                <div class="px-2">
+                    <div class="text-gray-900 font-bold text-xl dark:text-white">Map any region in the world with R - Part I: The basic map</div>
+                    <p class="text-sm text-gray-600 flex items-center pb-1 dark:text-gray-400">
+                        <time><span class="icon-access_time mr-1"></span>2022/10/04</time>
+                    </p>
+                </div>
+            </div>
+        <a href="/post/2022/minitut_makebool/" class="">
+            <div class="w-full block mt-3 bg-white hover:bg-gray-100 duration-200 dark:bg-warmgray-900 dark:text-gray-200 dark:hover:bg-warmgray-800">
+                <div class="px-2">
+                    <div class="text-gray-900 font-bold text-xl dark:text-white">Minitutorial: make_logical any string</div>
+                    <p class="text-sm text-gray-600 flex items-center pb-1 dark:text-gray-400">
+                        <time><span class="icon-access_time mr-1"></span>2022/09/18</time>
+                    </p>
+                </div>
+            </div>
+        <a href="/post/2021/fill_merged_cells/" class="">
+            <div class="w-full block mt-3 bg-white hover:bg-gray-100 duration-200 dark:bg-warmgray-900 dark:text-gray-200 dark:hover:bg-warmgray-800">
+                <div class="px-2">
+                    <div class="text-gray-900 font-bold text-xl dark:text-white">R function to fill in merged cells</div>
+                    <p class="text-sm text-gray-600 flex items-center pb-1 dark:text-gray-400">
+                        <time><span class="icon-access_time mr-1"></span>2021/12/05</time>
+                    </p>
+                </div>
+            </div>
+        <a href="/post/2021/first_shiny_app/" class="">
+            <div class="w-full block mt-3 bg-white hover:bg-gray-100 duration-200 dark:bg-warmgray-900 dark:text-gray-200 dark:hover:bg-warmgray-800">
+                <div class="px-2">
+                    <div class="text-gray-900 font-bold text-xl dark:text-white">My first shiny app</div>
+                    <p class="text-sm text-gray-600 flex items-center pb-1 dark:text-gray-400">
+                        <time><span class="icon-access_time mr-1"></span>2021/12/20</time>
+                    </p>
+                </div>
+            </div>
+        <a href="/post/2021/functions/" class="">
+            <div class="w-full block mt-3 bg-white hover:bg-gray-100 duration-200 dark:bg-warmgray-900 dark:text-gray-200 dark:hover:bg-warmgray-800">
+                <div class="px-2">
+                    <div class="text-gray-900 font-bold text-xl dark:text-white">Functions in R</div>
+                    <p class="text-sm text-gray-600 flex items-center pb-1 dark:text-gray-400">
+                        <time><span class="icon-access_time mr-1"></span>2021/11/30</time>
+                    </p>
+                </div>
+            </div>
+        </a>
+    </div>
+</div>
+	<div class="bg-white panel mb-3 pb-5 dark:bg-warmgray-900">
+  <p class="text-xl text-center text-gray-700 py-5 dark:text-gray-300">External links</p>
+  
+    <a href="https://www.r-project.org/" class="">
+      <div class="w-full block mt-3 bg-white hover:bg-gray-100 duration-200 dark:bg-warmgray-900 dark:text-gray-200 dark:hover:bg-warmgray-800">
+        <div class="px-2">
+          <div class="text-gray-900 font-bold text-xl dark:text-white">R-project</div>
+          <p class="text-sm text-gray-600 flex items-center pb-1 dark:text-gray-400">Official website of R
+          </p>
+        </div>
+      </div>
+    </a>
+
+    <a href="https://www.r-bloggers.com/" class="">
+      <div class="w-full block mt-3 bg-white hover:bg-gray-100 duration-200 dark:bg-warmgray-900 dark:text-gray-200 dark:hover:bg-warmgray-800">
+        <div class="px-2">
+          <div class="text-gray-900 font-bold text-xl dark:text-white">R-bloggers</div>
+          <p class="text-sm text-gray-600 flex items-center pb-1 dark:text-gray-400">Hundreds of bloggers empowering R users
+          </p>
+        </div>
+      </div>
+    </a>
+
+    <a href="https://github.com/" class="">
+      <div class="w-full block mt-3 bg-white hover:bg-gray-100 duration-200 dark:bg-warmgray-900 dark:text-gray-200 dark:hover:bg-warmgray-800">
+        <div class="px-2">
+          <div class="text-gray-900 font-bold text-xl dark:text-white">Github</div>
+          <p class="text-sm text-gray-600 flex items-center pb-1 dark:text-gray-400">Platform to build, ship, maintain and share code and software
+          </p>
+        </div>
+      </div>
+    </a>
+</div>
+
+	<div class="bg-white panel mb-3 pb-5 dark:bg-warmgray-900">
+    <p class="text-xl text-center text-gray-700 py-3 px-3 dark:text-gray-300">Archives</p>
+    
+    
+    <a class="text-center block duration-100 py-2 px-4 mx-4 hover:bg-gray-100 text-gray-800 dark:text-gray-200 dark:hover:bg-warmgray-800"
+        href="https://blog.rwhitedwarf.com/archives/2021">2021 (3)</a>
+    
+    <a class="text-center block duration-100 py-2 px-4 mx-4 hover:bg-gray-100 text-gray-800 dark:text-gray-200 dark:hover:bg-warmgray-800"
+        href="https://blog.rwhitedwarf.com/archives/2022">2022 (2)</a>
+    
+    
+</div>
+        
+<div class="bg-white panel mb-3 pb-5 dark:bg-warmgray-900">
+    <p class="text-xl text-center text-gray-700 py-5 dark:text-gray-300">Categories</p>
+    
+    <a class="text-center block duration-100 py-2 px-4 mx-4 hover:bg-gray-100 text-gray-800 dark:text-gray-200 dark:hover:bg-warmgray-800"
+        href="https://blog.rwhitedwarf.com/categories/r">R</a>
+
+    
+</div>
+
+    </div>
+    
+</div>
+
+            </div>
+        </div><footer class="bg-blue-900 text-white p-6">
+    
+    <div class="container max-w-screen-xl mr-auto ml-auto">
+        <p>&copy; 2022 <a href="https://blog.rwhitedwarf.com" class="duration-200 hover:opacity-50">R with White Dwarf</a></p>
+        <p>Powered by <a href="https://gohugo.io/" class="duration-200 hover:opacity-50">Hugo</a>, Theme <a
+                href="https://github.com/opera7133/Blonde" class="duration-200 hover:opacity-50">Blonde</a>.</p>
+    </div>
+    <script>
+        var icon = document.getElementById("icon");
+        var icon2 = document.getElementById("icon2");
+        
+        if (document.documentElement.classList.contains("dark") || localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+          icon.classList.remove("icon-moon");
+          icon.classList.add("icon-sun");
+          icon2.classList.remove("icon-moon");
+          icon2.classList.add("icon-sun");
+          document.documentElement.classList.add('dark')
+        } else {
+          document.documentElement.classList.remove('dark')
+        }
+        function toggleDarkMode() {
+        if (document.documentElement.classList.contains('dark')) {
+            icon.classList.remove("icon-sun");
+            icon.classList.add("icon-moon");
+            icon2.classList.remove("icon-sun");
+            icon2.classList.add("icon-moon");
+            document.documentElement.classList.remove('dark')
+            localStorage.theme = 'light'
+        } else {
+            icon.classList.remove("icon-moon");
+            icon.classList.add("icon-sun");
+            icon2.classList.remove("icon-moon");
+            icon2.classList.add("icon-sun");
+            document.documentElement.classList.add('dark')
+            localStorage.theme = 'dark'
+        }
+    }
+    </script>
+</footer>
+</div>
+</body>
+
+</html>
