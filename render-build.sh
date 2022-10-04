@@ -1,7 +1,7 @@
 #!/bin/bash
 
 hugo version
-if [[! -f $XDG_CACHE_HOME/hugo]]; then 
+if [[ ! -f $XDG_CACHE_HOME/hugo ]]; then 
   echo "...Downloading HUGO" 
   mkdir -p ~/tmp 
   wget -P ~/tmp https://github.com/gohugoio/hugo/releases/download/v0.99.1/hugo_0.99.1_Linux-32bit.tar.gz 
@@ -16,4 +16,4 @@ else
 fi
 
 $XDG_CACHE_HOME/hugo version # Output the NEW version
-$XDG_CACHE_HOME/hugo --gc --minify`
+$XDG_CACHE_HOME/hugo --gc --minify
