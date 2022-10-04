@@ -15,3 +15,5 @@ List of tags
 "R minitutorials"
 "R maps"
 "web scrapping"
+"Code Visuals"
+"ggplot2"
