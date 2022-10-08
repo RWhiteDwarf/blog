@@ -3,7 +3,7 @@ author: "M. Teodoro Tenango"
 title: "Map any region in the world with R - Part I: The basic map"
 image: "/post/2022/map_any_region_with_ggplot2_part_I/maps_DrawingMap.png"
 draft: false
-date: 2022-10-04
+date: 2022-10-08
 description: "Part I of making maps of any region in the world with R using ggplot2 and maps packages"
 tags: ["R maps", "ggplot2", "Code Visuals", "R functions"]
 categories: ["R"]
