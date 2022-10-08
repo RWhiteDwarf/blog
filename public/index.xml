@@ -2,17 +2,17 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>R with White Dwarf</title>
-    <link>https://blog-rwd-test.onrender.com/</link>
+    <link>https://blog.rwhitedwarf.com/</link>
     <description>Recent content on R with White Dwarf</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Tue, 04 Oct 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://blog-rwd-test.onrender.com/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 04 Oct 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.rwhitedwarf.com/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Map any region in the world with R - Part I: The basic map</title>
-      <link>https://blog-rwd-test.onrender.com/post/map_any_region_with_ggplot2_part_i/</link>
+      <link>https://blog.rwhitedwarf.com/post/map_any_region_with_ggplot2_part_i/</link>
       <pubDate>Tue, 04 Oct 2022 00:00:00 +0000</pubDate>
       
-      <guid>https://blog-rwd-test.onrender.com/post/map_any_region_with_ggplot2_part_i/</guid>
+      <guid>https://blog.rwhitedwarf.com/post/map_any_region_with_ggplot2_part_i/</guid>
       <description>&lt;h2 id=&#34;scope-of-this-post&#34;&gt;Scope of this post&lt;/h2&gt;
 &lt;p&gt;When you prepare for a job interview one of the questions they always tell you to prepare is &amp;ldquo;What are you most proud of?&amp;rdquo;. Personally I&amp;rsquo;ve never been asked that question in a job interview but it kept me thinking. Some years ago I developed the R code for the creation of maps of infrastructure for a Political Sciences project, and I can say that this is one of the projects I&amp;rsquo;m most proud of. However, it is also true what they say to developers, that &lt;strong&gt;nobody cares about how you did it&lt;/strong&gt;. The final user only cared about what was done, while the research team about what are the possibilities. Due to the confidentiality agreement of the client, I also cannot share a git repository.&lt;/p&gt;
 &lt;p&gt;The project taught me so much in terms of technical skills that I have decided to &lt;strong&gt;share the how&lt;/strong&gt; in case it can help somebody else. It is also my way to contribute to the R community since I myself learned R and programming thanks to the kind people who post their experience on the web (and to the ones who have the patience to answer questions in StackOverflow too).&lt;/p&gt;
@@ -55,12 +55,12 @@ ggplot() +
     ggtitle(&amp;quot;A map of Spain&amp;quot;) +
     theme(panel.background =element_rect(fill = &#39;blue&#39;))
 &lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img class=&#34;img-zoomable&#34; src=&#34;https://blog-rwd-test.onrender.com/post/2022/map_any_region_with_ggplot2_part_I/basic_map-1.png&#34; alt=&#34;plot of chunk basic_map&#34; /&gt;
+&lt;p&gt;&lt;img class=&#34;img-zoomable&#34; src=&#34;https://blog.rwhitedwarf.com/post/2022/map_any_region_with_ggplot2_part_I/basic_map-1.png&#34; alt=&#34;plot of chunk basic_map&#34; /&gt;
 &lt;/p&gt;
 &lt;p&gt;We are using the library &lt;a href=&#34;https://cran.r-project.org/web/packages/maps/index.html&#34; target=&#34;_blank&#34;&gt;maps&lt;/a&gt; in combination with &lt;a href=&#34;https://cran.r-project.org/web/packages/ggplot2/index.html&#34; target=&#34;_blank&#34;&gt;ggplot2&lt;/a&gt;. The &lt;code&gt;maps&lt;/code&gt; package contains coordinates system for a map of the whole world separated by countries (although political borders might not be fully up to date). It can as well do the maps, but for that we are making use of &lt;code&gt;ggplot2&lt;/code&gt; support here.&lt;/p&gt;
 &lt;p&gt;We start by extracting the data relevant to the country we want to map, in this case &lt;code&gt;Spain&lt;/code&gt;. It is of course important to pass the name of the country in the same way that it is written in &lt;code&gt;map_data(&#39;world&#39;)$region&lt;/code&gt;. You can use the function &lt;code&gt;unique()&lt;/code&gt; to find the exact names of all the countries included in the packages (&lt;code&gt;unique(map_data(&#39;world&#39;)$region)&lt;/code&gt; gives 252 countries at the moment of writing this post).&lt;/p&gt;
 &lt;p&gt;Once we have the data for the one particular country, we could simply map it directly using &lt;code&gt;geom_polygon()&lt;/code&gt; however, that would map Spain surrounded by empty space around it. To place it in the context of its neighborhood, we apply two layers of &lt;code&gt;geom_polygon()&lt;/code&gt;: first one with the map of the whole world and secondly the map of the country only.&lt;/p&gt;
-&lt;p&gt;&lt;img class=&#34;img-zoomable&#34; src=&#34;https://blog-rwd-test.onrender.com/post/2022/map_any_region_with_ggplot2_part_I/maps_BasicMap.png&#34; alt=&#34;The basic map code explained&#34; /&gt;
+&lt;p&gt;&lt;img class=&#34;img-zoomable&#34; src=&#34;https://blog.rwhitedwarf.com/post/2022/map_any_region_with_ggplot2_part_I/maps_BasicMap.png&#34; alt=&#34;The basic map code explained&#34; /&gt;
 &lt;/p&gt;
 &lt;p&gt;Then we need to tell &lt;code&gt;ggplot&lt;/code&gt; to use a coordinates system to create maps instead of just polygons. For that we use &lt;a href=&#34;https://ggplot2.tidyverse.org/reference/coord_map.html&#34; target=&#34;_blank&#34;&gt;coord_map()&lt;/a&gt; function and then we pass the details of the map ratio, and limits in X and Y to the function &lt;code&gt;coord_fixed()&lt;/code&gt;.&lt;/p&gt;
 &lt;p&gt;Up to here we can have our map. &lt;code&gt;ggplot&lt;/code&gt; is basically plotting what we are specifying inside the coordinates system, everything around it (the oceans) will be just empty and it will be filled in by the default grids and gray colors of &lt;code&gt;ggplot()&lt;/code&gt;. Thus, we need to define the color of the Oceans as the background color for the whole plot. That&amp;rsquo;s what the last line of code does.&lt;/p&gt;
@@ -127,17 +127,17 @@ ggplot() +
 ## Test the function with a different country
 map_country(&amp;quot;Germany&amp;quot;, c(-2, 22), c(47, 55))
 &lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img class=&#34;img-zoomable&#34; src=&#34;https://blog-rwd-test.onrender.com/post/2022/map_any_region_with_ggplot2_part_I/function_map-1.png&#34; alt=&#34;plot of chunk function_map&#34; /&gt;
+&lt;p&gt;&lt;img class=&#34;img-zoomable&#34; src=&#34;https://blog.rwhitedwarf.com/post/2022/map_any_region_with_ggplot2_part_I/function_map-1.png&#34; alt=&#34;plot of chunk function_map&#34; /&gt;
 &lt;/p&gt;
 &lt;p&gt;Although the function might seem complicated at first, it is in fact the same code as we used to create the map, but instead of typing directly the name of the country or the limits for X and Y, we replace them with the arguments &lt;code&gt;country&lt;/code&gt;, &lt;code&gt;x_limits&lt;/code&gt; and &lt;code&gt;y_limits&lt;/code&gt; respectively; in that way all the parts were we had the string &lt;code&gt;&amp;quot;Spain&amp;quot;&lt;/code&gt; we now have the argument &lt;code&gt;country&lt;/code&gt;, and so on. These are the only arguments that we need to change when we want to map a different country. You can define more arguments in case you want to have more possibilities to be editable, for example, we could define an argument &lt;code&gt;country_color&lt;/code&gt; to specify the color we want for the target country. In our case we wanted to keep the same standards for all the maps due to branding reasons and thus, we rather wanted to have the exact same colors and styles for all of our maps.&lt;/p&gt;
 &lt;p&gt;There are also some additions on the top before the actual code to make the maps, all the &lt;code&gt;if&lt;/code&gt; and &lt;code&gt;else&lt;/code&gt; statements that are simply used to validate that the information passed by the user is the info that we actually need to make the function work. If any incorrect argument is passed to the function, we stop the process and write a message of what is wrong using the function &lt;code&gt;stop()&lt;/code&gt;. For the case that no limits of either X or Y are defined, I send a warning message using &lt;code&gt;warning()&lt;/code&gt;. In that case the process continues but we define a &lt;code&gt;theme()&lt;/code&gt; that allows the user to see the country in the context of the worldwide map, with excess of values in the X and Y axes to provide the points of reference and give an idea of where to set the limits. By the end, when we ensure that all the values are fine, we define the final theme that we actually want to apply. About that, probably I should make special mention of &lt;code&gt;!all(grepl(&#39;^-?[0-9.]+$&#39;, c(x_limits, y_limits))))&lt;/code&gt;: it is used to ensure that X and Y limits are of type numeric. See the visualization of the code below together with the help of the function(s) you don&amp;rsquo;t understand for a more detail explanation. Feel free to test the errors and warnings by providing to the function no country names or letters where there should be numbers, etc.&lt;/p&gt;
-&lt;p&gt;&lt;img class=&#34;img-zoomable&#34; src=&#34;https://blog-rwd-test.onrender.com/post/2022/map_any_region_with_ggplot2_part_I/maps_FunctionMap.png&#34; alt=&#34;Code of the function explained&#34; /&gt;
+&lt;p&gt;&lt;img class=&#34;img-zoomable&#34; src=&#34;https://blog.rwhitedwarf.com/post/2022/map_any_region_with_ggplot2_part_I/maps_FunctionMap.png&#34; alt=&#34;Code of the function explained&#34; /&gt;
 &lt;/p&gt;
 &lt;p&gt;The lower part of the function is exactly the same as our first map, replacing the actual values for the arguments. We also have changed the colors for more specific ones. Almost by the end of the function we have added &lt;code&gt;scale_x_continuous(n.breaks = 20)&lt;/code&gt; which will add 20 marks of the X axis scale (same for Y). We want to use it to ensure that, in case the user doesn&amp;rsquo;t have idea of which limit values to choose, it can have a good approach regarding the position of the target country. In case that both limits for X and Y are passed to the function, our other theme will mask this 20 breaks with &lt;code&gt;axis.text.x = element_blank()&lt;/code&gt; and &lt;code&gt;axis.ticks.x = element_blank()&lt;/code&gt;.&lt;/p&gt;
 &lt;p&gt;The final line is the test that our function can plot a map other than Spain, in this case I chose Germany. We can basically choose any country included in the &lt;code&gt;maps&lt;/code&gt; package and now make the map with the same standards in one line of R code.&lt;/p&gt;
 &lt;h2 id=&#34;final-remarks&#34;&gt;Final remarks&lt;/h2&gt;
 &lt;p&gt;Here I am somehow showing one of the methods I use to create functions: I basically write first the code of what I want to achieve and once it does exactly what I want, I wrap it in a function, replacing the arguments that the user will need to modify later. Then I think what could go wrong and create the corresponding warnings an errors. It is a good practice to do that not only for the user to know better how to use the function, but also for yourself, it proves very useful when we need to debug code. Another good practice in R functions is the call to the libraries inside the function using &lt;code&gt;require()&lt;/code&gt;. Even if you are writing many functions that use the same libraries, is good to repeat it on each function to make it self contained and again, help yourself in the debugging process. Not long ago I started collaborating in a project where there was no call to the libraries per function, but rather only at the top level when the main action of the program was called. This made almost impossible for me to test and debug code so, the first activity I did as a new member of the team was to spend 2 full working days adding &lt;code&gt;require()&lt;/code&gt; where necessary.&lt;/p&gt;
-&lt;p&gt;&lt;img class=&#34;img-zoomable&#34; src=&#34;https://blog-rwd-test.onrender.com/post/2022/map_any_region_with_ggplot2_part_I/maps_CompareCode.png&#34; alt=&#34;Code of the function explained&#34; /&gt;
+&lt;p&gt;&lt;img class=&#34;img-zoomable&#34; src=&#34;https://blog.rwhitedwarf.com/post/2022/map_any_region_with_ggplot2_part_I/maps_CompareCode.png&#34; alt=&#34;Code of the function explained&#34; /&gt;
 &lt;/p&gt;
 &lt;p&gt;I hope you get some fun mapping different countries. Because different countries have different sizes and shapes, one way to improve the visuals related to this is by adjusting the ratio, for example, my own map of Germany looks out of shape, but it improves considerably if instead of 1.3 we give a ratio of 1.4, check the documentation to learn more about it.&lt;/p&gt;
 &lt;p&gt;Once that we have the basic map, we could add the cities were we want to add data values. Unfortunately, for cities there are many limitations, specially for countries where no special packages has been created to be mapped, and even there, most packages of particular countries don&amp;rsquo;t contain all the cities, especially minor ones. Thus, in our second part I will show how I tackled this problem doing some web scrapping to open street maps.&lt;/p&gt;
@@ -146,10 +146,10 @@ map_country(&amp;quot;Germany&amp;quot;, c(-2, 22), c(47, 55))
     
     <item>
       <title>Minitutorial: make_logical any string</title>
-      <link>https://blog-rwd-test.onrender.com/post/minitut_makebool/</link>
+      <link>https://blog.rwhitedwarf.com/post/minitut_makebool/</link>
       <pubDate>Sun, 18 Sep 2022 00:00:00 +0000</pubDate>
       
-      <guid>https://blog-rwd-test.onrender.com/post/minitut_makebool/</guid>
+      <guid>https://blog.rwhitedwarf.com/post/minitut_makebool/</guid>
       <description>&lt;h2 id=&#34;welcome-to-r-minitutorials-of-r-white-dwarf&#34;&gt;Welcome to R minitutorials of R White Dwarf&lt;/h2&gt;
 &lt;p&gt;Since the beginning of this year I&amp;rsquo;ve been forced to abandon completely the blog for countless and rather abstract personal reasons that include personal health, family matters and changes in my daily activities including volunteer work as well as main job. As part of the last, I finally got hired for a position as R developer, which brings great joy to me.&lt;/p&gt;
 &lt;p&gt;Thus, I&amp;rsquo;ve been using R more lately in all kinds of forms, including review and debug of small or simple code pieces that can result in practical quick hints for other R users, especially beginners or people with not much experience using R.&lt;/p&gt;
@@ -174,39 +174,39 @@ map_country(&amp;quot;Germany&amp;quot;, c(-2, 22), c(47, 55))
     
     <item>
       <title>My first shiny app</title>
-      <link>https://blog-rwd-test.onrender.com/post/first_shiny_app/</link>
+      <link>https://blog.rwhitedwarf.com/post/first_shiny_app/</link>
       <pubDate>Mon, 20 Dec 2021 00:00:00 +0000</pubDate>
       
-      <guid>https://blog-rwd-test.onrender.com/post/first_shiny_app/</guid>
+      <guid>https://blog.rwhitedwarf.com/post/first_shiny_app/</guid>
       <description>&lt;p&gt;I am happy and excited as I have just deployed my first shiny app on the web. You can find it running at &lt;a href=&#34;http://shiny.rwhitedwarf.com&#34; target=&#34;_blank&#34;&gt;shiny.rwhitedwarf.com&lt;/a&gt; (NOTE: I don&amp;rsquo;t have ssl certificate so, your browser might tell you that is not secure, but you can trust me that there&amp;rsquo;s no risk). I have created a few shiny apps in the past but I never deployed one, especially in an owned domain.&lt;/p&gt;
 &lt;p&gt;The app can create a map of all cities listed in a table for a given country. The idea is to simulate a table with a list of organizations, franchises, shops, etc. However, columns for name of organization or ID are missing in order to ensure data protection. In this way the user only needs to provide to the table name of the city, country, region (optional) and year of opening. The app creates the map, placing bigger dots in cities with more organizations. The year is interactive.&lt;/p&gt;
 &lt;p&gt;&lt;br&gt;
-&lt;img class=&#34;img-zoomable&#34; src=&#34;https://blog-rwd-test.onrender.com/post/2021/first_shiny_app/03-italy.png&#34; alt=&#34;Map of Italy&#34; /&gt;
+&lt;img class=&#34;img-zoomable&#34; src=&#34;https://blog.rwhitedwarf.com/post/2021/first_shiny_app/03-italy.png&#34; alt=&#34;Map of Italy&#34; /&gt;
 
-&lt;img class=&#34;img-zoomable&#34; src=&#34;https://blog-rwd-test.onrender.com/post/2021/first_shiny_app/04-log.png&#34; alt=&#34;Log&#34; /&gt;
+&lt;img class=&#34;img-zoomable&#34; src=&#34;https://blog.rwhitedwarf.com/post/2021/first_shiny_app/04-log.png&#34; alt=&#34;Log&#34; /&gt;
 &lt;/p&gt;
 &lt;p&gt;&lt;br&gt;
 The app uses the package &lt;a href=&#34;https://github.com/duncantl/RJSONIO&#34; target=&#34;_blank&#34;&gt;RJSONIO&lt;/a&gt; to do a simple web scrapping on &lt;a href=&#34;https://www.openstreetmap.org/&#34; target=&#34;_blank&#34;&gt;Open Street Maps&lt;/a&gt; using its API &lt;a href=&#34;https://nominatim.org/&#34; target=&#34;_blank&#34;&gt;Nominatim&lt;/a&gt; to obtain the coordinates (latitude and longitude), in this way any city that can be found in open street maps can be pointed in the map. The data is then sorted and cleaned with some basic R functions and some &lt;a href=&#34;https://www.tidyverse.org/&#34; target=&#34;_blank&#34;&gt;Tidyverse&lt;/a&gt; and finally the map is made with &lt;a href=&#34;https://ggplot2.tidyverse.org/&#34; target=&#34;_blank&#34;&gt;ggplot2&lt;/a&gt; and &lt;a href=&#34;https://cran.r-project.org/web/packages/maps/index.html&#34; target=&#34;_blank&#34;&gt;maps&lt;/a&gt;. The front end is created of course with &lt;a href=&#34;https://shiny.rstudio.com/&#34; target=&#34;_blank&#34;&gt;shiny&lt;/a&gt; and &lt;a href=&#34;https://www.w3schools.com/css/&#34; target=&#34;_blank&#34;&gt;css&lt;/a&gt; but I have to mention also the use of &lt;a href=&#34;https://jrowen.github.io/rhandsontable/&#34; target=&#34;_blank&#34;&gt;rhandsontable&lt;/a&gt;, a wonderful package that allows the user to interact with the tables and therefore, the data. The app was very easily deployed in &lt;a href=&#34;https://www.heroku.com/&#34; target=&#34;_blank&#34;&gt;heroku&lt;/a&gt; thanks to the wonderful work of Chris Stefano who did all the hard work of creating a &lt;a href=&#34;https://github.com/virtualstaticvoid/heroku-buildpack-r&#34; target=&#34;_blank&#34;&gt;buildpack&lt;/a&gt; for applications written in R. The buildpack recognizes shiny and plumber apps. For shiny, it builds based on the &lt;code&gt;run.R&lt;/code&gt; file and installs all the packages listed in &lt;code&gt;init.R&lt;/code&gt;, making the deployment in heroku extremely easy.&lt;/p&gt;
 &lt;p&gt;The app is still in a raw state but already functional. The plan is to improve both, the functionality and the view in the following days. If you are interested in the source code to get inspiration or create your own, you can find it on github under the MIT license: &lt;a href=&#34;https://github.com/teotenn/dynamic_maps_shiny&#34; target=&#34;_blank&#34;&gt;teotenn/dynamic_maps_shiny&lt;/a&gt;.&lt;/p&gt;
 &lt;p&gt;If you want to learn how to make a similar shiny app, stay connected for a 3-4 part tutorial to get full details step by step.&lt;/p&gt;
 &lt;p&gt;&lt;br&gt;
-&lt;img class=&#34;img-zoomable&#34; src=&#34;https://blog-rwd-test.onrender.com/post/2021/first_shiny_app/01-empty-app.png&#34; alt=&#34;Empty app&#34; /&gt;
+&lt;img class=&#34;img-zoomable&#34; src=&#34;https://blog.rwhitedwarf.com/post/2021/first_shiny_app/01-empty-app.png&#34; alt=&#34;Empty app&#34; /&gt;
 &lt;/p&gt;
 </description>
     </item>
     
     <item>
       <title>R function to fill in merged cells</title>
-      <link>https://blog-rwd-test.onrender.com/post/fill_merged_cells/</link>
+      <link>https://blog.rwhitedwarf.com/post/fill_merged_cells/</link>
       <pubDate>Sun, 05 Dec 2021 00:00:00 +0000</pubDate>
       
-      <guid>https://blog-rwd-test.onrender.com/post/fill_merged_cells/</guid>
+      <guid>https://blog.rwhitedwarf.com/post/fill_merged_cells/</guid>
       <description>&lt;p&gt;This post is part of our series on &lt;a href=&#34;https://blog.rwhitedwarf.com/tags/r-functions&#34; target=&#34;_blank&#34;&gt;functions in R&lt;/a&gt;. You can see our &lt;a href=&#34;https://blog.rwhitedwarf.com/post/2021/functions/&#34; target=&#34;_blank&#34;&gt;previous post&lt;/a&gt; if you want to understand the basics but it is not strictly necessary. Here we will go into detail about for loops and if statements in R, two key elements of any function. We are going to define a process, map it in a step-by-step approach and wrape it in a function that can repeat it automatically. Even if you have a very basic understanding of R you should be able to follow this tutorial without problem.&lt;/p&gt;
-&lt;p&gt;Our outcome will be an R function that by calling it, is able to fill in empty rows generated from imported sheets (like excel) when it contains merged cells. If you are only &lt;strong&gt;interested in the function itself&lt;/strong&gt; you can go to the end of the post and find it in the section &lt;a href=&#34;https://blog-rwd-test.onrender.com/post/fill_merged_cells/#final&#34;&gt;Final remarks&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;Our outcome will be an R function that by calling it, is able to fill in empty rows generated from imported sheets (like excel) when it contains merged cells. If you are only &lt;strong&gt;interested in the function itself&lt;/strong&gt; you can go to the end of the post and find it in the section &lt;a href=&#34;https://blog.rwhitedwarf.com/post/fill_merged_cells/#final&#34;&gt;Final remarks&lt;/a&gt;.&lt;/p&gt;
 &lt;h3 id=&#34;description-of-the-problem&#34;&gt;Description of the problem&lt;/h3&gt;
 &lt;p&gt;In our &lt;a href=&#34;https://blog.rwhitedwarf.com/post/2021/functions/&#34; target=&#34;_blank&#34;&gt;previous post&lt;/a&gt; we saw the basics for creating functions, yet using silly examples with not much of practical usage. Now we are ready to write a function that can have more practical use.&lt;/p&gt;
 &lt;p&gt;There are different ways how to import data sheets (i.e. from excel) to R. Regardless of its limitations, these sheets are widely used in data analysis today. If you are used to do data analysis with a different software you should be familiar with the complications of sorting your data imported from sheets when there are merged cells in the rows. Usually, a file like below&lt;/p&gt;
-&lt;p&gt;&lt;img class=&#34;img-zoomable&#34; src=&#34;https://blog-rwd-test.onrender.com/post/2021/fill_merged_cells/Screenshot_excel_merged_cells.png&#34; alt=&#34;Excel with merged cells&#34; /&gt;
+&lt;p&gt;&lt;img class=&#34;img-zoomable&#34; src=&#34;https://blog.rwhitedwarf.com/post/2021/fill_merged_cells/Screenshot_excel_merged_cells.png&#34; alt=&#34;Excel with merged cells&#34; /&gt;
 &lt;/p&gt;
 &lt;p&gt;results in a table like this&lt;/p&gt;
 &lt;table&gt;
@@ -754,10 +754,10 @@ is.character(a)
     
     <item>
       <title>Functions in R</title>
-      <link>https://blog-rwd-test.onrender.com/post/functions/</link>
+      <link>https://blog.rwhitedwarf.com/post/functions/</link>
       <pubDate>Tue, 30 Nov 2021 00:00:00 +0000</pubDate>
       
-      <guid>https://blog-rwd-test.onrender.com/post/functions/</guid>
+      <guid>https://blog.rwhitedwarf.com/post/functions/</guid>
       <description>&lt;h2 id=&#34;background&#34;&gt;Background&lt;/h2&gt;
 &lt;p&gt;This is the first post of R with White Dwarf and I decided to start this blog with a basic tutorial. There is already a lot of information in the web about getting started with R. With a simple google search you can easily find info on how to install it, how to use R studio or other text editor, learn about the basic functions and concepts, what is a vector, a data frame, how to use them, etc. Therefore, I decided to start with a topic that is also basic and fundamental but slightly less common: Functions.&lt;/p&gt;
 &lt;p&gt;How to create a function is not an easy topic for non-programmers and non-mathematicians, Myself I have a background in Ecology and when I started using R for my statistical analysis I was avoiding using functions at all cost, while most of my colleagues where avoiding R fully. Many people has the idea that, as a programming language, R is really difficult to use and it should be left for the initiated ones. They end up using user interface based-software which assumes not only that the user doesn&amp;rsquo;t know about programming, but also about statistics. It makes things easy for the user but also limits the possibilities of what you can do with your data and as a result, it also what you can learn.&lt;/p&gt;
@@ -929,10 +929,10 @@ sum_other_vector()
     
     <item>
       <title>About</title>
-      <link>https://blog-rwd-test.onrender.com/about/</link>
+      <link>https://blog.rwhitedwarf.com/about/</link>
       <pubDate>Sun, 28 Nov 2021 00:00:00 +0000</pubDate>
       
-      <guid>https://blog-rwd-test.onrender.com/about/</guid>
+      <guid>https://blog.rwhitedwarf.com/about/</guid>
       <description>&lt;p&gt;&lt;strong&gt;White Dwarf&lt;/strong&gt; is committed with promoting the use of R and make it available for more people.&lt;/p&gt;
 &lt;h2 id=&#34;m-teodoro-tenango&#34;&gt;M. Teodoro Tenango&lt;/h2&gt;
 &lt;p&gt;I am a statistician and data analyst with background in Ecology and Environmental Sciences. When I am not working for money or for idealism (volunteer) I am programming and learning new stuff. Programming has been my biggest hobby for long time and in the last years I decided to make it my career. I am supporter of free software and big fan and user of R.&lt;/p&gt;

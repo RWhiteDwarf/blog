@@ -1,5 +1,7 @@
-baseURL = "https://blog-rwd-test.onrender.com"
-# baseURL = "https://blog.rwhitedwarf.com"
+# TEST
+# baseURL = "https://blog-rwd-test.onrender.com"
+# PROD
+baseURL = "https://blog.rwhitedwarf.com"
 title = "R with White Dwarf"
 
 theme = "fuji"

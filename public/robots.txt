@@ -1,3 +1,3 @@
 User-agent: *
 
-Sitemap: https://blog-rwd-test.onrender.com/sitemap.xml
+Sitemap: https://blog.rwhitedwarf.com/sitemap.xml
