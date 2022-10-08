@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+<meta name="HandheldFriendly" content="True" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<meta name="generator" content="Hugo 0.104.2" />
+
+
+<link rel="shortcut icon" href="https://cdn.jsdelivr.net/gh/dsrkafuu/dsr-cdn-main@1/images/favicons/dsrca.ico" />
+
+
+
+<title>Map any region in the world with R - Part I: The basic map - R with White Dwarf</title>
+
+
+<meta name="author" content="M. Teodoro Tenango" />
+
+
+<meta name="description" content="Part I of making maps of any region in the world with R using ggplot2 and maps packages" />
+
+
+<meta name="keywords" content="R maps, ggplot2, Code Visuals, R functions" />
+
+
+<meta property="og:title" content="Map any region in the world with R - Part I: The basic map" />
+<meta name="twitter:title" content="Map any region in the world with R - Part I: The basic map" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://blog-rwd-test.onrender.com/post/map_any_region_with_ggplot2_part_i/" /><meta property="og:description" content="Part I of making maps of any region in the world with R using ggplot2 and maps packages" />
+<meta name="twitter:description" content="Part I of making maps of any region in the world with R using ggplot2 and maps packages" /><meta property="og:image" content="https://blog-rwd-test.onrender.com/post/2022/map_any_region_with_ggplot2_part_I/maps_DrawingMap.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://blog-rwd-test.onrender.com/post/2022/map_any_region_with_ggplot2_part_I/maps_DrawingMap.png" /><meta property="article:published_time" content="2022-10-04T00:00:00+00:00" /><meta property="article:modified_time" content="2022-10-04T00:00:00+00:00" />
+
+
+<style>
+    @media (prefers-color-scheme: dark) {
+        body[data-theme='auto'] img {
+            filter: brightness(60%);
+        }
+    }
+
+    body[data-theme='dark'] img {
+        filter: brightness(60%);
+    }
+</style>
+
+
+
+
+<link rel="stylesheet" href="https://blog-rwd-test.onrender.com/assets/css/fuji.min.css" />
+
+
+
+
+
+<script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+        dataLayer.push(arguments);
+    }
+    gtag('js', new Date());
+    gtag('config', 'G-4BW3ZE1JE8');
+</script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-4BW3ZE1JE8"></script>
+
+
+
+
+
+</head>
+
+<body
+  data-theme="auto"
+  data-theme-auto='true'
+  >
+    <script data-cfasync="false">
+  
+  var fujiThemeData = localStorage.getItem('fuji_data-theme');
+  
+  if (!fujiThemeData) {
+    localStorage.setItem('fuji_data-theme', 'auto');
+  } else {
+    
+    if (fujiThemeData !== 'auto') {
+      document.body.setAttribute('data-theme', fujiThemeData === 'dark' ? 'dark' : 'light');
+    }
+  }
+</script>
+
+    <header>
+    <div class="container-lg clearfix">
+        <div class="col-12 header">
+            <a class="title-main" href="https://blog-rwd-test.onrender.com">R with White Dwarf</a>
+            
+            <span class="title-sub">A distant star coding in R</span>
+            
+        </div>
+    </div>
+</header>
+
+    <main>
+        <div class="container-lg clearfix">
+            
+            <div class="col-12 col-md-9 float-left content">
+                
+<article>
+    
+    <h2 class="post-item post-title">
+        <a href="https://blog-rwd-test.onrender.com/post/map_any_region_with_ggplot2_part_i/">Map any region in the world with R - Part I: The basic map</a>
+    </h2>
+    <div class="post-item post-meta">
+        <span><i class="iconfont icon-today-sharp"></i>&nbsp;2022-10-04</span>
+
+<span><i class="iconfont icon-file-tray-sharp"></i>&nbsp;2536 words</span>
+
+<span><i class="iconfont icon-pricetags-sharp"></i>&nbsp;<a href="/tags/r-maps">R maps</a>&nbsp;<a href="/tags/ggplot2">ggplot2</a>&nbsp;<a href="/tags/code-visuals">Code Visuals</a>&nbsp;<a href="/tags/r-functions">R functions</a>&nbsp;</span>
+
+    </div>
+    
+    <div class="post-content markdown-body">
+        <h2 id="scope-of-this-post">Scope of this post</h2>
+<p>When you prepare for a job interview one of the questions they always tell you to prepare is &ldquo;What are you most proud of?&rdquo;. Personally I&rsquo;ve never been asked that question in a job interview but it kept me thinking. Some years ago I developed the R code for the creation of maps of infrastructure for a Political Sciences project, and I can say that this is one of the projects I&rsquo;m most proud of. However, it is also true what they say to developers, that <strong>nobody cares about how you did it</strong>. The final user only cared about what was done, while the research team about what are the possibilities. Due to the confidentiality agreement of the client, I also cannot share a git repository.</p>
+<p>The project taught me so much in terms of technical skills that I have decided to <strong>share the how</strong> in case it can help somebody else. It is also my way to contribute to the R community since I myself learned R and programming thanks to the kind people who post their experience on the web (and to the ones who have the patience to answer questions in StackOverflow too).</p>
+<p>We created maps of data showing changes over a span of time for different countries and pointing at all kinds of cities. That basically means that we need to <strong>map any region of the world with R</strong>. Today there are all kinds of packages and techniques to do that. I will share the strategy I used with <a href="https://cran.r-project.org/web/packages/ggplot2/index.html" target="_blank">ggplot2</a> and <a href="https://cran.r-project.org/web/packages/maps/index.html" target="_blank">maps</a> packages, using support of <a href="https://www.openstreetmap.org/" target="_blank">Open Street Map</a> to obtain the coordinates of cities and finally making it interactive with <a href="https://shiny.rstudio.com/" target="_blank">shiny</a>. The project is quite long for a single post, so my idea is to split it into a few smaller blog posts. The list can still change but I thought something like this:</p>
+<pre><code>1. The basic map
+2. Web scrapping with nominatim open street maps
+3. Maps with cities
+4. Dynamic maps in time
+5. Making a single script for fast replication
+6. Making the code interactive in a shiny app
+</code></pre>
+<p>I hope you all enjoy it. Feel free to leave any kind of comment and/or question at the end.</p>
+<h2 id="background">Background</h2>
+<p>When I joined the team all what they knew is that the wanted to make maps of infrastructure (say hospitals, cafes, churches, public offices, etc., but the project can basically be applied to anything countable per city). The maps should change in time according to the data (usually growth) and it should be possible to apply it for any country and thus, any kind of city of that particular country can be listed there. This last point represents a challenge because to make a map you need the coordinates of a particular point to map, but instead we got address in the best scenario, or only city name in the worst. Therefore, we left it to the level of city and decided to work with that.</p>
+<p>Most R packages to make maps have granularity up to some regions and major cities per country, and we are talking about countries where somebody has develop some R package for that. However, even the best packages would miss some cities or some countries some times. We needed to standardize everything without the need of changing packages according to the particular country. Before I joined, the team attempted to use Google Maps and excel, but the amount of data became messy and the flexibility to edit the maps was pretty limited. And they didn&rsquo;t want to add copyright issues to the list of limitations. Therefore I proposed to use R. Of course, nobody in the team had ever heard about it before. We could had used any other tool, I learned that both, Python and JavaScript have some decent possibilities. But R is what I have been using for the last 10 years and is what I wanted to use for this project. And so I started to code.</p>
+<p>The first couple of maps were custom code for a particular country with decent styles. But it quickly evolved into a set of functions and arguments to maintain the same standards for each map. The support of graphic designers also took the styles to a very professional level. After a few months we had very professional maps that could be done in couple of hrs (or less) with a couple of lines of code. Each map per each country with the desired span of years to be printed.</p>
+<p>I don&rsquo;t think I will share every single detail of it, but at least I want to show how we went from the basic map to its dynamic form mapping over a span of time, and how I wrapped it all together in a couple of functions to make it quickly replicable for any given data set. Let me know what you think.</p>
+<h2 id="how-to-create-a-map-of-any-country-in-r-using-the-library-maps">How to create a map of any country in R using the library maps</h2>
+<p>The first step is to create the basic map of a country. Here is the function to achieve exactly that.</p>
+<pre><code class="language-r">library(maps)
+library(ggplot2)
+
+## make a df with only the country to overlap
+map_data_es &lt;- map_data('world')[map_data('world')$region == &quot;Spain&quot;,]
+
+## The map (maps + ggplot2 )
+ggplot() +
+    ## First layer: worldwide map
+    geom_polygon(data = map_data(&quot;world&quot;),
+                 aes(x=long, y=lat, group = group),
+                 color = '#9c9c9c', fill = '#f3f3f3') +
+    ## Second layer: Country map
+    geom_polygon(data = map_data_es,
+                 aes(x=long, y=lat, group = group),
+                 color = 'red', fill = 'pink') +
+    coord_map() +
+    coord_fixed(1.3,
+                xlim = c(-13.5, 8.5),
+                ylim = c(34, 45)) +
+    ggtitle(&quot;A map of Spain&quot;) +
+    theme(panel.background =element_rect(fill = 'blue'))
+</code></pre>
+<p><img class="img-zoomable" src="/post/2022/map_any_region_with_ggplot2_part_I/basic_map-1.png" alt="plot of chunk basic_map" />
+</p>
+<p>We are using the library <a href="https://cran.r-project.org/web/packages/maps/index.html" target="_blank">maps</a> in combination with <a href="https://cran.r-project.org/web/packages/ggplot2/index.html" target="_blank">ggplot2</a>. The <code>maps</code> package contains coordinates system for a map of the whole world separated by countries (although political borders might not be fully up to date). It can as well do the maps, but for that we are making use of <code>ggplot2</code> support here.</p>
+<p>We start by extracting the data relevant to the country we want to map, in this case <code>Spain</code>. It is of course important to pass the name of the country in the same way that it is written in <code>map_data('world')$region</code>. You can use the function <code>unique()</code> to find the exact names of all the countries included in the packages (<code>unique(map_data('world')$region)</code> gives 252 countries at the moment of writing this post).</p>
+<p>Once we have the data for the one particular country, we could simply map it directly using <code>geom_polygon()</code> however, that would map Spain surrounded by empty space around it. To place it in the context of its neighborhood, we apply two layers of <code>geom_polygon()</code>: first one with the map of the whole world and secondly the map of the country only.</p>
+<p><img class="img-zoomable" src="/post/2022/map_any_region_with_ggplot2_part_I/maps_BasicMap.png" alt="The basic map code explained" />
+</p>
+<p>Then we need to tell <code>ggplot</code> to use a coordinates system to create maps instead of just polygons. For that we use <a href="https://ggplot2.tidyverse.org/reference/coord_map.html" target="_blank">coord_map()</a> function and then we pass the details of the map ratio, and limits in X and Y to the function <code>coord_fixed()</code>.</p>
+<p>Up to here we can have our map. <code>ggplot</code> is basically plotting what we are specifying inside the coordinates system, everything around it (the oceans) will be just empty and it will be filled in by the default grids and gray colors of <code>ggplot()</code>. Thus, we need to define the color of the Oceans as the background color for the whole plot. That&rsquo;s what the last line of code does.</p>
+<p>Of course there are a lot of improvements to do. So far I have given exaggerated colors to make obvious for the reader which piece of code controls what. In that sense you can see that you can simply pass the names of the colors, which applies the defaults, or you can be more specific and provide the html notation of the color (i.e., <code>'#9c9c9c'</code>). So, let&rsquo;s now improve the visuals and at the same time create a function to plot any country we want to.</p>
+<h2 id="function-to-create-the-basic-map-in-r">Function to create the basic map in R</h2>
+<pre><code class="language-r">map_country &lt;- function(country, x_limits = NULL, y_limits = NULL){
+    ## Verifying the arguments passed to the function
+    if(!is.character(country)) stop(&quot;Name of the country should be character&quot;)
+    if(length(country) != 1) stop(&quot;Function supports only one country per map&quot;)
+    ## Load libraries
+    require(maps)
+    require(ggplot2)
+    if(!country %in% map_data('world')$region) stop('Country name not recognized\nTo see a list of recognized countries run &lt;unique(maps::map_data(&quot;world&quot;)$region)&gt;')
+    ## If coords limits missing, print worldwide map with coordinates system to allow
+    ## User observe coords for reference
+    if(missing(x_limits) || missing(y_limits)) {
+        warning(&quot;X and/or Y limits not provided.\nPrinting worldwide map.&quot;)
+        map_country_theme &lt;- theme(panel.background = element_rect(fill = '#4e91d2'))
+    }
+    else {
+        if(length(x_limits) != 2 || length(y_limits) != 2 ||
+           !all(grepl('^-?[0-9.]+$', c(x_limits, y_limits)))){
+            stop(&quot;Limits for X and Y coords should be provided as vectors with two numeric values&quot;)
+        }
+        else {
+            ## All the received inputs are correct.
+            ## Let's define our custom theme for the final map 
+            map_country_theme &lt;- theme_bw() +
+                theme(panel.background = element_rect(fill = '#4e91d2'),
+                      legend.position = 'none',
+                      panel.grid.major = element_blank(),
+                      panel.grid.minor = element_blank(),
+                      axis.line = element_line(colour = &quot;black&quot;),
+                      axis.title.x=element_blank(),
+                      axis.text.x=element_blank(),
+                      axis.ticks.x=element_blank(),
+                      axis.title.y=element_blank(),
+                      axis.text.y=element_blank(),
+                      axis.ticks.y=element_blank())
+        }
+    }
+    ## make a df with only the country to overlap
+    map_data_country &lt;- map_data('world')[map_data('world')$region == country,]
+    ## The map (maps + ggplot2 )
+    ggplot() +
+        ## First layer: worldwide map
+        geom_polygon(data = map_data(&quot;world&quot;),
+                     aes(x=long, y=lat, group = group),
+                     color = '#9c9c9c', fill = '#f3f3f3') +
+        ## Second layer: Country map
+        geom_polygon(data = map_data_country,
+                     aes(x=long, y=lat, group = group),
+                     color = '#4d696e', fill = '#8caeb4') +
+        coord_map() +
+        coord_fixed(1.3,
+                    xlim = x_limits,
+                    ylim = y_limits) +
+        ggtitle(paste0(&quot;A map of &quot;, country)) +
+        scale_x_continuous(n.breaks = 20) +
+        scale_y_continuous(n.breaks = 20) +
+        map_country_theme
+}
+
+## Test the function with a different country
+map_country(&quot;Germany&quot;, c(-2, 22), c(47, 55))
+</code></pre>
+<p><img class="img-zoomable" src="/post/2022/map_any_region_with_ggplot2_part_I/function_map-1.png" alt="plot of chunk function_map" />
+</p>
+<p>Although the function might seem complicated at first, it is in fact the same code as we used to create the map, but instead of typing directly the name of the country or the limits for X and Y, we replace them with the arguments <code>country</code>, <code>x_limits</code> and <code>y_limits</code> respectively; in that way all the parts were we had the string <code>&quot;Spain&quot;</code> we now have the argument <code>country</code>, and so on. These are the only arguments that we need to change when we want to map a different country. You can define more arguments in case you want to have more possibilities to be editable, for example, we could define an argument <code>country_color</code> to specify the color we want for the target country. In our case we wanted to keep the same standards for all the maps due to branding reasons and thus, we rather wanted to have the exact same colors and styles for all of our maps.</p>
+<p>There are also some additions on the top before the actual code to make the maps, all the <code>if</code> and <code>else</code> statements that are simply used to validate that the information passed by the user is the info that we actually need to make the function work. If any incorrect argument is passed to the function, we stop the process and write a message of what is wrong using the function <code>stop()</code>. For the case that no limits of either X or Y are defined, I send a warning message using <code>warning()</code>. In that case the process continues but we define a <code>theme()</code> that allows the user to see the country in the context of the worldwide map, with excess of values in the X and Y axes to provide the points of reference and give an idea of where to set the limits. By the end, when we ensure that all the values are fine, we define the final theme that we actually want to apply. About that, probably I should make special mention of <code>!all(grepl('^-?[0-9.]+$', c(x_limits, y_limits))))</code>: it is used to ensure that X and Y limits are of type numeric. See the visualization of the code below together with the help of the function(s) you don&rsquo;t understand for a more detail explanation. Feel free to test the errors and warnings by providing to the function no country names or letters where there should be numbers, etc.</p>
+<p><img class="img-zoomable" src="/post/2022/map_any_region_with_ggplot2_part_I/maps_FunctionMap.png" alt="Code of the function explained" />
+</p>
+<p>The lower part of the function is exactly the same as our first map, replacing the actual values for the arguments. We also have changed the colors for more specific ones. Almost by the end of the function we have added <code>scale_x_continuous(n.breaks = 20)</code> which will add 20 marks of the X axis scale (same for Y). We want to use it to ensure that, in case the user doesn&rsquo;t have idea of which limit values to choose, it can have a good approach regarding the position of the target country. In case that both limits for X and Y are passed to the function, our other theme will mask this 20 breaks with <code>axis.text.x = element_blank()</code> and <code>axis.ticks.x = element_blank()</code>.</p>
+<p>The final line is the test that our function can plot a map other than Spain, in this case I chose Germany. We can basically choose any country included in the <code>maps</code> package and now make the map with the same standards in one line of R code.</p>
+<h2 id="final-remarks">Final remarks</h2>
+<p>Here I am somehow showing one of the methods I use to create functions: I basically write first the code of what I want to achieve and once it does exactly what I want, I wrap it in a function, replacing the arguments that the user will need to modify later. Then I think what could go wrong and create the corresponding warnings an errors. It is a good practice to do that not only for the user to know better how to use the function, but also for yourself, it proves very useful when we need to debug code. Another good practice in R functions is the call to the libraries inside the function using <code>require()</code>. Even if you are writing many functions that use the same libraries, is good to repeat it on each function to make it self contained and again, help yourself in the debugging process. Not long ago I started collaborating in a project where there was no call to the libraries per function, but rather only at the top level when the main action of the program was called. This made almost impossible for me to test and debug code so, the first activity I did as a new member of the team was to spend 2 full working days adding <code>require()</code> where necessary.</p>
+<p><img class="img-zoomable" src="/post/2022/map_any_region_with_ggplot2_part_I/maps_CompareCode.png" alt="Code of the function explained" />
+</p>
+<p>I hope you get some fun mapping different countries. Because different countries have different sizes and shapes, one way to improve the visuals related to this is by adjusting the ratio, for example, my own map of Germany looks out of shape, but it improves considerably if instead of 1.3 we give a ratio of 1.4, check the documentation to learn more about it.</p>
+<p>Once that we have the basic map, we could add the cities were we want to add data values. Unfortunately, for cities there are many limitations, specially for countries where no special packages has been created to be mapped, and even there, most packages of particular countries don&rsquo;t contain all the cities, especially minor ones. Thus, in our second part I will show how I tackled this problem doing some web scrapping to open street maps.</p>
+
+    </div>
+</article>
+
+
+
+<div class="post-comment" data-comment="utterances">
+    <span class="post-comment-notloaded">
+        <i class="iconfont icon-chatbox-ellipses-sharp"></i>&nbsp;Load comments
+    </span>
+    <script>
+        function loadComment() {
+            var commentArea = document.querySelector('.post-comment');
+            var utterancesTheme = document.body.getAttribute('data-theme');
+            if (utterancesTheme === 'auto') {
+                utterancesTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'photon-dark' :
+                    'github-light';
+            } else {
+                utterancesTheme = utterancesTheme === 'dark' ? 'photon-dark' : 'github-light';
+            }
+            var s = document.createElement('script');
+            s.src = 'https://utteranc.es/client.js';
+            s.setAttribute('repo', 'teotenn\/blog-RWD');
+            s.setAttribute('issue-term', 'github-light');
+            s.setAttribute('theme', utterancesTheme);
+            s.setAttribute('crossorigin', 'anonymous');
+            s.setAttribute('async', '');
+            document.querySelector('.post-comment').appendChild(s);
+            document.querySelector('span.post-comment-notloaded').setAttribute('style', 'display: none;');
+        }
+    </script>
+</div>
+
+
+            </div>
+            <aside class="col-12 col-md-3 float-left sidebar">
+    
+    <div class="sidebar-item sidebar-pages">
+        <h3>Pages</h3>
+        <ul>
+            
+            <li>
+                <a href="/">Home</a>
+            </li>
+            
+            <li>
+                <a href="/archives/">Archives</a>
+            </li>
+            
+            <li>
+                <a href="/about/">About</a>
+            </li>
+            
+            <li>
+                <a href="/search/">Search</a>
+            </li>
+            
+            <li>
+                <a href="/index.xml">RSS</a>
+            </li>
+            
+        </ul>
+    </div>
+    
+    <div class="sidebar-item sidebar-links">
+        <h3>Links</h3>
+        <ul>
+            
+            <li>
+                <a href="https://github.com/teotenn" target="_blank"><span>GitHub</span></a>
+            </li>
+            
+            <li>
+                <a href="https://www.r-bloggers.com/" target="_blank"><span>R Bloggers</span></a>
+            </li>
+            
+            <li>
+                <a href="https://www.r-project.org/" target="_blank"><span>The R Project</span></a>
+            </li>
+            
+            <li>
+                <a href="https://www.bioconductor.org/" target="_blank"><span>Bioconductor</span></a>
+            </li>
+            
+        </ul>
+    </div>
+    
+    <div class="sidebar-item sidebar-tags">
+        <h3>Tags</h3>
+        <div>
+            
+            <span>
+                <a href="/tags/code-visuals/">Code Visuals</a>
+            </span>
+            
+            <span>
+                <a href="/tags/ggplot2/">ggplot2</a>
+            </span>
+            
+            <span>
+                <a href="/tags/minitutorial/">minitutorial</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-basics/">R basics</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-functions/">R functions</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-maps/">R maps</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-shiny/">R shiny</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-tips/">R tips</a>
+            </span>
+            
+        </div>
+    </div>
+    <div class="sidebar-item sidebar-toc">
+        <h3>Table of Contents</h3><nav id="TableOfContents">
+  <ul>
+    <li><a href="#scope-of-this-post">Scope of this post</a></li>
+    <li><a href="#background">Background</a></li>
+    <li><a href="#how-to-create-a-map-of-any-country-in-r-using-the-library-maps">How to create a map of any country in R using the library maps</a></li>
+    <li><a href="#function-to-create-the-basic-map-in-r">Function to create the basic map in R</a></li>
+    <li><a href="#final-remarks">Final remarks</a></li>
+  </ul>
+</nav></div>
+</aside>
+
+        </div>
+        <div class="btn">
+    <div class="btn-menu" id="btn-menu">
+        <i class="iconfont icon-grid-sharp"></i>
+    </div>
+    <div class="btn-toggle-mode">
+        <i class="iconfont icon-contrast-sharp"></i>
+    </div>
+    <div class="btn-scroll-top">
+        <i class="iconfont icon-chevron-up-circle-sharp"></i>
+    </div>
+</div>
+<aside class="sidebar-mobile" style="display: none;">
+  <div class="sidebar-wrapper">
+    
+    <div class="sidebar-item sidebar-pages">
+        <h3>Pages</h3>
+        <ul>
+            
+            <li>
+                <a href="/">Home</a>
+            </li>
+            
+            <li>
+                <a href="/archives/">Archives</a>
+            </li>
+            
+            <li>
+                <a href="/about/">About</a>
+            </li>
+            
+            <li>
+                <a href="/search/">Search</a>
+            </li>
+            
+            <li>
+                <a href="/index.xml">RSS</a>
+            </li>
+            
+        </ul>
+    </div>
+    
+    <div class="sidebar-item sidebar-links">
+        <h3>Links</h3>
+        <ul>
+            
+            <li>
+                <a href="https://github.com/teotenn" target="_blank"><span>GitHub</span></a>
+            </li>
+            
+            <li>
+                <a href="https://www.r-bloggers.com/" target="_blank"><span>R Bloggers</span></a>
+            </li>
+            
+            <li>
+                <a href="https://www.r-project.org/" target="_blank"><span>The R Project</span></a>
+            </li>
+            
+            <li>
+                <a href="https://www.bioconductor.org/" target="_blank"><span>Bioconductor</span></a>
+            </li>
+            
+        </ul>
+    </div>
+    
+    <div class="sidebar-item sidebar-tags">
+        <h3>Tags</h3>
+        <div>
+            
+            <span>
+                <a href="/tags/code-visuals/">Code Visuals</a>
+            </span>
+            
+            <span>
+                <a href="/tags/ggplot2/">ggplot2</a>
+            </span>
+            
+            <span>
+                <a href="/tags/minitutorial/">minitutorial</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-basics/">R basics</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-functions/">R functions</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-maps/">R maps</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-shiny/">R shiny</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-tips/">R tips</a>
+            </span>
+            
+        </div>
+    </div>
+    
+    
+    
+    <div class="sidebar-item sidebar-toc">
+        <h3>Table of Contents</h3>
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#scope-of-this-post">Scope of this post</a></li>
+    <li><a href="#background">Background</a></li>
+    <li><a href="#how-to-create-a-map-of-any-country-in-r-using-the-library-maps">How to create a map of any country in R using the library maps</a></li>
+    <li><a href="#function-to-create-the-basic-map-in-r">Function to create the basic map in R</a></li>
+    <li><a href="#final-remarks">Final remarks</a></li>
+  </ul>
+</nav>
+    </div>
+    
+    
+  </div>
+</aside>
+    </main>
+
+    <footer>
+    <div class="container-lg clearfix">
+        <div class="col-12 footer">
+            
+            <span>&copy; 2021-2022
+                <a href="https://blog-rwd-test.onrender.com">R White Dwarf</a>
+                
+                | Powered by <a href="https://github.com/dsrkafuu/hugo-theme-fuji/"
+                   target="_blank">Fuji-v2</a> &amp; <a href="https://gohugo.io/"
+                                                    target="_blank">Hugo</a> 
+            </span>
+        </div>
+    </div>
+</footer>
+
+    
+<script defer src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.6/dist/medium-zoom.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/lazysizes@5.3.2/lazysizes.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/prismjs@1.27.0/components/prism-core.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/prismjs@1.27.0/plugins/autoloader/prism-autoloader.min.js"></script>
+
+
+
+<script defer src="/assets/js/fuji.min.js"></script>
+
+
+
+</body>
+
+</html>

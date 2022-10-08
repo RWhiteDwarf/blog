@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+<meta name="HandheldFriendly" content="True" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<meta name="generator" content="Hugo 0.104.2" />
+
+
+<link rel="shortcut icon" href="https://cdn.jsdelivr.net/gh/dsrkafuu/dsr-cdn-main@1/images/favicons/dsrca.ico" />
+
+
+
+<title>Functions in R - R with White Dwarf</title>
+
+
+<meta name="author" content="M. Teodoro Tenango" />
+
+
+<meta name="description" content="Basic description of functions in R" />
+
+
+<meta name="keywords" content="R tips, R basics, R functions" />
+
+
+<meta property="og:title" content="Functions in R" />
+<meta name="twitter:title" content="Functions in R" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://blog-rwd-test.onrender.com/post/functions/" /><meta property="og:description" content="Basic description of functions in R" />
+<meta name="twitter:description" content="Basic description of functions in R" /><meta property="og:image" content="https://blog-rwd-test.onrender.com/img/Screenshot_functions_in_R_fragment.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://blog-rwd-test.onrender.com/img/Screenshot_functions_in_R_fragment.png" /><meta property="article:published_time" content="2021-11-30T00:00:00+00:00" /><meta property="article:modified_time" content="2021-11-30T00:00:00+00:00" />
+
+
+<style>
+    @media (prefers-color-scheme: dark) {
+        body[data-theme='auto'] img {
+            filter: brightness(60%);
+        }
+    }
+
+    body[data-theme='dark'] img {
+        filter: brightness(60%);
+    }
+</style>
+
+
+
+
+<link rel="stylesheet" href="https://blog-rwd-test.onrender.com/assets/css/fuji.min.css" />
+
+
+
+
+
+<script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+        dataLayer.push(arguments);
+    }
+    gtag('js', new Date());
+    gtag('config', 'G-4BW3ZE1JE8');
+</script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-4BW3ZE1JE8"></script>
+
+
+
+
+
+</head>
+
+<body
+  data-theme="auto"
+  data-theme-auto='true'
+  >
+    <script data-cfasync="false">
+  
+  var fujiThemeData = localStorage.getItem('fuji_data-theme');
+  
+  if (!fujiThemeData) {
+    localStorage.setItem('fuji_data-theme', 'auto');
+  } else {
+    
+    if (fujiThemeData !== 'auto') {
+      document.body.setAttribute('data-theme', fujiThemeData === 'dark' ? 'dark' : 'light');
+    }
+  }
+</script>
+
+    <header>
+    <div class="container-lg clearfix">
+        <div class="col-12 header">
+            <a class="title-main" href="https://blog-rwd-test.onrender.com">R with White Dwarf</a>
+            
+            <span class="title-sub">A distant star coding in R</span>
+            
+        </div>
+    </div>
+</header>
+
+    <main>
+        <div class="container-lg clearfix">
+            
+            <div class="col-12 col-md-9 float-left content">
+                
+<article>
+    
+    <h2 class="post-item post-title">
+        <a href="https://blog-rwd-test.onrender.com/post/functions/">Functions in R</a>
+    </h2>
+    <div class="post-item post-meta">
+        <span><i class="iconfont icon-today-sharp"></i>&nbsp;2021-11-30</span>
+
+<span><i class="iconfont icon-file-tray-sharp"></i>&nbsp;2911 words</span>
+
+<span><i class="iconfont icon-pricetags-sharp"></i>&nbsp;<a href="/tags/r-tips">R tips</a>&nbsp;<a href="/tags/r-basics">R basics</a>&nbsp;<a href="/tags/r-functions">R functions</a>&nbsp;</span>
+
+    </div>
+    
+    <div class="post-content markdown-body">
+        <h2 id="background">Background</h2>
+<p>This is the first post of R with White Dwarf and I decided to start this blog with a basic tutorial. There is already a lot of information in the web about getting started with R. With a simple google search you can easily find info on how to install it, how to use R studio or other text editor, learn about the basic functions and concepts, what is a vector, a data frame, how to use them, etc. Therefore, I decided to start with a topic that is also basic and fundamental but slightly less common: Functions.</p>
+<p>How to create a function is not an easy topic for non-programmers and non-mathematicians, Myself I have a background in Ecology and when I started using R for my statistical analysis I was avoiding using functions at all cost, while most of my colleagues where avoiding R fully. Many people has the idea that, as a programming language, R is really difficult to use and it should be left for the initiated ones. They end up using user interface based-software which assumes not only that the user doesn&rsquo;t know about programming, but also about statistics. It makes things easy for the user but also limits the possibilities of what you can do with your data and as a result, it also what you can learn.</p>
+<p>In today&rsquo;s world, it is important to to have at least a basic understanding of programming. Learning how to write simple functions in R will widen your perception about R and programming by showing you that it is actually easy. I am writing this post especially for all the people who are not programmers, not statisticians and are thinking to learn R. By the end of the post I hope that you can agree with me that writing functions in R is not difficult.</p>
+<h2 id="how-to-write-functions-in-r">How to write functions in R</h2>
+<p>Basically, when we use R we are using functions all the time. When you want to obtain the summation of values, or the mean or standard deviation, you can simply call a function to do that</p>
+<pre><code class="language-r">values &lt;- c(2, 3, 4, 5)
+sum(values)
+</code></pre>
+<pre><code>&gt; [1] 14
+</code></pre>
+<p>As you should already know from any R tutorial, the example above is storing the values in the vector <code>value</code> and then calling the function <code>sum</code> to obtain the summation of the values. One way to create our own version of sum would be:</p>
+<pre><code class="language-r">my_sum &lt;- function(user.values){
+    cumulative.sum &lt;- user.values[1]
+    for(i in 2:length(user.values)){
+        cumulative.sum &lt;- cumulative.sum + user.values[i]
+    }
+    return(cumulative.sum)
+}
+</code></pre>
+<p>Now we can call our brand new function and obtain the same results</p>
+<pre><code class="language-r">my_sum(values)
+</code></pre>
+<pre><code>&gt; [1] 14
+</code></pre>
+<p>Let&rsquo;s go piece by piece. Line no. <em>1</em> is simply placing the function that we are creating into the object <code>my_sum</code> which means that later, we can call our function using that same argument: <code>my_func(some values)</code>. This is similar to creating a vector or data frame or variables, as you know, if you enter <code>x &lt;- 12</code> then each time you type <code>x</code> in the console it will return the value <code>12</code>, and so it explains line <em>2</em>, when we define <code>cumulative.sum &lt;- user.values[1]</code> this places the first value of the vector <code>user.values</code> into the variable <code>cumulative.sum</code>. It means that now we can start by adding the second value to the <code>cumulative.sum</code>, then we move forward to the third value, and so on until the last element in the vector. This process is defined in the for loop: we move value by value from the second element to the last one: <code>for(i in 2:length(user.values))</code>, each time we stored the cumulative value in our variable <code>cumulative.sum</code> until we reach the last value. I will not go deep into the for loop, but I understand that it can also be somehow complicated for a beginner, if it is your case I invite you to leave us a comment (you will need a github account for that) and I might cover it in a future issue.</p>
+<p>Once we are outside the for loop we have collected the final value in <code>cumulative.sum</code> so, we make sure that our function is returning exactly that by using <code>return(cumulative.sum)</code>. If you have seen some other tutorials you might have noticed that the <code>return()</code> is not always added at the end of the function. And indeed, it is not strictly necessary (more on that later), but as a beginner it is good to start with good habits and defining what exactly you want your function to return is a good habit for your future functions.</p>
+<h3 id="simple-error-handling">Simple error handling</h3>
+<p>When you work with functions you need to tell the user what exactly went wrong in order to help him fix it. Even if you are writing functions only for yourself, after a while has passed you might forget all the logic behind your function and thus, obtaining errors that you don&rsquo;t understand where they come from. A basic knowledge of error handling can help us prevent that.</p>
+<p>What I&rsquo;m explaining here is a very basic and simple management of errors but yet, practical and useful, it can save us wasted time and headaches. It is something I wish I had learned when I started writing my first functions. Due to my ignorance it used to take me a lot of time just to figure out what was wrong with my own code.</p>
+<p>Let&rsquo;s go back to our function. As you probably already noticed, it starts summing up from the second value in the vector, therefore if we provide only one value instead of a vector of values the result will be <code>NA</code></p>
+<pre><code class="language-r">my_sum(12)
+</code></pre>
+<pre><code>&gt; [1] NA
+</code></pre>
+<p>quite silly compared to the professional function from base-R which returns the value itself</p>
+<pre><code class="language-r">sum(12)
+</code></pre>
+<pre><code>&gt; [1] 12
+</code></pre>
+<p>We could try to imitate the base-R <code>sum()</code> and continue in that direction, but instead we are going to have a little fun with simple examples of errors. Let&rsquo;s say that instead of returning the value itself, we want our new function to send an error when a single value is entered. For that, we simply need to check if the value size is bigger than 1, and if not, send the error. We can achieve that with an if statement:</p>
+<pre><code class="language-r">my_sum &lt;- function(user.values){
+    if(length(user.values) == 1){
+        stop('We cannot sum individual values here!')
+    }
+    cumulative.sum &lt;- user.values[1]
+    for(i in 2:length(user.values)){
+        cumulative.sum &lt;- cumulative.sum + user.values[i]
+    }
+    return(cumulative.sum)
+}
+</code></pre>
+<p>As you can see in line <em>2</em>, we will enter inside the if-part-of-code if the length of the values is one (we cannot have length smaller than 1, if we run the function without a value, R will say that the argument is missing), calling <code>stop()</code> which basically stops the function at that point, and exits printing whatever message you define inside it. Go ahead and try it.</p>
+<pre><code class="language-r">my_sum(12)
+</code></pre>
+<pre><code>&gt; Error in my_sum(12): We cannot sum individual values here!
+</code></pre>
+<p>I am sure that with this basic info you can already move forward and improve it even more to send an error message when an object other than a vector is entered. Try to do it yourself and feel free to leave me a comment below if you get any trouble. Some hints: You can use the function <code>is.vector()</code> to test if the value entered by the user is a vector or not; and you can place one if statement inside the other, first to check if it is a vector, and secondly to check its size.</p>
+<h3 id="function-arguments">Function arguments</h3>
+<p>You might be wondering what about the argument used as variable <code>user.values</code>, where does it come from? how is it defined? how does R knows how to use it? Keeping it simple, all the arguments that you define inside the parenthesis of a function will be searched by R when you execute the function and will be used accordingly. You can easily see how we were using the variable <code>user.values</code> to tell the rest of the program what to do with it. The function has no idea if the user will enter a single value, a vector or a data frame, this is the reason why we created the errors with <code>stop()</code>. As the creator of the function, it is your role to decide what kind of object you need, how to use it and how to ensure that the user knows what is wrong if an unexpected object is entered.</p>
+<p>You can define as many arguments as you wish for your function, for example</p>
+<pre><code class="language-r">sum_four_nums &lt;- function(num1, num2, num3, num4){
+    return(sum(num1, num2, num3, num4))
+}
+
+sum_four_nums(2, 4, 6, 8)
+</code></pre>
+<pre><code>&gt; [1] 20
+</code></pre>
+<p>Here we are telling R to take the four values entered by the user and sum them up. R will check the values in the order they are entered, so in our example it will associate the value 2 with our first variable <code>num1</code>, then the value 4 with the second variable <code>num2</code> and so on. If we miss one of the values, R will tell us that one of the variables is missing</p>
+<pre><code class="language-r">sum_four_nums(2, 4, 6)
+</code></pre>
+<pre><code>&gt; Error in sum_four_nums(2, 4, 6): argument &quot;num4&quot; is missing, with no default
+</code></pre>
+<p>If we want to allow the user to provide only 3 values, we can initialize one of them as null</p>
+<pre><code class="language-r">sum_four_nums &lt;- function(num1, num2, num3, num4 = NULL){
+    return(sum(num1, num2, num3, num4))
+}
+
+sum_four_nums(2, 4, 6)
+</code></pre>
+<pre><code>&gt; [1] 12
+</code></pre>
+<p>This means that we can actually initialize our variables with whatever we want to put on it, for example we can tell our function to always add 10 if only 3 values are entered by the user</p>
+<pre><code class="language-r">sum_four_nums &lt;- function(num1, num2, num3, num4 = 10){
+    return(sum(num1, num2, num3, num4))
+}
+
+sum_four_nums(2, 4, 6)
+</code></pre>
+<pre><code>&gt; [1] 22
+</code></pre>
+<p>Also notice that we are telling R to take strictly four values, and not a vector of size 4. If we do this, R will associate the vector to the variable <code>num1</code> as one object and will complain that the other arguments are missing</p>
+<pre><code class="language-r">sum_four_nums(c(2, 4, 6, 8))
+</code></pre>
+<pre><code>&gt; Error in sum_four_nums(c(2, 4, 6, 8)): argument &quot;num2&quot; is missing, with no default
+</code></pre>
+<p>As I mentioned already, R is not aware of what type of object the user should enter, therefore we could as well enter only a vector, or vector and numbers, and R will simply apply the <code>sum()</code> function to whatever is inside it, because this is how we defined our function</p>
+<pre><code class="language-r">sum_four_nums(c(2, 4, 6, 8), 20, 50)
+</code></pre>
+<pre><code>&gt; [1] 100
+</code></pre>
+<p>Here R is summing first all values contained in the vector, then 20 and 50, and finally the predefined 10. As you can see, the proper handling of errors is important when you want to ensure that you function does what is intended to do, or to help you or the user identify what exactly when wrong.</p>
+<h3 id="functions-without-arguments">Functions without arguments</h3>
+<p>You can also define functions without arguments, meaning without direct input from the user. For example, let&rsquo;s write the classical Hello World!, a function that, when called, prints the sentence itself</p>
+<pre><code class="language-r">hello_world_function &lt;- function(){
+    print('Hello World!')
+}
+
+hello_world_function()
+</code></pre>
+<pre><code>&gt; [1] &quot;Hello World!&quot;
+</code></pre>
+<p>As you can see, in line <em>1</em> when we define the function there is nothing inside the parenthesis and thus, when we call the function we don&rsquo;t need to include anything inside it. This example might look silly, but sometimes we want the functions for their side effects, rather than for the values they return.</p>
+<p>When we write a function, R will search for the variable inside the function</p>
+<pre><code class="language-r">sum_my_vector &lt;- function(){
+    my.vector &lt;- c(10, 20, 30)
+    return(sum(my.vector))
+}
+
+sum_my_vector()
+</code></pre>
+<pre><code>&gt; [1] 60
+</code></pre>
+<pre><code class="language-r">ls()
+</code></pre>
+<pre><code>&gt;  [1] &quot;base.dir&quot;             &quot;base.url&quot;             &quot;changing.wd&quot;         
+&gt;  [4] &quot;dirs&quot;                 &quot;fig.path&quot;             &quot;func.params&quot;         
+&gt;  [7] &quot;hello_world_function&quot; &quot;my_sum&quot;               &quot;rmd.file&quot;            
+&gt; [10] &quot;rmd.path&quot;             &quot;sum_four_nums&quot;        &quot;sum_my_vector&quot;       
+&gt; [13] &quot;values&quot;               &quot;work.in&quot;
+</code></pre>
+<p>As you can see, the vector called <code>my.vector</code> is created inside the function and thus, when we call it, the function returns the sum of the vector. However, when we list all the objects in memory using <code>ls()</code>, the object <code>my.vector</code> doesn&rsquo;t exists. All the objects that we define inside the function live only there. If we now create an object called <code>my.vector</code> and call again the function, the result will not change</p>
+<pre><code class="language-r">my.vector &lt;- c(1, 2, 3)
+sum_my_vector()
+</code></pre>
+<pre><code>&gt; [1] 60
+</code></pre>
+<pre><code class="language-r">ls()
+</code></pre>
+<pre><code>&gt;  [1] &quot;base.dir&quot;             &quot;base.url&quot;             &quot;changing.wd&quot;         
+&gt;  [4] &quot;dirs&quot;                 &quot;fig.path&quot;             &quot;func.params&quot;         
+&gt;  [7] &quot;hello_world_function&quot; &quot;my_sum&quot;               &quot;my.vector&quot;           
+&gt; [10] &quot;rmd.file&quot;             &quot;rmd.path&quot;             &quot;sum_four_nums&quot;       
+&gt; [13] &quot;sum_my_vector&quot;        &quot;values&quot;               &quot;work.in&quot;
+</code></pre>
+<p>The reason is that R functions search for objects inside the function. Therefore, you could give the same names to objects inside and outside the functions without affecting the outcome, however this is not recommended because it might cause confusion in the future. Another reason why is not recommended is that R searches for the object inside the function first, but when it cannot find it, it searches for the object outside of the function, in your working environment (it means, what we can see listed by <code>ls()</code>), for example</p>
+<pre><code class="language-r">sum_other_vector &lt;- function(){
+    return(sum(my.vector))
+}
+
+sum_other_vector()
+</code></pre>
+<pre><code>&gt; [1] 6
+</code></pre>
+<p>here I have created a similar function but this time I did not create the object <code>my.vector</code> inside it, therefore R is using the one that I loaded into the working environment as <code>my.vector &lt;- c(1, 2, 3)</code>.</p>
+<p>We could consider the objects created inside the function as local variables because they have local effect only, and the ones defined outside of the function as global variables. Other programming languages make a clear difference of this two and handle each of them differently, often by initiating the global variables with special characters, or creating them using special functions, in order to avoid mistakes and confusion. In R you should be very careful on how you name your objects and where you use them when you are creating functions.</p>
+<p>On the other hand it has the advantage that it is very easy to create functions that use the same structure of data. For example, I could create a data frame called <code>elements</code> that will always contain the columns called <code>Pb</code>, <code>As</code>, <code>Cd</code> and <code>Zn</code> and then just make functions that take no arguments to do all my statistics at once by calling the same table and the same columns inside them.</p>
+<h2 id="why-to-write-functions">Why to write functions</h2>
+<p>As mentioned above, I started writing functions when I did my Ph.D. I was working with contaminated soils and basically for all my projects I had to analyze data of concentration of elements. This means that for each project, I had to repeat the same process for each element and then, for the next project do the same for the new data and for different or more elements. Luckily my first project was only focused on 4 different elements. I did a script for the statistics and visualizations of the first element, organize the workflow, decided what would be variable and what constant, and created two functions, one for the statistics and one for the visualizations, based on the output of the first one, and then just applied the functions to the remaining 3 elements.</p>
+<p>When I got the first results of my second experiment it was related to more than 10 different elements, and that only for soils, I knew that later I&rsquo;d have to do the same statistics for different parts of the plants. Therefore I decided to create a package. I simply googled how to put all my functions together in a package, installed it and then, for each of my next data results I could simply call my own functions directly in my R environment from any folder and do all the statistical analysis way faster than I can even measure.</p>
+<p>Learning how to write functions in R is not only intended for processes or calculations that don&rsquo;t have a particular function yet (today basically everything is cover in one or another package). It can save a lot of time in any kind of work you are doing. It can reduce the time you need for your data analysis and the amount of code written in your scripts. As a result it also makes your code more organized and more understandable. It can also help you to understand better how R works, as you need to get more familiar with the type of objects used, the structures of the functions, the application of conditionals and iterative processes, etc.</p>
+<p>Functions are a key element of most (probably all) programming languages and thus, learning how to create your own will also develop your programming skills and teach you how to automatize tasks. There is a general informal rule for programming that is called the <strong>DRY</strong> principle, which means <strong>D</strong>on&rsquo;t <strong>R</strong>epeat <strong>Y</strong>ourself. In other words, if there is a process in your code/program/script that has to be repeated at least once, it is worth it to write a function and then call it twice with the different arguments that will be variable rather than coping the whole code from the first case and pasting it where the second case needs it and only changing the arguments that are variable in the second case. The next post will be exactly about that.</p>
+<h2 id="final-remarks">Final remarks</h2>
+<p>I hope that this tutorial has reach its goal of showing how easy and useful is to write your own functions in R. I agree that all the functions created here had minimum practical application. It is usually the case when getting started. But right in our next post we are going to write our first complete function with practical application: A function that fills empty rows generated from merged cells imported from excel.</p>
+<p>Stay in touch!</p>
+
+    </div>
+</article>
+
+
+
+<div class="post-comment" data-comment="utterances">
+    <span class="post-comment-notloaded">
+        <i class="iconfont icon-chatbox-ellipses-sharp"></i>&nbsp;Load comments
+    </span>
+    <script>
+        function loadComment() {
+            var commentArea = document.querySelector('.post-comment');
+            var utterancesTheme = document.body.getAttribute('data-theme');
+            if (utterancesTheme === 'auto') {
+                utterancesTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'photon-dark' :
+                    'github-light';
+            } else {
+                utterancesTheme = utterancesTheme === 'dark' ? 'photon-dark' : 'github-light';
+            }
+            var s = document.createElement('script');
+            s.src = 'https://utteranc.es/client.js';
+            s.setAttribute('repo', 'teotenn\/blog-RWD');
+            s.setAttribute('issue-term', 'github-light');
+            s.setAttribute('theme', utterancesTheme);
+            s.setAttribute('crossorigin', 'anonymous');
+            s.setAttribute('async', '');
+            document.querySelector('.post-comment').appendChild(s);
+            document.querySelector('span.post-comment-notloaded').setAttribute('style', 'display: none;');
+        }
+    </script>
+</div>
+
+
+            </div>
+            <aside class="col-12 col-md-3 float-left sidebar">
+    
+    <div class="sidebar-item sidebar-pages">
+        <h3>Pages</h3>
+        <ul>
+            
+            <li>
+                <a href="/">Home</a>
+            </li>
+            
+            <li>
+                <a href="/archives/">Archives</a>
+            </li>
+            
+            <li>
+                <a href="/about/">About</a>
+            </li>
+            
+            <li>
+                <a href="/search/">Search</a>
+            </li>
+            
+            <li>
+                <a href="/index.xml">RSS</a>
+            </li>
+            
+        </ul>
+    </div>
+    
+    <div class="sidebar-item sidebar-links">
+        <h3>Links</h3>
+        <ul>
+            
+            <li>
+                <a href="https://github.com/teotenn" target="_blank"><span>GitHub</span></a>
+            </li>
+            
+            <li>
+                <a href="https://www.r-bloggers.com/" target="_blank"><span>R Bloggers</span></a>
+            </li>
+            
+            <li>
+                <a href="https://www.r-project.org/" target="_blank"><span>The R Project</span></a>
+            </li>
+            
+            <li>
+                <a href="https://www.bioconductor.org/" target="_blank"><span>Bioconductor</span></a>
+            </li>
+            
+        </ul>
+    </div>
+    
+    <div class="sidebar-item sidebar-tags">
+        <h3>Tags</h3>
+        <div>
+            
+            <span>
+                <a href="/tags/code-visuals/">Code Visuals</a>
+            </span>
+            
+            <span>
+                <a href="/tags/ggplot2/">ggplot2</a>
+            </span>
+            
+            <span>
+                <a href="/tags/minitutorial/">minitutorial</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-basics/">R basics</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-functions/">R functions</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-maps/">R maps</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-shiny/">R shiny</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-tips/">R tips</a>
+            </span>
+            
+        </div>
+    </div>
+    <div class="sidebar-item sidebar-toc">
+        <h3>Table of Contents</h3><nav id="TableOfContents">
+  <ul>
+    <li><a href="#background">Background</a></li>
+    <li><a href="#how-to-write-functions-in-r">How to write functions in R</a>
+      <ul>
+        <li><a href="#simple-error-handling">Simple error handling</a></li>
+        <li><a href="#function-arguments">Function arguments</a></li>
+        <li><a href="#functions-without-arguments">Functions without arguments</a></li>
+      </ul>
+    </li>
+    <li><a href="#why-to-write-functions">Why to write functions</a></li>
+    <li><a href="#final-remarks">Final remarks</a></li>
+  </ul>
+</nav></div>
+</aside>
+
+        </div>
+        <div class="btn">
+    <div class="btn-menu" id="btn-menu">
+        <i class="iconfont icon-grid-sharp"></i>
+    </div>
+    <div class="btn-toggle-mode">
+        <i class="iconfont icon-contrast-sharp"></i>
+    </div>
+    <div class="btn-scroll-top">
+        <i class="iconfont icon-chevron-up-circle-sharp"></i>
+    </div>
+</div>
+<aside class="sidebar-mobile" style="display: none;">
+  <div class="sidebar-wrapper">
+    
+    <div class="sidebar-item sidebar-pages">
+        <h3>Pages</h3>
+        <ul>
+            
+            <li>
+                <a href="/">Home</a>
+            </li>
+            
+            <li>
+                <a href="/archives/">Archives</a>
+            </li>
+            
+            <li>
+                <a href="/about/">About</a>
+            </li>
+            
+            <li>
+                <a href="/search/">Search</a>
+            </li>
+            
+            <li>
+                <a href="/index.xml">RSS</a>
+            </li>
+            
+        </ul>
+    </div>
+    
+    <div class="sidebar-item sidebar-links">
+        <h3>Links</h3>
+        <ul>
+            
+            <li>
+                <a href="https://github.com/teotenn" target="_blank"><span>GitHub</span></a>
+            </li>
+            
+            <li>
+                <a href="https://www.r-bloggers.com/" target="_blank"><span>R Bloggers</span></a>
+            </li>
+            
+            <li>
+                <a href="https://www.r-project.org/" target="_blank"><span>The R Project</span></a>
+            </li>
+            
+            <li>
+                <a href="https://www.bioconductor.org/" target="_blank"><span>Bioconductor</span></a>
+            </li>
+            
+        </ul>
+    </div>
+    
+    <div class="sidebar-item sidebar-tags">
+        <h3>Tags</h3>
+        <div>
+            
+            <span>
+                <a href="/tags/code-visuals/">Code Visuals</a>
+            </span>
+            
+            <span>
+                <a href="/tags/ggplot2/">ggplot2</a>
+            </span>
+            
+            <span>
+                <a href="/tags/minitutorial/">minitutorial</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-basics/">R basics</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-functions/">R functions</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-maps/">R maps</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-shiny/">R shiny</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-tips/">R tips</a>
+            </span>
+            
+        </div>
+    </div>
+    
+    
+    
+    <div class="sidebar-item sidebar-toc">
+        <h3>Table of Contents</h3>
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#background">Background</a></li>
+    <li><a href="#how-to-write-functions-in-r">How to write functions in R</a>
+      <ul>
+        <li><a href="#simple-error-handling">Simple error handling</a></li>
+        <li><a href="#function-arguments">Function arguments</a></li>
+        <li><a href="#functions-without-arguments">Functions without arguments</a></li>
+      </ul>
+    </li>
+    <li><a href="#why-to-write-functions">Why to write functions</a></li>
+    <li><a href="#final-remarks">Final remarks</a></li>
+  </ul>
+</nav>
+    </div>
+    
+    
+  </div>
+</aside>
+    </main>
+
+    <footer>
+    <div class="container-lg clearfix">
+        <div class="col-12 footer">
+            
+            <span>&copy; 2021-2022
+                <a href="https://blog-rwd-test.onrender.com">R White Dwarf</a>
+                
+                | Powered by <a href="https://github.com/dsrkafuu/hugo-theme-fuji/"
+                   target="_blank">Fuji-v2</a> &amp; <a href="https://gohugo.io/"
+                                                    target="_blank">Hugo</a> 
+            </span>
+        </div>
+    </div>
+</footer>
+
+    
+<script defer src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.6/dist/medium-zoom.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/lazysizes@5.3.2/lazysizes.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/prismjs@1.27.0/components/prism-core.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/prismjs@1.27.0/plugins/autoloader/prism-autoloader.min.js"></script>
+
+
+
+<script defer src="/assets/js/fuji.min.js"></script>
+
+
+
+</body>
+
+</html>

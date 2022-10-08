@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+<meta name="HandheldFriendly" content="True" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<meta name="generator" content="Hugo 0.104.2" />
+
+
+<link rel="shortcut icon" href="https://cdn.jsdelivr.net/gh/dsrkafuu/dsr-cdn-main@1/images/favicons/dsrca.ico" />
+
+
+
+<title>R function to fill in merged cells - R with White Dwarf</title>
+
+
+<meta name="author" content="M. Teodoro Tenango" />
+
+
+<meta name="description" content="For loops and if statements to create a useful function" />
+
+
+<meta name="keywords" content="R tips, R basics, R functions" />
+
+
+<meta property="og:title" content="R function to fill in merged cells" />
+<meta name="twitter:title" content="R function to fill in merged cells" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://blog-rwd-test.onrender.com/post/fill_merged_cells/" /><meta property="og:description" content="For loops and if statements to create a useful function" />
+<meta name="twitter:description" content="For loops and if statements to create a useful function" /><meta property="og:image" content="https://blog-rwd-test.onrender.com/post/2021/fill_merged_cells/Screenshot_fill_merged_cells.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://blog-rwd-test.onrender.com/post/2021/fill_merged_cells/Screenshot_fill_merged_cells.png" /><meta property="article:published_time" content="2021-12-05T00:00:00+00:00" /><meta property="article:modified_time" content="2021-12-05T00:00:00+00:00" />
+
+
+<style>
+    @media (prefers-color-scheme: dark) {
+        body[data-theme='auto'] img {
+            filter: brightness(60%);
+        }
+    }
+
+    body[data-theme='dark'] img {
+        filter: brightness(60%);
+    }
+</style>
+
+
+
+
+<link rel="stylesheet" href="https://blog-rwd-test.onrender.com/assets/css/fuji.min.css" />
+
+
+
+
+
+<script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+        dataLayer.push(arguments);
+    }
+    gtag('js', new Date());
+    gtag('config', 'G-4BW3ZE1JE8');
+</script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-4BW3ZE1JE8"></script>
+
+
+
+
+
+</head>
+
+<body
+  data-theme="auto"
+  data-theme-auto='true'
+  >
+    <script data-cfasync="false">
+  
+  var fujiThemeData = localStorage.getItem('fuji_data-theme');
+  
+  if (!fujiThemeData) {
+    localStorage.setItem('fuji_data-theme', 'auto');
+  } else {
+    
+    if (fujiThemeData !== 'auto') {
+      document.body.setAttribute('data-theme', fujiThemeData === 'dark' ? 'dark' : 'light');
+    }
+  }
+</script>
+
+    <header>
+    <div class="container-lg clearfix">
+        <div class="col-12 header">
+            <a class="title-main" href="https://blog-rwd-test.onrender.com">R with White Dwarf</a>
+            
+            <span class="title-sub">A distant star coding in R</span>
+            
+        </div>
+    </div>
+</header>
+
+    <main>
+        <div class="container-lg clearfix">
+            
+            <div class="col-12 col-md-9 float-left content">
+                
+<article>
+    
+    <h2 class="post-item post-title">
+        <a href="https://blog-rwd-test.onrender.com/post/fill_merged_cells/">R function to fill in merged cells</a>
+    </h2>
+    <div class="post-item post-meta">
+        <span><i class="iconfont icon-today-sharp"></i>&nbsp;2021-12-05</span>
+
+<span><i class="iconfont icon-file-tray-sharp"></i>&nbsp;4415 words</span>
+
+<span><i class="iconfont icon-pricetags-sharp"></i>&nbsp;<a href="/tags/r-tips">R tips</a>&nbsp;<a href="/tags/r-basics">R basics</a>&nbsp;<a href="/tags/r-functions">R functions</a>&nbsp;</span>
+
+    </div>
+    
+    <div class="post-content markdown-body">
+        <p>This post is part of our series on <a href="https://blog.rwhitedwarf.com/tags/r-functions" target="_blank">functions in R</a>. You can see our <a href="https://blog.rwhitedwarf.com/post/2021/functions/" target="_blank">previous post</a> if you want to understand the basics but it is not strictly necessary. Here we will go into detail about for loops and if statements in R, two key elements of any function. We are going to define a process, map it in a step-by-step approach and wrape it in a function that can repeat it automatically. Even if you have a very basic understanding of R you should be able to follow this tutorial without problem.</p>
+<p>Our outcome will be an R function that by calling it, is able to fill in empty rows generated from imported sheets (like excel) when it contains merged cells. If you are only <strong>interested in the function itself</strong> you can go to the end of the post and find it in the section <a href="https://blog-rwd-test.onrender.com/post/fill_merged_cells/#final">Final remarks</a>.</p>
+<h3 id="description-of-the-problem">Description of the problem</h3>
+<p>In our <a href="https://blog.rwhitedwarf.com/post/2021/functions/" target="_blank">previous post</a> we saw the basics for creating functions, yet using silly examples with not much of practical usage. Now we are ready to write a function that can have more practical use.</p>
+<p>There are different ways how to import data sheets (i.e. from excel) to R. Regardless of its limitations, these sheets are widely used in data analysis today. If you are used to do data analysis with a different software you should be familiar with the complications of sorting your data imported from sheets when there are merged cells in the rows. Usually, a file like below</p>
+<p><img class="img-zoomable" src="/post/2021/fill_merged_cells/Screenshot_excel_merged_cells.png" alt="Excel with merged cells" />
+</p>
+<p>results in a table like this</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Specie</th>
+<th style="text-align:left">Dup</th>
+<th style="text-align:right">Treat</th>
+<th style="text-align:right">Rep</th>
+<th style="text-align:right">Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">A. cap</td>
+<td style="text-align:left">A</td>
+<td style="text-align:right">0</td>
+<td style="text-align:right">1</td>
+<td style="text-align:right">34</td>
+</tr>
+<tr>
+<td style="text-align:left"></td>
+<td style="text-align:left">AA</td>
+<td style="text-align:right">NA</td>
+<td style="text-align:right">NA</td>
+<td style="text-align:right">26</td>
+</tr>
+<tr>
+<td style="text-align:left"></td>
+<td style="text-align:left">A</td>
+<td style="text-align:right">25</td>
+<td style="text-align:right">NA</td>
+<td style="text-align:right">18</td>
+</tr>
+<tr>
+<td style="text-align:left"></td>
+<td style="text-align:left">AA</td>
+<td style="text-align:right">NA</td>
+<td style="text-align:right">NA</td>
+<td style="text-align:right">24</td>
+</tr>
+<tr>
+<td style="text-align:left"></td>
+<td style="text-align:left">A</td>
+<td style="text-align:right">50</td>
+<td style="text-align:right">NA</td>
+<td style="text-align:right">11</td>
+</tr>
+<tr>
+<td style="text-align:left"></td>
+<td style="text-align:left">AA</td>
+<td style="text-align:right">NA</td>
+<td style="text-align:right">NA</td>
+<td style="text-align:right">12</td>
+</tr>
+<tr>
+<td style="text-align:left"></td>
+<td style="text-align:left">A</td>
+<td style="text-align:right">100</td>
+<td style="text-align:right">NA</td>
+<td style="text-align:right">15</td>
+</tr>
+<tr>
+<td style="text-align:left"></td>
+<td style="text-align:left">AA</td>
+<td style="text-align:right">NA</td>
+<td style="text-align:right">NA</td>
+<td style="text-align:right">11</td>
+</tr>
+<tr>
+<td style="text-align:left">F. rub</td>
+<td style="text-align:left">F</td>
+<td style="text-align:right">0</td>
+<td style="text-align:right">NA</td>
+<td style="text-align:right">25</td>
+</tr>
+<tr>
+<td style="text-align:left"></td>
+<td style="text-align:left">FF</td>
+<td style="text-align:right">NA</td>
+<td style="text-align:right">NA</td>
+<td style="text-align:right">26</td>
+</tr>
+<tr>
+<td style="text-align:left"></td>
+<td style="text-align:left">F</td>
+<td style="text-align:right">25</td>
+<td style="text-align:right">NA</td>
+<td style="text-align:right">17</td>
+</tr>
+<tr>
+<td style="text-align:left"></td>
+<td style="text-align:left">FF</td>
+<td style="text-align:right">NA</td>
+<td style="text-align:right">NA</td>
+<td style="text-align:right">11</td>
+</tr>
+<tr>
+<td style="text-align:left"></td>
+<td style="text-align:left">F</td>
+<td style="text-align:right">50</td>
+<td style="text-align:right">NA</td>
+<td style="text-align:right">13</td>
+</tr>
+<tr>
+<td style="text-align:left"></td>
+<td style="text-align:left">FF</td>
+<td style="text-align:right">NA</td>
+<td style="text-align:right">NA</td>
+<td style="text-align:right">11</td>
+</tr>
+<tr>
+<td style="text-align:left"></td>
+<td style="text-align:left">F</td>
+<td style="text-align:right">100</td>
+<td style="text-align:right">NA</td>
+<td style="text-align:right">11</td>
+</tr>
+</tbody>
+</table>
+<p>when the amount of rows to be filled in is small, there&rsquo;s no big problem in copying and pasting the values. But as the DRY principle says, if we know how to create functions there is no need to do that, we can make a function that will do it automatically. This will specially pay off when you will have a table with hundreds or even thousands of cells merged. You might be thinking that nobody will merge cells for thousands of rows every 3 or 4 lines, but believe me, I have seen such things.</p>
+<p>Keep in mind that this is mainly a tutorial for writting functions in R. It does not intend to deal with all the issues that migh appear with the importing of data such as merged columns or a mixture of both, among others. But if you have problems with that or are interested in the topic, leave us a comment and we can cover some points in a future post.</p>
+<h2 id="r-function-to-fill-in-merged-cells-from-excel">R function to fill in merged cells from excel</h2>
+<p>With today&rsquo;s technology there are many ways to solve this problem. However sometimes the easiest way to import data to R as data analyst or statistician is by simply taking the working sheet containing the data and exporting it in csv format.</p>
+<p>Regardless of the source (excel, libre office, google sheets, etc.) this method produces empty rows by default. When some rows have been merged because they belong to the same group or factor, the csv file will capture the value only on the first row and leave the rest empty until the next factor appear, where it again, will capture the value on the first row and leave the rest empty until the next factor appears. The process continues like this, iteratively until the end of the table. We basically need to copy the value stored on that first row and paste it to the empty rows, until a new factor appears.</p>
+<p>Let&rsquo;s map the process in terms of R steps to complete our task.</p>
+<h3 id="maping-the-process">Maping the process</h3>
+<p>We will start by calling the table. If you have an excel, libre office calc or google sheet file with merged rows as our example above feel free to use it. Otherwise you can quickly simulate one similar to the image above. Start by exporting the sheet of interest to csv, then we call it using <code>read.csv</code></p>
+<pre><code class="language-r">my.table &lt;- read.csv('../../../static/post/2021/fill_merged_cells/Hydroponic_results.csv')
+head(my.table, n = 10)
+</code></pre>
+<pre><code>&gt;    Specie Dup Treat Rep Value
+&gt; 1  A. cap   A     0   1    34
+&gt; 2          AA    NA  NA    26
+&gt; 3           A    25  NA    18
+&gt; 4          AA    NA  NA    24
+&gt; 5           A    50  NA    11
+&gt; 6          AA    NA  NA    12
+&gt; 7           A   100  NA    15
+&gt; 8          AA    NA  NA    11
+&gt; 9  F. rub   F     0  NA    25
+&gt; 10         FF    NA  NA    26
+</code></pre>
+<p>Here we can see the first 10 rows containing <code>NA</code> for numeric columns and empty string for character columns. Now let&rsquo;s go step by step to fill empty values.</p>
+<pre><code>1. Identify and capture the factor
+</code></pre>
+<p>Let&rsquo;s start with the first column <code>Specie</code> (an experiment was run for 3 different species of plants). We want to check if the first row contains a categorical value</p>
+<pre><code class="language-r">no.row &lt;- 1
+my.table[['Specie']][no.row]
+</code></pre>
+<pre><code>&gt; [1] &quot;A. cap&quot;
+</code></pre>
+<pre><code>2. Copy it into the empty rows
+</code></pre>
+<p>Now we want to paste the value stored in <code>category</code> to all empty rows. So we first need to check if the next row is empty</p>
+<pre><code class="language-r">no.row &lt;- 2
+my.table[['Specie']][no.row]
+</code></pre>
+<pre><code>&gt; [1] &quot;&quot;
+</code></pre>
+<p>And when it is, we place the value contained in the previous row to our current row 2</p>
+<pre><code class="language-r">my.table[['Specie']][no.row] &lt;- my.table[['Specie']][no.row-1]
+head(my.table)
+</code></pre>
+<pre><code>&gt;   Specie Dup Treat Rep Value
+&gt; 1 A. cap   A     0   1    34
+&gt; 2 A. cap  AA    NA  NA    26
+&gt; 3          A    25  NA    18
+&gt; 4         AA    NA  NA    24
+&gt; 5          A    50  NA    11
+&gt; 6         AA    NA  NA    12
+</code></pre>
+<p>Now row 2 contains it&rsquo;s categorical value, and when we move to row 3 (which is also empty), it can be copied from the previous row 2</p>
+<pre><code class="language-r">no.row &lt;- 3
+my.table[['Specie']][no.row]
+</code></pre>
+<pre><code>&gt; [1] &quot;&quot;
+</code></pre>
+<pre><code class="language-r">my.table[['Specie']][no.row] &lt;- my.table[['Specie']][no.row-1]
+head(my.table)
+</code></pre>
+<pre><code>&gt;   Specie Dup Treat Rep Value
+&gt; 1 A. cap   A     0   1    34
+&gt; 2 A. cap  AA    NA  NA    26
+&gt; 3 A. cap   A    25  NA    18
+&gt; 4         AA    NA  NA    24
+&gt; 5          A    50  NA    11
+&gt; 6         AA    NA  NA    12
+</code></pre>
+<pre><code>3. When a new factor appears, repeat the process
+</code></pre>
+<p>We can repeat this process until a new factor appears, as it is the case of row 9. Therefore we should not paste anything in row 9, and continue the process on row 10 which is also empty</p>
+<pre><code class="language-r">no.row &lt;- 10
+my.table[['Specie']][no.row]
+</code></pre>
+<pre><code>&gt; [1] &quot;&quot;
+</code></pre>
+<pre><code class="language-r">my.table[['Specie']][no.row] &lt;- my.table[['Specie']][no.row-1]
+head(my.table, n = 10)
+</code></pre>
+<pre><code>&gt;    Specie Dup Treat Rep Value
+&gt; 1  A. cap   A     0   1    34
+&gt; 2  A. cap  AA    NA  NA    26
+&gt; 3  A. cap   A    25  NA    18
+&gt; 4          AA    NA  NA    24
+&gt; 5           A    50  NA    11
+&gt; 6          AA    NA  NA    12
+&gt; 7           A   100  NA    15
+&gt; 8          AA    NA  NA    11
+&gt; 9  F. rub   F     0  NA    25
+&gt; 10 F. rub  FF    NA  NA    26
+</code></pre>
+<pre><code>4. Repeat steps 1-3 for each column that needs it
+</code></pre>
+<p>The process moves forward in this way until the whole column <code>Specie</code> is filled in. Then we can move to the next column with empty values, in my case this is <code>Treat</code>.</p>
+<p>If you look at the process, we basically need to write an R command for step 2. The rest is just a process of verification and repetition. We are going to automate verification using the function <code>if()</code> and the repetition using <code>for()</code>.</p>
+<h3 id="writing-my-first-for-loop">Writing my first for loop</h3>
+<p>Since the present post is directed to R beginners with not much experience with programming or coding I will avoid all the technicalities of for loops and if statements and instead dive deeply into them by applying our logic above. Then we are going to use them and explain carefully to obtain a pragmatic understanding of the process.</p>
+<p>We will start with a for loop to go row by row in one column and check what is inside, as described in the step <em>1</em> of our process. Let&rsquo;s start with only 20 rows as an example</p>
+<pre><code class="language-r">for(no.row in 1:20){
+    print(my.table[[&quot;Specie&quot;]][no.row])
+}
+</code></pre>
+<pre><code>&gt; [1] &quot;A. cap&quot;
+&gt; [1] &quot;A. cap&quot;
+&gt; [1] &quot;A. cap&quot;
+&gt; [1] &quot;&quot;
+&gt; [1] &quot;&quot;
+&gt; [1] &quot;&quot;
+&gt; [1] &quot;&quot;
+&gt; [1] &quot;&quot;
+&gt; [1] &quot;F. rub&quot;
+&gt; [1] &quot;F. rub&quot;
+&gt; [1] &quot;&quot;
+&gt; [1] &quot;&quot;
+&gt; [1] &quot;&quot;
+&gt; [1] &quot;&quot;
+&gt; [1] &quot;&quot;
+&gt; [1] &quot;&quot;
+&gt; [1] &quot;A. ela&quot;
+&gt; [1] &quot;&quot;
+&gt; [1] &quot;&quot;
+&gt; [1] &quot;&quot;
+</code></pre>
+<p>The function <code>for()</code>uses the first argument that you define (here <code>no.row</code>) and goes one by one <code>in</code> the series specified as the second argument, in this case a series of numbers from 1 to 20 (<code>1:20</code>). It means that in the first iteration <code>no.row</code> will take the value <code>1</code>, in the second iteration the value <code>2</code>, and so on, until the last iteration where it will have the value <code>20</code>. Each iteration will execute the code inside the curly braces <code>{}</code> which, in this case, is simply to print the value of each row.</p>
+<p>Because the first argument in <code>for()</code> is defined by us, we could as well use any arbitrary argument we want, for example</p>
+<pre><code class="language-r">for(n in 1:20){
+    print(my.table[[&quot;Specie&quot;]][n])
+}
+</code></pre>
+<p>would do exactly the same but now <code>n</code> is taking the values from 1 to 20.</p>
+<p>We can then initialize a function that takes the name of our data frame, the name of the column, and do exactly the same as our code above, but for all the rows contained in the table, no matter how many they are</p>
+<pre><code class="language-r">fill_merged &lt;- function(dat, column){
+    ## Get value of each row
+    for(n in 1:nrow(dat)){
+        print(my.table[[column]][n])
+        }
+}
+</code></pre>
+<p>Here our for loop will create a local variable <code>n</code> that will take values from 1 until <code>nrow(dat)</code> which means number of rows in the table <code>dat</code>, and then print each row value contained in the column stated in the argument <code>column</code>. If we apply it to our data frame</p>
+<pre><code class="language-r">fill_merged(my.table, &quot;Specie&quot;)
+</code></pre>
+<p>The R console will print, one by one, each of the values contained in the column <code>Specie</code> (I have 120 rows, it makes no sense to take space to show it in the post, but you can go ahead and try it yourself).</p>
+<p>If the last two pieces of code are not clear for you, I recommend you to read our previous post about <a href="https://blog.rwhitedwarf.com/post/2021/functions/" target="_blank">functions in R</a>.</p>
+<h3 id="how-to-use-if-statement-in-r">How to use If statement in R</h3>
+<p>Printing the values is far from what we want to achieve. As we defined in the first step of the process, we need to check the value inside, if it has a value we leave it alone, but if it is empty, we fill it in with the previous value. To check if the value is empty or not we use the <code>if()</code> function</p>
+<pre><code class="language-r">fill_merged &lt;- function(dat, column){
+    ## Get value of each row
+    for(n in 1:nrow(dat)){
+        ## Check if it is empty
+        if(dat[[column]][n] == ''){
+            dat[[column]][n] &lt;- dat[[column]][n - 1]
+        }
+    }
+    return(dat)
+}
+</code></pre>
+<p>The function <code>if()</code> checks the expression inside parentheses and if it returns <code>TRUE</code> it executes the code inside curly braces <code>{}</code>, otherwise it will skip it. Therefore it is crucial that the expression inside <code>if()</code> returns either <code>TRUE</code> or <code>FALSE</code>. You can always test it by sending the exact expression directly to the console</p>
+<pre><code class="language-r">my.table[['Specie']][1] == ''
+</code></pre>
+<pre><code>&gt; [1] FALSE
+</code></pre>
+<pre><code class="language-r">my.table[['Specie']][5] == ''
+</code></pre>
+<pre><code>&gt; [1] TRUE
+</code></pre>
+<p>Once we confirm that the value is empty, we enter the if statement and execute the code from step <em>2</em>, which inside the function takes the form of <code>dat[[column]][n] &lt;- dat[[column]][n - 1]</code>.If the value is not empty, we simply do nothing.</p>
+<p>Now we can actually try the function in one of our columns</p>
+<pre><code class="language-r">my.filled.table &lt;- fill_merged(my.table, 'Specie')
+head(my.filled.table, n = 15)
+</code></pre>
+<pre><code>&gt;    Specie Dup Treat Rep Value
+&gt; 1  A. cap   A     0   1    34
+&gt; 2  A. cap  AA    NA  NA    26
+&gt; 3  A. cap   A    25  NA    18
+&gt; 4  A. cap  AA    NA  NA    24
+&gt; 5  A. cap   A    50  NA    11
+&gt; 6  A. cap  AA    NA  NA    12
+&gt; 7  A. cap   A   100  NA    15
+&gt; 8  A. cap  AA    NA  NA    11
+&gt; 9  F. rub   F     0  NA    25
+&gt; 10 F. rub  FF    NA  NA    26
+&gt; 11 F. rub   F    25  NA    17
+&gt; 12 F. rub  FF    NA  NA    11
+&gt; 13 F. rub   F    50  NA    13
+&gt; 14 F. rub  FF    NA  NA    11
+&gt; 15 F. rub   F   100  NA    11
+</code></pre>
+<p><strong>Note</strong> that so far it works only for columns with character values, not numeric</p>
+<pre><code class="language-r">fill_merged(my.table, 'Treat')
+</code></pre>
+<pre><code>&gt; Error in if (dat[[column]][n] == &quot;&quot;) {: missing value where TRUE/FALSE needed
+</code></pre>
+<p>The reason is that only character columns produce empty strings. Numeric columns will produce <code>NA</code> values. Therefore, we need to add a condition to our if expression to test also if the value is <code>NA</code>. To do that we use double <code>|</code> which in R means <strong>OR</strong></p>
+<pre><code class="language-r">fill_merged &lt;- function(dat, column){
+    ## Get value of each row
+    for(n in 1:nrow(dat)){
+        ## Check if it is empty
+        if(dat[[column]][n] == '' || is.na(dat[[column]][n])){
+            dat[[column]][n] &lt;- dat[[column]][n - 1]
+        }
+    }
+    return(dat)
+}
+</code></pre>
+<p>Now our if statement is telling to R &ldquo;<strong>IF</strong> the value is empty (<code>''</code>) <strong>OR</strong> is NA (<code>is.na()</code>) then, execute this code&rdquo;, and so we enter to the code inside the if-curly-braces.</p>
+<p><code>NA</code> are not exactly values and therefore we cannot test them by using the expression</p>
+<pre><code class="language-r">my.table[['Treat']][2] == NA
+</code></pre>
+<pre><code>&gt; [1] NA
+</code></pre>
+<p>Instead of returning <code>TRUE</code> or <code>FALSE</code> returns <code>NA</code> which means <strong>Not Available</strong>. To check if the value is <code>NA</code> or really a value we use the function <code>is.na()</code></p>
+<pre><code class="language-r">is.na(my.table[['Treat']][2])
+</code></pre>
+<pre><code>&gt; [1] TRUE
+</code></pre>
+<p>Now we can use our function for columns with numeric values also</p>
+<pre><code class="language-r">my.filled.table &lt;- fill_merged(my.table, 'Treat')
+head(my.filled.table, n = 10)
+</code></pre>
+<pre><code>&gt;    Specie Dup Treat Rep Value
+&gt; 1  A. cap   A     0   1    34
+&gt; 2  A. cap  AA     0  NA    26
+&gt; 3  A. cap   A    25  NA    18
+&gt; 4          AA    25  NA    24
+&gt; 5           A    50  NA    11
+&gt; 6          AA    50  NA    12
+&gt; 7           A   100  NA    15
+&gt; 8          AA   100  NA    11
+&gt; 9  F. rub   F     0  NA    25
+&gt; 10 F. rub  FF     0  NA    26
+</code></pre>
+<h3 id="check-confirm-and-repeat-for-and-if-together">Check, confirm and repeat (for and if together)</h3>
+<p>Now we could use our function for each column that presents this issue, but we are actually trying to apply the DRY principle. Instead we could use <code>for()</code> to go through all the columns where we want to apply it. There are other functions that can help with this as well such as <code>map()</code> and its derived functions from the package <a href="https://purrr.tidyverse.org/" target="_blank">purrr</a>.We could also write a new function that calls our first function to repeat it into each column. Feel free to experiment, for this tutorial we are going to take a different approach.</p>
+<p>We are going to improve the same old function and add yet one more for loop that iterates from each column of interest and repeats the same process. This will cover the step 4 of our mapped process.</p>
+<p>The implementation is actually easy, we just need to wrap the whole previous process of if&rsquo;s and for&rsquo;s inside a for loop that goes column by column</p>
+<pre><code class="language-r">fill_merged &lt;- function(dat, columns.as.vector){
+    ## Go through the columns
+    for(column in columns.as.vector){
+        ## Get value of each row
+        for(n in 1:nrow(dat)){
+            ## Check if it is empty
+            if(dat[[column]][n] == '' || is.na(dat[[column]][n])){
+                dat[[column]][n] &lt;- dat[[column]][n - 1]
+            }
+        }
+    }
+    return(dat)
+}
+</code></pre>
+<p>I have changed the argument for initiating the function from <code>column</code> to <code>columns.as.vector</code>. Now this will take a vector containing all the names of the columns that should be treated. Notice that in our new for loop I am declaring <code>column</code> to iterate over each value of <code>column.as.vector</code> therefore, the variable <code>column</code> will contain each string in the vector for each iteration. In this way we don&rsquo;t need to change the rest of the code.</p>
+<p>Now you can call exactly the same function for each column that needs it</p>
+<pre><code class="language-r">target_cols &lt;- names(my.table)[c(1,3,4)]
+my.filled.table &lt;- fill_merged(my.table, target_cols)
+head(my.filled.table, n = 15)
+</code></pre>
+<pre><code>&gt;    Specie Dup Treat Rep Value
+&gt; 1  A. cap   A     0   1    34
+&gt; 2  A. cap  AA     0   1    26
+&gt; 3  A. cap   A    25   1    18
+&gt; 4  A. cap  AA    25   1    24
+&gt; 5  A. cap   A    50   1    11
+&gt; 6  A. cap  AA    50   1    12
+&gt; 7  A. cap   A   100   1    15
+&gt; 8  A. cap  AA   100   1    11
+&gt; 9  F. rub   F     0   1    25
+&gt; 10 F. rub  FF     0   1    26
+&gt; 11 F. rub   F    25   1    17
+&gt; 12 F. rub  FF    25   1    11
+&gt; 13 F. rub   F    50   1    13
+&gt; 14 F. rub  FF    50   1    11
+&gt; 15 F. rub   F   100   1    11
+</code></pre>
+<p>Also notice the trick in the first line: <code>names(my.table)</code> returns a vector containing all the column names of the data frame and <code>names(my.table)[c(1,3,4)]</code> is taking only the columns 1, 3 and 4, which are the ones that need to be fixed. This is extremely useful when you have many columns that need to be fixed</p>
+<h3 id="marking-the-errors">Marking the errors</h3>
+<p>You might have noticed that I&rsquo;m adding text preceded by <code>##</code> within the function. If you are not familiar with it, this are comments, it means that anything that is written in the same line after one <code>#</code> will not be evaluated by R (I use double for technical reasons of my text editor). Although this function is quite small and simple, and we know what exactly we are doing on each line thanks to the explanations, it is a good practice to add comments to your code because after a while, when you will look back at the code you might had forgotten the logic and structure. Adding comments help us to know what each piece is about, making it easier to apply changes in the future.</p>
+<p>In the same way, it is a good practice to add errors when the function is expecting something in particular and we can foresee potential problems. Often we don&rsquo;t foresee all the mistakes and problems that the user or we ourselves can have when using our own functions and thus, errors are usually added along the way based on the experience gathered by using the function.</p>
+<p>For example, our function is expecting that at least the first row will not have empty values, otherwise it cannot go one row before to find the value to paste on it. Although it is not expected, our table can still present this situation due to human errors, for example, somebody by accident pressed <em>Delete</em> button somewhere on the first row in the source file. In such case R will mark some error that will be difficult to understand and track back. We might wonder for hours what we did wrong in our function only to find out that the problem comes from the data table itself. Instead we can mark our own error in advance by sending a message when the value on the first row is missing.</p>
+<p>An easy way of implementing this is using the function <code>stop()</code>. Let&rsquo;s implement our error into our function right before it copies the value from the row <code>n - 1</code>.</p>
+<pre><code class="language-r">fill_merged &lt;- function(dat, columns.as.vector){
+    ## Go through the columns
+    for(column in columns.as.vector){
+        ## Get value of each row
+        for(n in 1:nrow(dat)){
+            ## Check if it is empty
+            if(dat[[column]][n] == '' || is.na(dat[[column]][n])){
+                ## If it is the row 1, stop with Error
+                if(n == 1){
+                    stop(paste0(&quot;Row 1 of column &quot;, column,
+                                    &quot; has empty values. Check your data.&quot;))
+                }
+                else{
+                    dat[[column]][n] &lt;- dat[[column]][n - 1]
+                }
+            }
+        }
+    }
+    return(dat)
+}
+</code></pre>
+<p>If the value of the first row is empty, the function will stop, printing a message that says in which column the row no. 1 is empty. When the row is not the first, R will evaluate the code next, contained inside <code>else{}</code>. <code>else</code> is a complement for if that tell R what to do when the <code>if()</code> part is not fulfilled. Sometimes we can omit it, when the <code>if()</code> part is not fulfilled R will simply go to the next part of the code. But when we want to make sure that nothing will happen outside these options, we include <code>else</code>. Here we are giving only two options, either <code>n</code> equals 1 and the function stops with an error, or else <code>n</code> is not one and the function continues.</p>
+<p>Let&rsquo;s try the error by making a copy of our data frame with the first row empty</p>
+<pre><code class="language-r">test.error &lt;- my.table[2:10,]
+fill_merged(test.error, 'Rep')
+</code></pre>
+<pre><code>&gt; Error in fill_merged(test.error, &quot;Rep&quot;): Row 1 of column Rep has empty values. Check your data.
+</code></pre>
+<p>Another misunderstanding that the user can encounter is with the argument <code>columns.as.vector</code>. We are expecting that the user will provide a string, or vector of strings with the names of the columns, but the user as well might think that the function is expecting the whole data as vector. We can prevent the user for doing this by adding an error at the beginning of the function.</p>
+<pre><code class="language-r">fill_merged &lt;- function(dat, columns.as.vector){
+    ## Check if column names are provided as strings
+    if(!is.character(columns.as.vector)){
+        stop(&quot;Column names must be provided as string or vector of strings of class character&quot;)
+    }
+    ## Go through the columns
+    for(column in columns.as.vector){
+        ## Get value of each row
+        for(n in 1:nrow(dat)){
+            ## Check if it is empty
+            if(dat[[column]][n] == '' || is.na(dat[[column]][n])){
+                ## If it is the row 1, stop with Error
+                if(n == 1){
+                    stop(paste0(&quot;Row 1 of column &quot;, column,
+                                    &quot; has empty values. Check your data.&quot;))
+                }
+                else{
+                    dat[[column]][n] &lt;- dat[[column]][n - 1]
+                }
+            }
+        }
+    }
+    return(dat)
+}
+</code></pre>
+<p>We want to make sure that <code>columns.as.vector</code> is character. To test this, we use the function <code>is.character()</code>, which will return <code>TRUE</code> when the values inside are character, and <code>FALSE</code> otherwise.</p>
+<pre><code class="language-r">a &lt;- 'foo'
+is.character(a)
+</code></pre>
+<pre><code>&gt; [1] TRUE
+</code></pre>
+<p>However we want to send the error only when the value is NOT character. To tell R to test the opposite, we start the argument with the symbol <code>!</code></p>
+<pre><code class="language-r">!is.character(a)
+</code></pre>
+<pre><code>&gt; [1] FALSE
+</code></pre>
+<p>Now with our new version, when the user might provide any value that is not string, the error will be triggered</p>
+<pre><code class="language-r">fill_merged(my.table, 1)
+</code></pre>
+<pre><code>&gt; Error in fill_merged(my.table, 1): Column names must be provided as string or vector of strings of class character
+</code></pre>
+<p>Still if the user provides a vector of strings, or a misspelled name of the column, our function is not aware of it. We can add one more error when <code>column.as.vector</code> is string but not a string that we are expecting</p>
+<pre><code class="language-r">fill_merged &lt;- function(dat, columns.as.vector){
+    ## Check if column names are provided as strings
+    if(!is.character(columns.as.vector)){
+        stop(&quot;Column names must be provided as string or vector of strings of class character&quot;)
+    }
+    ## Go through the columns
+    for(column in columns.as.vector){
+        ## Check if the column name matches with dat column names
+        if (!column %in% names(dat)){
+            stop(paste0('Column &lt;', column, '&gt; cannot be found in the data frame'))
+        }
+        ## Get value of each row
+        for(n in 1:nrow(dat)){
+            ## Check if it is empty
+            if(dat[[column]][n] == '' || is.na(dat[[column]][n])){
+                ## If it is the row 1, stop with Error
+                if(n == 1){
+                    stop(paste0(&quot;Row 1 of column &lt;&quot;, column,
+                                    &quot;&gt; has empty values. Check your data.&quot;))
+                }
+                else{
+                    dat[[column]][n] &lt;- dat[[column]][n - 1]
+                }
+            }
+        }
+    }
+    return(dat)
+}
+</code></pre>
+<p>Here we are implementing <code>if (!column %in% names(dat))</code>. Again we are using <code>!</code> to tell R to test the opposite. <code>column %in% names(dat)</code> will take the value of <code>column</code> and check if it is present in the vector <code>names(dat)</code> (which has the names of the columns).</p>
+<p>Let&rsquo;s test the last error by misspelling the name of one column</p>
+<pre><code class="language-r">fill_merged(my.table, c('Specie', 'Treatment'))
+</code></pre>
+<pre><code>&gt; Error in fill_merged(my.table, c(&quot;Specie&quot;, &quot;Treatment&quot;)): Column &lt;Treatment&gt; cannot be found in the data frame
+</code></pre>
+<p>If you can think of more errors feel free to add them, it will be good for you  as a practice. However you should also try and see what happens with other potential scenarios before adding the errors yourself. Sometimes the default errors from other functions are enough to solve problems. For example, try providing to our function a data frame that does not exist, R will immediately tell you <code>object 'x' not found</code>.</p>
+<h2 id="final">Final remarks</h2>
+<p>I hope that the post has helped you to have a better understanding of <code>for()</code> and <code>if()</code>, and provided you with a good guidance on how you can plan and structure functions. If something was not clear or you still have questions, or something in your code did not work as expected, feel welcome to leave us a comment below (you will need a github account for that).</p>
+<p>There are many ways how you can call your function now to your future projects. One of the easiest for now would be to save it in an R script, for example <code>fill_merged_cells.R</code> and then you can call it from any script or R code by providing the path to your script to the function <code>source()</code></p>
+<pre><code class="language-r">source('~/Rscripts/fill_merged_cells.R')
+</code></pre>
+<p>changing the path to the exact location of your file. Source will run all the code contained inside the <code>.R</code> file in the R session where you call it, making your function available for the current session.</p>
+<p>Here is the final form of the <strong>function for filling in empty rows produced by merged cells</strong>. I hope it will help with your work. Enjoy it!</p>
+<pre><code class="language-r">fill_merged &lt;- function(dat, columns.as.vector){
+    ## Check if column names are provided as strings
+    if(!is.character(columns.as.vector)){
+        stop(&quot;Column names must be provided as string or vector of strings of class character&quot;)
+    }
+    ## Go through the columns
+    for(column in columns.as.vector){
+        ## Check if the column name matches with dat column names
+        if (!column %in% names(dat)){
+            stop(paste0('Column &lt;', column, '&gt; cannot be found in the data frame'))
+        }
+        ## Get value of each row
+        for(n in 1:nrow(dat)){
+            ## Check if it is empty
+            if(dat[[column]][n] == '' || is.na(dat[[column]][n])){
+                ## If it is the row 1, stop with Error
+                if(n == 1){
+                    stop(paste0(&quot;Row 1 of column &lt;&quot;, column,
+                                    &quot;&gt; has empty values. Check your data.&quot;))
+                }
+                else{
+                    dat[[column]][n] &lt;- dat[[column]][n - 1]
+                }
+            }
+        }
+    }
+    return(dat)
+}
+</code></pre>
+
+    </div>
+</article>
+
+
+
+<div class="post-comment" data-comment="utterances">
+    <span class="post-comment-notloaded">
+        <i class="iconfont icon-chatbox-ellipses-sharp"></i>&nbsp;Load comments
+    </span>
+    <script>
+        function loadComment() {
+            var commentArea = document.querySelector('.post-comment');
+            var utterancesTheme = document.body.getAttribute('data-theme');
+            if (utterancesTheme === 'auto') {
+                utterancesTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'photon-dark' :
+                    'github-light';
+            } else {
+                utterancesTheme = utterancesTheme === 'dark' ? 'photon-dark' : 'github-light';
+            }
+            var s = document.createElement('script');
+            s.src = 'https://utteranc.es/client.js';
+            s.setAttribute('repo', 'teotenn\/blog-RWD');
+            s.setAttribute('issue-term', 'github-light');
+            s.setAttribute('theme', utterancesTheme);
+            s.setAttribute('crossorigin', 'anonymous');
+            s.setAttribute('async', '');
+            document.querySelector('.post-comment').appendChild(s);
+            document.querySelector('span.post-comment-notloaded').setAttribute('style', 'display: none;');
+        }
+    </script>
+</div>
+
+
+            </div>
+            <aside class="col-12 col-md-3 float-left sidebar">
+    
+    <div class="sidebar-item sidebar-pages">
+        <h3>Pages</h3>
+        <ul>
+            
+            <li>
+                <a href="/">Home</a>
+            </li>
+            
+            <li>
+                <a href="/archives/">Archives</a>
+            </li>
+            
+            <li>
+                <a href="/about/">About</a>
+            </li>
+            
+            <li>
+                <a href="/search/">Search</a>
+            </li>
+            
+            <li>
+                <a href="/index.xml">RSS</a>
+            </li>
+            
+        </ul>
+    </div>
+    
+    <div class="sidebar-item sidebar-links">
+        <h3>Links</h3>
+        <ul>
+            
+            <li>
+                <a href="https://github.com/teotenn" target="_blank"><span>GitHub</span></a>
+            </li>
+            
+            <li>
+                <a href="https://www.r-bloggers.com/" target="_blank"><span>R Bloggers</span></a>
+            </li>
+            
+            <li>
+                <a href="https://www.r-project.org/" target="_blank"><span>The R Project</span></a>
+            </li>
+            
+            <li>
+                <a href="https://www.bioconductor.org/" target="_blank"><span>Bioconductor</span></a>
+            </li>
+            
+        </ul>
+    </div>
+    
+    <div class="sidebar-item sidebar-tags">
+        <h3>Tags</h3>
+        <div>
+            
+            <span>
+                <a href="/tags/code-visuals/">Code Visuals</a>
+            </span>
+            
+            <span>
+                <a href="/tags/ggplot2/">ggplot2</a>
+            </span>
+            
+            <span>
+                <a href="/tags/minitutorial/">minitutorial</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-basics/">R basics</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-functions/">R functions</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-maps/">R maps</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-shiny/">R shiny</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-tips/">R tips</a>
+            </span>
+            
+        </div>
+    </div>
+    <div class="sidebar-item sidebar-toc">
+        <h3>Table of Contents</h3><nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#description-of-the-problem">Description of the problem</a></li>
+      </ul>
+    </li>
+    <li><a href="#r-function-to-fill-in-merged-cells-from-excel">R function to fill in merged cells from excel</a>
+      <ul>
+        <li><a href="#maping-the-process">Maping the process</a></li>
+        <li><a href="#writing-my-first-for-loop">Writing my first for loop</a></li>
+        <li><a href="#how-to-use-if-statement-in-r">How to use If statement in R</a></li>
+        <li><a href="#check-confirm-and-repeat-for-and-if-together">Check, confirm and repeat (for and if together)</a></li>
+        <li><a href="#marking-the-errors">Marking the errors</a></li>
+      </ul>
+    </li>
+    <li><a href="#final">Final remarks</a></li>
+  </ul>
+</nav></div>
+</aside>
+
+        </div>
+        <div class="btn">
+    <div class="btn-menu" id="btn-menu">
+        <i class="iconfont icon-grid-sharp"></i>
+    </div>
+    <div class="btn-toggle-mode">
+        <i class="iconfont icon-contrast-sharp"></i>
+    </div>
+    <div class="btn-scroll-top">
+        <i class="iconfont icon-chevron-up-circle-sharp"></i>
+    </div>
+</div>
+<aside class="sidebar-mobile" style="display: none;">
+  <div class="sidebar-wrapper">
+    
+    <div class="sidebar-item sidebar-pages">
+        <h3>Pages</h3>
+        <ul>
+            
+            <li>
+                <a href="/">Home</a>
+            </li>
+            
+            <li>
+                <a href="/archives/">Archives</a>
+            </li>
+            
+            <li>
+                <a href="/about/">About</a>
+            </li>
+            
+            <li>
+                <a href="/search/">Search</a>
+            </li>
+            
+            <li>
+                <a href="/index.xml">RSS</a>
+            </li>
+            
+        </ul>
+    </div>
+    
+    <div class="sidebar-item sidebar-links">
+        <h3>Links</h3>
+        <ul>
+            
+            <li>
+                <a href="https://github.com/teotenn" target="_blank"><span>GitHub</span></a>
+            </li>
+            
+            <li>
+                <a href="https://www.r-bloggers.com/" target="_blank"><span>R Bloggers</span></a>
+            </li>
+            
+            <li>
+                <a href="https://www.r-project.org/" target="_blank"><span>The R Project</span></a>
+            </li>
+            
+            <li>
+                <a href="https://www.bioconductor.org/" target="_blank"><span>Bioconductor</span></a>
+            </li>
+            
+        </ul>
+    </div>
+    
+    <div class="sidebar-item sidebar-tags">
+        <h3>Tags</h3>
+        <div>
+            
+            <span>
+                <a href="/tags/code-visuals/">Code Visuals</a>
+            </span>
+            
+            <span>
+                <a href="/tags/ggplot2/">ggplot2</a>
+            </span>
+            
+            <span>
+                <a href="/tags/minitutorial/">minitutorial</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-basics/">R basics</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-functions/">R functions</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-maps/">R maps</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-shiny/">R shiny</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-tips/">R tips</a>
+            </span>
+            
+        </div>
+    </div>
+    
+    
+    
+    <div class="sidebar-item sidebar-toc">
+        <h3>Table of Contents</h3>
+        <nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#description-of-the-problem">Description of the problem</a></li>
+      </ul>
+    </li>
+    <li><a href="#r-function-to-fill-in-merged-cells-from-excel">R function to fill in merged cells from excel</a>
+      <ul>
+        <li><a href="#maping-the-process">Maping the process</a></li>
+        <li><a href="#writing-my-first-for-loop">Writing my first for loop</a></li>
+        <li><a href="#how-to-use-if-statement-in-r">How to use If statement in R</a></li>
+        <li><a href="#check-confirm-and-repeat-for-and-if-together">Check, confirm and repeat (for and if together)</a></li>
+        <li><a href="#marking-the-errors">Marking the errors</a></li>
+      </ul>
+    </li>
+    <li><a href="#final">Final remarks</a></li>
+  </ul>
+</nav>
+    </div>
+    
+    
+  </div>
+</aside>
+    </main>
+
+    <footer>
+    <div class="container-lg clearfix">
+        <div class="col-12 footer">
+            
+            <span>&copy; 2021-2022
+                <a href="https://blog-rwd-test.onrender.com">R White Dwarf</a>
+                
+                | Powered by <a href="https://github.com/dsrkafuu/hugo-theme-fuji/"
+                   target="_blank">Fuji-v2</a> &amp; <a href="https://gohugo.io/"
+                                                    target="_blank">Hugo</a> 
+            </span>
+        </div>
+    </div>
+</footer>
+
+    
+<script defer src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.6/dist/medium-zoom.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/lazysizes@5.3.2/lazysizes.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/prismjs@1.27.0/components/prism-core.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/prismjs@1.27.0/plugins/autoloader/prism-autoloader.min.js"></script>
+
+
+
+<script defer src="/assets/js/fuji.min.js"></script>
+
+
+
+</body>
+
+</html>
