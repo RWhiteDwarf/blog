@@ -1,0 +1,29 @@
+{{ define "main" }}
+<article>
+    <!-- post meta -->
+    <h2 class="post-item post-title">
+        <a href="{{ .Permalink }}">{{ .Title }}</a>
+    </h2>
+    <div class="post-item post-meta">
+        {{ partial "post-meta.html" . }}
+    </div>
+    <!-- post main content -->
+    <div class="post-content markdown-body">
+        {{ .Content }}
+    </div>
+    <div class="bg-white dark:bg-warmgray-900 p-5 my-4">
+      <div class="post-comment">
+	{{ partial "comments.html" . }}
+      </div>
+    </div>
+</article>
+<!-- post license -->
+{{ if and (or .Site.Params.showLicense .Params.showLicense) (ne .Params.showLicense false) }}
+<div class="license markdown-body">
+    <blockquote>
+        <p>{{ i18n "postCopyrightFront" }}<a rel="license" href="{{ .Site.Params.licenseLink }}"
+               target="_blank">{{ .Site.Params.license }}</a>{{ i18n "postCopyrightEnd" }}</p>
+    </blockquote>
+</div>
+{{ end }}
+{{ end }}

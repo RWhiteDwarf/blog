@@ -83,8 +83,8 @@ licenseLink = "http://creativecommons.org/licenses/by-nc-sa/4.0/"
 
 # Comments
 # utterances, see: https://utteranc.es/
-utterancesRepo = "RWhiteDwarf/blog"
-utterancesIssueTerm = "github-light"
+# utterancesRepo = "RWhiteDwarf/blog"
+# utterancesIssueTerm = "github-light"
 
 # Disqus, see: https://disqus.com/admin/install/platforms/universalcode/
 # disqusShortname = "*********"

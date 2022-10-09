@@ -145,36 +145,20 @@
 <p>Something to keep in mind is that the arguments are always passed to R script as character and thus, I wrote the example for this post converting everything into character in the first line of the function, which is not necessary in our original code executed in the terminal. In this way, if any number is passed to the function, it will also return <code>FALSE</code>, emulating what would happen if a number is entered into the console. This behavior <strong>is different for the function</strong> <code>as.logical()</code> itself, which returns <code>FALSE</code> if you enter the numerical value <code>0</code> and <code>TRUE</code> if any other numerical value is passed.</p>
 
     </div>
+    <div class="bg-white dark:bg-warmgray-900 p-5 my-4">
+      <div class="post-comment">
+	<script src="https://utteranc.es/client.js"
+            repo="RWhiteDwarf/blog"
+            issue-term="pathname"
+            theme="github-light"
+            crossorigin="anonymous"
+            async>
+</script>
+
+      </div>
+    </div>
 </article>
 
-
-
-<div class="post-comment" data-comment="utterances">
-    <span class="post-comment-notloaded">
-        <i class="iconfont icon-chatbox-ellipses-sharp"></i>&nbsp;Load comments
-    </span>
-    <script>
-        function loadComment() {
-            var commentArea = document.querySelector('.post-comment');
-            var utterancesTheme = document.body.getAttribute('data-theme');
-            if (utterancesTheme === 'auto') {
-                utterancesTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'photon-dark' :
-                    'github-light';
-            } else {
-                utterancesTheme = utterancesTheme === 'dark' ? 'photon-dark' : 'github-light';
-            }
-            var s = document.createElement('script');
-            s.src = 'https://utteranc.es/client.js';
-            s.setAttribute('repo', 'RWhiteDwarf\/blog');
-            s.setAttribute('issue-term', 'github-light');
-            s.setAttribute('theme', utterancesTheme);
-            s.setAttribute('crossorigin', 'anonymous');
-            s.setAttribute('async', '');
-            document.querySelector('.post-comment').appendChild(s);
-            document.querySelector('span.post-comment-notloaded').setAttribute('style', 'display: none;');
-        }
-    </script>
-</div>
 
 
             </div>
