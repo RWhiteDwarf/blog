@@ -28,7 +28,8 @@ However, as I said, efficiency is critical in this project and thus, I've been t
 ## The challenge
 
 
-```{r base-r}
+
+```r
 rename_nCols <- function(samples, cols_to_rename, rename = FALSE, ignore_missing = TRUE){
   for(i in 1:length(cols_to_rename)){
     old_name <- cols_to_rename[[i]][1] ## Old in position 1 of vector
@@ -81,7 +82,8 @@ create_cols_base <- function(samples){
 And then
 
 
-```{r tidyverse}
+
+```r
 create_cols_tidy <- function(samples, eventsToCreate=c("BATCH","GETTING")){
     require(dplyr)
     require(glue)
