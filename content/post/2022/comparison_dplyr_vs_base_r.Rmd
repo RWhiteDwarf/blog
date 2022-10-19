@@ -1,7 +1,7 @@
 ---
 author: "M. Teodoro Tenango"
 title: "Efficiency comparison of dplyr and tidyr functions vs base R"
-image: 
+image: "/post/2022/comparison_dplyr_vs_base_r/Langs_compare.png"
 draft: true
 date: 2022-10-18
 description: "Monte carlo simulations to compare time efficiency of a function created with dplyr and tidyr vs base R"
@@ -19,3 +19,106 @@ I recently joined a project where the team has been developing a mapper and wrap
 As mentioned before, a team has been working on this project for a while and they were using the `tidyverse` family of packages a lot. Myself I prefer to stick to base R functions when it comes to development. I think it makes the work neat, simple and easier, keeps the dependencies to the minimum and, since I know R for more than 10 years, it's easier for me to write code in base R. And please, don't misunderstand me, I like the `tidyverse` functions but I rather use them when it comes to data analysis: it is great to clean data, prepare it to fit models, explore it, and of course, to make visualizations with the wonderful `ggplot` preceded by the `%>%` sequence to provide exactly what is needed. But for me, developing a software is base R is just more straight forward.
 
 However, as I said, efficiency is critical in this project and thus, I've been tasked to test it in a few functions already. The most recent was a function to import JSON files line by line using `dplyr` functions which I could reduce by half the time using `data.table` functions, but that's a topic for another time. One of the first tasks I was given as a new member was to map a process, very similar to another one but with different input parameters. I could had simply copied the code from the previous mapping process into my own script and just change the parameters, since the mapping logic is exactly the same. However, I decided to create my own code using base R, trusting that is more straight forward and efficient, and at the same time taking the opportunity to show up my skills to my new team. Therefore, I ended up comparing the efficiency of the functions using Monte Carlo simulations and thus, creating the present post. I hope it can be useful for some of you.
+
+| ![Speed comparison](/post/2022/comparison_dplyr_vs_base_r/Langs_compare.png) |
+|:--:|
+| <b>Image Credits - https://github.com/niklas-heer/speed-comparison</b> |
+
+
+## The challenge
+
+
+```{r base-r}
+rename_nCols <- function(samples, cols_to_rename, rename = FALSE, ignore_missing = TRUE){
+  require(assertthat)
+  assert_that(is.data.frame(samples))
+  assert_that(is.list(cols_to_rename))
+  assert_that(length(unique(lengths(cols_to_rename))) == 1 &&
+                unique(lengths(cols_to_rename) == 2),
+              msg = "Each element in list with names must be of size 2")
+  ## ---
+  for(i in 1:length(cols_to_rename)){
+    old_name <- cols_to_rename[[i]][1] ## Old in position 1 of vector
+    SDAP_name <- cols_to_rename[[i]][2] ## New in position 2 of vector
+    ## WHEN NOT PRESENT
+    if(!old_name %in% names(samples)) {
+      warning(paste("Column", old_name, "not found."))
+      if(!ignore_missing){
+        samples[,SDAP_name] <- as.character(NA)
+      }
+    }
+    ## RENAMING
+    else if(rename){
+      names(samples)[names(samples) == old_name] <- SDAP_name
+    }
+    ## ADDING
+    else {
+      samples[,SDAP_name] <- samples[,old_name]
+    }
+  }
+  return(samples)
+}
+
+create_cols_base <- function(samples){
+  require(dplyr)
+  require(assertthat)
+  assert_that(is.data.frame(samples))
+  assert_that('SMPNAM' %in% names(samples),
+              msg = 'Column "SMPNAM" not found in <samples>. Please check')
+  assert_that('SAMPLE_DATA_ID' %in% names(samples),
+              msg = 'Column "SAMPLE_DATA_ID" not found in <samples>. Please check')
+  ## THE FUNCTION ---
+  assay <- cbind(samples, SMPE = "ASSAY")
+  cols_to_rename <- list(c('SMPNAM', 'SPEPARTY'),
+                         c('GNFTD', 'SMPESTD'),
+                         c('GNFTTM', 'SMPESTTM'))
+  assay <- rename_nCols(assay, cols_to_rename)
+  #print(assay)
+  ## then receiving
+  if("IPACCSNM" %in% names(samples)){
+    if(nrow(samples[is.na(samples$IPACCSNM),]) != 0){
+      receiving <- cbind(samples[is.na(samples$IPACCSNM),], SMPE = "RECEIVING")
+    }
+    else receiving <- samples[is.na(samples$IPACCSNM),]
+  }
+  else{
+    receiving <- cbind(samples, SMPE = "RECEIVING")
+  }
+  receiving <- rename_nCols(receiving, list(c('SMPNAM', 'SPEPARTY')))
+  #print(receiving)
+  events <- full_join(assay, receiving)
+  return(events)
+}
+```
+
+And then
+
+
+```{r tidyverse}
+create_cols_tidy <- function(samples, eventsToCreate=c("ASSAY","RECEIVING")){
+    require(dplyr)
+    require(glue)
+    require(tidyr)
+  events <- samples %>%
+    mutate(
+      SMPE =
+        case_when(
+          is.na(get0('IPACCSNM', ifnotfound = as.character(NA))) | get0('IPACCSNM', ifnotfound = as.character(NA)) == "" ~ list(Reduce(intersect,list(eventsToCreate,c("ASSAY", "RECEIVING")))),
+          TRUE ~ list(Reduce(intersect,list(eventsToCreate,c("ASSAY"))))
+        )
+    ) %>% unnest(cols = c(SMPE))%>%
+    subset(!is.na(SMPE)) %>% mutate(
+      SPEPARTY = get0('SMPNAM', ifnotfound = as.character(NA)),
+      SMPESTD = case_when(
+        (SMPE == "ASSAY") ~ get0('LABTD', ifnotfound = as.character(NA)),
+        TRUE ~ as.character(NA)
+      ),
+      SMPESTTM = case_when(
+        (SMPE == "ASSAY") ~ get0('LABTTM', ifnotfound = as.character(NA)),
+        TRUE ~ as.character(NA)
+      )
+    )
+  
+  return(events)
+}
+```
