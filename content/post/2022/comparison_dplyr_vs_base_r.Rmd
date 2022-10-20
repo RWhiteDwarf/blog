@@ -91,7 +91,6 @@ My strategy using base R (function `create_cols_base()`) was to create two data 
 ```{r tidyverse}
 create_cols_tidy <- function(samples, responsesToCreate = c("BATCH", "GETTING")){
     require(dplyr)
-    require(glue)
     require(tidyr)
   responses <- samples %>%
     mutate(
@@ -120,4 +119,20 @@ As you can see in the code chunk above, my colleagues decided to use a completel
 
 ## The test
 
-To test the time efficiency of each function I iterated each of them a thousand times using datasets of different sizes, going from 1 thousand to 5 million, measuring the time at the beginning and end of the mapping process, and extracting the difference. The graphics presented here are the Minimum, Maximum and Median values of the thousand repetitions per each function.
+| ![Methods comparison](/post/2022/comparison_dplyr_vs_base_r/plotted_results.png) |
+|:--:|
+| <b>Image 2. Results of the comparisons using Monte Carlo Simulations.</b> |
+| <b>Strong lines represent the median, long and short dotted lines the maximum and minimum values, respectively.</b> |
+
+To test the time efficiency of each function I iterated each of them a thousand times using datasets of different sizes, going from 1 thousand to 5 million, measuring the time at the beginning and end of the mapping process, and extracting the difference. The graphics presented here are the Minimum, Maximum and Median values of the thousand repetitions per each function. You can see the amount of rows in the data frame plotted against the time that each function took, in seconds. 
+
+The results, as expected, show a direct correlation between time and amount of rows processed. What is interesting is that up to one million rows, the increase is very slow and the difference between methods is almost not noticeable. In the image 3 we can see that differences are smaller than 1 second. However, as the amount of rows increases above a million, the differences between methods are bigger, to a point where they even double the time. 
+
+| ![Methods comparison to million](/post/2022/comparison_dplyr_vs_base_r/plotted_results_1.png) |
+|:--:|
+| <b>Image 3. Results of the comparisons up to a million rows </b> |
+| <b>Strong lines represent the median, long and short dotted lines the maximum and minimum values, respectively.</b> |
+
+## Conclusions
+
+We are not using datasets above 5 million rows in the project, and even rarely above a million so, we can afford the process to take up to 12 seconds from time to time. However, there was a nice lesson to learn, especially for me: my method using base r functions is twice as slow than a method using `tidyverse` group of functions. That shows the commitment of [R studio](https://www.rstudio.com/) of making not only more human-readable functions, but also more efficient. That's also true for a series of new packages appearing in the last years that are helping R to cope better with big data.
