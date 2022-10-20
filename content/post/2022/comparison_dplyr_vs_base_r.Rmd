@@ -25,8 +25,18 @@ However, as I said, efficiency is critical in this project and thus, I've been t
 | <b>Image 1. Credits - https://github.com/niklas-heer/speed-comparison</b> |
 
 
-## The challenge
+## The task
 
+The general idea is to map a `RESPONSE` based on the contents of one column, in this case `CODE1`: all values get the response "BATCH", but only when `CODE` is empty, they also get the response "GETTING". Rows with value "BATCH" get renamed the columns `NAME`, `DAY` and `TIME` into `TEAM`, `RESPONSETD` and `RESPONSESTT` respectively, while rows with response "GETTING" only gets one more column: `NAME` into newly named column `TEAM`. 
+
+```{r sample-data}
+(test.df <- data.frame(NAME = as.character(c(1:10)),
+                      DAY = format(Sys.time(), "%d-%m-%y"),
+                      TIME = format(Sys.time(), "%T"),
+                      CODE1 = c("Code", NA)))
+```
+
+The whole general idea is to create a new table with response values, which follows and is followed by a series of adjustments to the data. For the post I have created a test data frame with simple values, in case somebody would like to reproduce the code execution. 
 
 ```{r base-r}
 rename_nCols <- function(samples, cols_to_rename, rename = FALSE, ignore_missing = TRUE){
@@ -54,14 +64,13 @@ rename_nCols <- function(samples, cols_to_rename, rename = FALSE, ignore_missing
 
 create_cols_base <- function(samples){
   require(dplyr)
-  ## THE FUNCTION ---
+  ## First BATCH
   assay <- cbind(samples, RESPONSE = "BATCH")
   cols_to_rename <- list(c('NAME', 'TEAM'),
                          c('DAY', 'RESPONSETD'),
                          c('TIME', 'RESPONSESTT'))
   assay <- rename_nCols(assay, cols_to_rename)
-  #print(assay)
-  ## then receiving
+  ## then GETTING
   if("CODE1" %in% names(samples)){
     if(nrow(samples[is.na(samples$CODE1),]) != 0){
       receiving <- cbind(samples[is.na(samples$CODE1),], RESPONSE = "GETTING")
@@ -72,39 +81,43 @@ create_cols_base <- function(samples){
     receiving <- cbind(samples, RESPONSE = "GETTING")
   }
   receiving <- rename_nCols(receiving, list(c('NAME', 'TEAM')))
-  #print(receiving)
-  events <- full_join(assay, receiving)
-  return(events)
+  responses <- full_join(assay, receiving)
+  return(responses)
 }
 ```
 
-And then
-
+My strategy using base R (function `create_cols_base()`) was to create two data frames, one per each response, and then join them using `full_join()` from `dplyr`. I want to stress that the idea was never to use only base R but rather to follow my own logic and my knowledge of R and then compare it with that of my colleagues. To support my `create_cols_base()` I created a function `rename_nCols` which is a great asset to the project since we are constantly renaming columns or creating new ones based on old ones. 
 
 ```{r tidyverse}
-create_cols_tidy <- function(samples, eventsToCreate=c("BATCH","GETTING")){
+create_cols_tidy <- function(samples, responsesToCreate = c("BATCH", "GETTING")){
     require(dplyr)
     require(glue)
     require(tidyr)
-  events <- samples %>%
+  responses <- samples %>%
     mutate(
       RESPONSE =
         case_when(
-          is.na(get0('CODE1', ifnotfound = as.character(NA))) | get0('CODE1', ifnotfound = as.character(NA)) == "" ~ list(Reduce(intersect,list(eventsToCreate,c("BATCH", "GETTING")))),
-          TRUE ~ list(Reduce(intersect,list(eventsToCreate,c("BATCH"))))
+          is.na(get0('CODE1', ifnotfound = as.character(NA))) |
+          get0('CODE1', ifnotfound = as.character(NA)) == "" ~
+              list(Reduce(intersect,list(responsesToCreate,c("BATCH", "GETTING")))),
+          TRUE ~ list(Reduce(intersect,list(responsesToCreate,c("BATCH"))))
         )
-    ) %>% unnest(cols = c(RESPONSE))%>%
-    subset(!is.na(RESPONSE)) %>% mutate(
-      TEAM = get0('NAME', ifnotfound = as.character(NA)),
-      RESPONSESTD = case_when(
-        (RESPONSE == "BATCH") ~ get0('DAY', ifnotfound = as.character(NA)),
-        TRUE ~ as.character(NA)
-      ),
-      RESPONSESTTM = case_when(
-        (RESPONSE == "BATCH") ~ get0('TIME', ifnotfound = as.character(NA)),
-        TRUE ~ as.character(NA)
-      )
-    )
-  return(events)
+    ) %>%
+      unnest(cols = c(RESPONSE))%>%
+      subset(!is.na(RESPONSE)) %>%
+      mutate(TEAM = get0('NAME', ifnotfound = as.character(NA)),
+             RESPONSESTD = case_when(
+             (RESPONSE == "BATCH") ~ get0('DAY', ifnotfound = as.character(NA)),
+             TRUE ~ as.character(NA)),
+             RESPONSESTTM = case_when(
+             (RESPONSE == "BATCH") ~ get0('TIME', ifnotfound = as.character(NA)),
+             TRUE ~ as.character(NA)))
+    return(responses)
 }
 ```
+
+As you can see in the code chunk above, my colleagues decided to use a completely different approach, with the function `case_when()` as the protagonist. An excellent call in my opinion, but one I'm not so familiar with in R. They also made use of the strength of `mutate()` to reduce generation of excessive data frames, as it was my case. 
+
+## The test
+
+To test the time efficiency of each function I iterated each of them a thousand times using datasets of different sizes, going from 1 thousand to 5 million, measuring the time at the beginning and end of the mapping process, and extracting the difference. The graphics presented here are the Minimum, Maximum and Median values of the thousand repetitions per each function.
