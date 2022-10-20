@@ -6,7 +6,165 @@
     <description>Recent content in R tips on R with White Dwarf</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Sun, 18 Sep 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.rwhitedwarf.com/tags/r-tips/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 20 Oct 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.rwhitedwarf.com/tags/r-tips/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Efficiency comparison of dplyr and tidyr functions vs base R</title>
+      <link>https://blog.rwhitedwarf.com/post/comparison_dplyr_vs_base_r/</link>
+      <pubDate>Thu, 20 Oct 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.rwhitedwarf.com/post/comparison_dplyr_vs_base_r/</guid>
+      <description>&lt;p&gt;A couple of years ago I was interested in the efficiency of R when it comes to time processing and management of memory and I read a few blog posts about this topic, particularly pointing at the fact that R hasn&amp;rsquo;t been designed to be a very efficient language, especially when it comes to big data processing, and this could be its doom at some point in the future. By that time I also read a great article or blog post regarding the complexity of using the &lt;a href=&#34;https://www.tidyverse.org/&#34; target=&#34;_blank&#34;&gt;tidyverse&lt;/a&gt; family of packages in R, especially with the task of teaching R to beginners. The text made excellent points discussing how the syntax of &lt;code&gt;tidyverse&lt;/code&gt; packages is so different from the base R functions that it might confuse the people trying to learn R from scratch. Thus, the narration continued towards the use of the packages &lt;code&gt;data.table&lt;/code&gt; instead, which maintains a syntax closer to that of base R. And from there, the author also took the opportunity to discuss efficiency of both packages. I apologize for the lack of sources but I could not find the link to the post(s) I&amp;rsquo;m referring to, if any of you knows the post I&amp;rsquo;m talking about please, share the link with me, I&amp;rsquo;d be greatly thankful.&lt;/p&gt;
+&lt;p&gt;Regardless of that line of thinking, I believe that we can all feel lucky to have packages such as &lt;code&gt;tidyverse&lt;/code&gt; and &lt;code&gt;data.table&lt;/code&gt; which make time processing of big data easier, among other advantages. And these are only the beginning to the list of packages. Although I was interested in the topic myself, I never run some &amp;ldquo;formal tests&amp;rdquo; to compare the efficiency of this or other packages (although I was comparing a few languages including Julia, Common Lisp and of course, Python, similarly to niklas-heer in his &lt;a href=&#34;https://github.com/niklas-heer/speed-comparison&#34; target=&#34;_blank&#34;&gt;speed-comparison&lt;/a&gt; repo, to whom I also thank for my head image). Nevertheless, in the last couple of weeks I had to do such tests due to the nature of my current job.&lt;/p&gt;
+&lt;p&gt;I recently joined a project where the team has been developing a mapper and wrapper of data using R, where the input data can vary from 2 rows to a few millions. The whole process runs through couple of servers to import the data into R, process it accordingly and send it out to a data base from where is served into some other software. The whole process per-se is quite complex and due to the use of servers and Internet connections it can become quite slow. Thus, it is critical that the time processing in R is efficient.&lt;/p&gt;
+&lt;p&gt;As mentioned before, a team has been working on this project for a while and they were using the &lt;code&gt;tidyverse&lt;/code&gt; family of packages a lot. Myself I prefer to stick to base R functions when it comes to development. I think it makes the work neat, simple and easier, keeps the dependencies to the minimum and, since I know R for more than 10 years, it&amp;rsquo;s easier for me to write code in base R. And please, don&amp;rsquo;t misunderstand me, I like the &lt;code&gt;tidyverse&lt;/code&gt; functions but I rather use them when it comes to data analysis: it is great to clean data, prepare it to fit models, explore it, and of course, to make visualizations with the wonderful &lt;code&gt;ggplot&lt;/code&gt; preceded by the &lt;code&gt;%&amp;gt;%&lt;/code&gt; sequence to provide exactly what is needed. But for me, developing a software in base R is just more straight forward.&lt;/p&gt;
+&lt;p&gt;However, as I said, efficiency is critical in this project and thus, I&amp;rsquo;ve been tasked to test it in a few functions already. The most recent was a function to import JSON files line by line using &lt;code&gt;dplyr&lt;/code&gt; functions which I could reduce by half the time using &lt;code&gt;data.table&lt;/code&gt; functions, but that&amp;rsquo;s a topic for another time. One of the first tasks I was given as a new member was to map a process, very similar to another one but with different input parameters. I could had simply copied the code from the previous mapping process into my own script and just change the parameters, since the mapping logic is exactly the same. However, I decided to create my own code using base R, trusting that is more straight forward and efficient, and at the same time taking the opportunity to show up my skills to my new team. Therefore, I ended up comparing the efficiency of the functions using Monte Carlo simulations and thus, creating the present post. I hope it can be useful for some of you.&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:center&#34;&gt;&lt;img class=&#34;img-zoomable&#34; src=&#34;https://blog.rwhitedwarf.com/post/2022/comparison_dplyr_vs_base_r/Langs_compare.png&#34; alt=&#34;Speed comparison&#34; /&gt;
+&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;&lt;b&gt;Image 1. Credits - &lt;a href=&#34;https://github.com/niklas-heer/speed-comparison&#34; target=&#34;_blank&#34;&gt;https://github.com/niklas-heer/speed-comparison&lt;/a&gt;&lt;/b&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h2 id=&#34;the-task&#34;&gt;The task&lt;/h2&gt;
+&lt;p&gt;The general idea is to map a &lt;code&gt;RESPONSE&lt;/code&gt; based on the contents of one column, in this case &lt;code&gt;CODE1&lt;/code&gt;: all values get the response &amp;ldquo;BATCH&amp;rdquo;, but only when &lt;code&gt;CODE1&lt;/code&gt; is empty, they also get the response &amp;ldquo;GETTING&amp;rdquo;. Rows with value &amp;ldquo;BATCH&amp;rdquo; get renamed the columns &lt;code&gt;NAME&lt;/code&gt;, &lt;code&gt;DAY&lt;/code&gt; and &lt;code&gt;TIME&lt;/code&gt; into &lt;code&gt;TEAM&lt;/code&gt;, &lt;code&gt;RESPONSETD&lt;/code&gt; and &lt;code&gt;RESPONSESTT&lt;/code&gt; respectively, while rows with response &amp;ldquo;GETTING&amp;rdquo; only get one more column: &lt;code&gt;NAME&lt;/code&gt; into newly named column &lt;code&gt;TEAM&lt;/code&gt;.&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;(test.df &amp;lt;- data.frame(NAME = as.character(c(1:10)),
+                      DAY = format(Sys.time(), &amp;quot;%d-%m-%y&amp;quot;),
+                      TIME = format(Sys.time(), &amp;quot;%T&amp;quot;),
+                      CODE1 = c(&amp;quot;Code&amp;quot;, NA)))
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;&amp;gt;    NAME      DAY     TIME CODE1
+&amp;gt; 1     1 20-10-22 18:37:23  Code
+&amp;gt; 2     2 20-10-22 18:37:23  &amp;lt;NA&amp;gt;
+&amp;gt; 3     3 20-10-22 18:37:23  Code
+&amp;gt; 4     4 20-10-22 18:37:23  &amp;lt;NA&amp;gt;
+&amp;gt; 5     5 20-10-22 18:37:23  Code
+&amp;gt; 6     6 20-10-22 18:37:23  &amp;lt;NA&amp;gt;
+&amp;gt; 7     7 20-10-22 18:37:23  Code
+&amp;gt; 8     8 20-10-22 18:37:23  &amp;lt;NA&amp;gt;
+&amp;gt; 9     9 20-10-22 18:37:23  Code
+&amp;gt; 10   10 20-10-22 18:37:23  &amp;lt;NA&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The whole general idea is to create a new table with response values, which follows and is followed by a series of adjustments to the data. For the post I have created a test data frame with simple values, in case somebody would like to reproduce the code execution.&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;rename_nCols &amp;lt;- function(samples, cols_to_rename, rename = FALSE, ignore_missing = TRUE){
+  for(i in 1:length(cols_to_rename)){
+    old_name &amp;lt;- cols_to_rename[[i]][1] ## Old in position 1 of vector
+    SYS_name &amp;lt;- cols_to_rename[[i]][2] ## New in position 2 of vector
+    ## WHEN NOT PRESENT
+    if(!old_name %in% names(samples)) {
+      warning(paste(&amp;quot;Column&amp;quot;, old_name, &amp;quot;not found.&amp;quot;))
+      if(!ignore_missing){
+        samples[,SYS_name] &amp;lt;- as.character(NA)
+      }
+    }
+    ## RENAMING
+    else if(rename){
+      names(samples)[names(samples) == old_name] &amp;lt;- SYS_name
+    }
+    ## ADDING
+    else {
+      samples[,SYS_name] &amp;lt;- samples[,old_name]
+    }
+  }
+  return(samples)
+}
+
+create_cols_base &amp;lt;- function(samples){
+  require(dplyr)
+  ## First BATCH
+  assay &amp;lt;- cbind(samples, RESPONSE = &amp;quot;BATCH&amp;quot;)
+  cols_to_rename &amp;lt;- list(c(&#39;NAME&#39;, &#39;TEAM&#39;),
+                         c(&#39;DAY&#39;, &#39;RESPONSETD&#39;),
+                         c(&#39;TIME&#39;, &#39;RESPONSESTT&#39;))
+  assay &amp;lt;- rename_nCols(assay, cols_to_rename)
+  ## then GETTING
+  if(&amp;quot;CODE1&amp;quot; %in% names(samples)){
+    if(nrow(samples[is.na(samples$CODE1),]) != 0){
+      receiving &amp;lt;- cbind(samples[is.na(samples$CODE1),], RESPONSE = &amp;quot;GETTING&amp;quot;)
+    }
+    else receiving &amp;lt;- samples[is.na(samples$CODE1),]
+  }
+  else{
+    receiving &amp;lt;- cbind(samples, RESPONSE = &amp;quot;GETTING&amp;quot;)
+  }
+  receiving &amp;lt;- rename_nCols(receiving, list(c(&#39;NAME&#39;, &#39;TEAM&#39;)))
+  responses &amp;lt;- full_join(assay, receiving)
+  return(responses)
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;My strategy using base R (function &lt;code&gt;create_cols_base()&lt;/code&gt;) was to create two data frames, one per each response, and then join them using &lt;code&gt;full_join()&lt;/code&gt; from &lt;code&gt;dplyr&lt;/code&gt;. I want to stress that the idea was never to use only base R but rather to follow my own logic and my knowledge of R and then compare it with that of my colleagues. To support my &lt;code&gt;create_cols_base()&lt;/code&gt; I created a function &lt;code&gt;rename_nCols&lt;/code&gt; which is a great asset to the project since we are constantly renaming columns or creating new ones based on old ones.&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;create_cols_tidy &amp;lt;- function(samples, responsesToCreate = c(&amp;quot;BATCH&amp;quot;, &amp;quot;GETTING&amp;quot;)){
+    require(dplyr)
+    require(tidyr)
+  responses &amp;lt;- samples %&amp;gt;%
+    mutate(
+      RESPONSE =
+        case_when(
+          is.na(get0(&#39;CODE1&#39;, ifnotfound = as.character(NA))) |
+          get0(&#39;CODE1&#39;, ifnotfound = as.character(NA)) == &amp;quot;&amp;quot; ~
+              list(Reduce(intersect,list(responsesToCreate,c(&amp;quot;BATCH&amp;quot;, &amp;quot;GETTING&amp;quot;)))),
+          TRUE ~ list(Reduce(intersect,list(responsesToCreate,c(&amp;quot;BATCH&amp;quot;))))
+        )
+    ) %&amp;gt;%
+      unnest(cols = c(RESPONSE))%&amp;gt;%
+      subset(!is.na(RESPONSE)) %&amp;gt;%
+      mutate(TEAM = get0(&#39;NAME&#39;, ifnotfound = as.character(NA)),
+             RESPONSESTD = case_when(
+             (RESPONSE == &amp;quot;BATCH&amp;quot;) ~ get0(&#39;DAY&#39;, ifnotfound = as.character(NA)),
+             TRUE ~ as.character(NA)),
+             RESPONSESTTM = case_when(
+             (RESPONSE == &amp;quot;BATCH&amp;quot;) ~ get0(&#39;TIME&#39;, ifnotfound = as.character(NA)),
+             TRUE ~ as.character(NA)))
+    return(responses)
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;As you can see in the code chunk above, my colleagues decided to use a completely different approach, with the function &lt;code&gt;case_when()&lt;/code&gt; as the protagonist. An excellent call in my opinion, but one I&amp;rsquo;m not so familiar with in R. They also made use of the strength of &lt;code&gt;mutate()&lt;/code&gt; to reduce generation of excessive data frames, as it was my case.&lt;/p&gt;
+&lt;h2 id=&#34;the-test&#34;&gt;The test&lt;/h2&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:center&#34;&gt;&lt;img class=&#34;img-zoomable&#34; src=&#34;https://blog.rwhitedwarf.com/post/2022/comparison_dplyr_vs_base_r/plotted_results.png&#34; alt=&#34;Methods comparison&#34; /&gt;
+&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;&lt;b&gt;Image 2. Results of the comparisons using Monte Carlo Simulations.&lt;/b&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;&lt;b&gt;Strong lines represent the median, long and short dotted lines the maximum and minimum values, respectively.&lt;/b&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;To test the time efficiency of each function I iterated each of them a thousand times using datasets of different sizes, going from 1 thousand to 5 million, measuring the time at the beginning and end of the mapping process, and extracting the difference. The graphics presented here are the Minimum, Maximum and Median values of the thousand repetitions per each function. You can see the amount of rows in the data frame plotted against the time that each function took, in seconds.&lt;/p&gt;
+&lt;p&gt;The results, as expected, show a direct correlation between time and amount of rows processed. What is interesting is that up to one million rows, the increase is very slow and the difference between methods is almost not noticeable. In the image 3 we can see that differences are smaller than 1 second. However, as the amount of rows increases above a million, the differences between methods are bigger, to a point where they even double the time.&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:center&#34;&gt;&lt;img class=&#34;img-zoomable&#34; src=&#34;https://blog.rwhitedwarf.com/post/2022/comparison_dplyr_vs_base_r/plotted_results_1m.png&#34; alt=&#34;Methods comparison to million&#34; /&gt;
+&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;&lt;b&gt;Image 3. Results of the comparisons up to a million rows &lt;/b&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;&lt;b&gt;Strong lines represent the median, long and short dotted lines the maximum and minimum values, respectively.&lt;/b&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h2 id=&#34;conclusions&#34;&gt;Conclusions&lt;/h2&gt;
+&lt;p&gt;We are not using datasets above 5 million rows in the project, and even rarely above a million so, we can afford the process to take up to 12 seconds from time to time. However, there was a nice lesson to learn, especially for me: my method using base r functions is twice as slow than a method using &lt;code&gt;tidyverse&lt;/code&gt; group of functions. That shows the commitment of &lt;a href=&#34;https://www.rstudio.com/&#34; target=&#34;_blank&#34;&gt;R studio&lt;/a&gt; of making not only more human-readable functions, but also more efficient.&lt;/p&gt;
+&lt;p&gt;This is also true for a series of new packages appearing in the last years that are helping R to cope better with big data. As I mentioned at the beginning of my post, I consider myself lucky to see how R is evolving and adapting to the challenges of our times when we have the needs to process big amounts of data relatively fast. Rather than see its slow time processing as its future doom, I see it as the potential  where developers are focusing to create packages that can make our job easier and be up to the challenge. And for that, I thank them!.&lt;/p&gt;
+</description>
+    </item>
+    
     <item>
       <title>Minitutorial: make_logical any string</title>
       <link>https://blog.rwhitedwarf.com/post/minitut_makebool/</link>

@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+<meta name="HandheldFriendly" content="True" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<meta name="generator" content="Hugo 0.104.2" />
+
+
+<link rel="shortcut icon" href="https://cdn.jsdelivr.net/gh/dsrkafuu/dsr-cdn-main@1/images/favicons/dsrca.ico" />
+
+
+
+<title>Efficiency comparison of dplyr and tidyr functions vs base R | R with White Dwarf</title>
+
+
+<meta name="author" content="M. Teodoro Tenango" />
+
+
+<meta name="description" content="Monte carlo simulations to compare time efficiency of a function created with dplyr and tidyr vs base R" />
+
+
+<meta name="keywords" content="R-dev, R tips" />
+
+
+<meta property="og:title" content="Efficiency comparison of dplyr and tidyr functions vs base R" />
+<meta name="twitter:title" content="Efficiency comparison of dplyr and tidyr functions vs base R" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://blog.rwhitedwarf.com/post/comparison_dplyr_vs_base_r/" /><meta property="og:description" content="Monte carlo simulations to compare time efficiency of a function created with dplyr and tidyr vs base R" />
+<meta name="twitter:description" content="Monte carlo simulations to compare time efficiency of a function created with dplyr and tidyr vs base R" /><meta property="og:image" content="https://blog.rwhitedwarf.com/post/2022/comparison_dplyr_vs_base_r/Langs_compare.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://blog.rwhitedwarf.com/post/2022/comparison_dplyr_vs_base_r/Langs_compare.png" /><meta property="article:published_time" content="2022-10-20T00:00:00+00:00" /><meta property="article:modified_time" content="2022-10-20T00:00:00+00:00" />
+
+
+<style>
+    @media (prefers-color-scheme: dark) {
+        body[data-theme='auto'] img {
+            filter: brightness(60%);
+        }
+    }
+
+    body[data-theme='dark'] img {
+        filter: brightness(60%);
+    }
+</style>
+
+
+
+
+<link rel="stylesheet" href="https://blog.rwhitedwarf.com/assets/css/fuji.min.css" />
+
+
+
+
+
+<script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+        dataLayer.push(arguments);
+    }
+    gtag('js', new Date());
+    gtag('config', 'G-4BW3ZE1JE8');
+</script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-4BW3ZE1JE8"></script>
+
+
+
+
+
+</head>
+
+<body
+  data-theme="auto"
+  data-theme-auto='true'
+  >
+    <script data-cfasync="false">
+  
+  var fujiThemeData = localStorage.getItem('fuji_data-theme');
+  
+  if (!fujiThemeData) {
+    localStorage.setItem('fuji_data-theme', 'auto');
+  } else {
+    
+    if (fujiThemeData !== 'auto') {
+      document.body.setAttribute('data-theme', fujiThemeData === 'dark' ? 'dark' : 'light');
+    }
+  }
+</script>
+
+    <header>
+    <div class="container-lg clearfix">
+        <div class="col-12 header">
+            <a class="title-main" href="https://blog.rwhitedwarf.com">R with White Dwarf</a>
+            
+            <span class="title-sub">A distant star coding in R</span>
+            
+        </div>
+    </div>
+</header>
+
+    <main>
+        <div class="container-lg clearfix">
+            
+            <div class="col-12 col-md-9 float-left content">
+                
+<article>
+    
+    <h2 class="post-item post-title">
+        <a href="https://blog.rwhitedwarf.com/post/comparison_dplyr_vs_base_r/">Efficiency comparison of dplyr and tidyr functions vs base R</a>
+    </h2>
+    <div class="post-item post-meta">
+        <span><i class="iconfont icon-today-sharp"></i>&nbsp;2022-10-20</span>
+
+<span><i class="iconfont icon-file-tray-sharp"></i>&nbsp;1733 words</span>
+
+<span><i class="iconfont icon-pricetags-sharp"></i>&nbsp;<a href="/tags/r-dev">R-dev</a>&nbsp;<a href="/tags/r-tips">R tips</a>&nbsp;</span>
+
+    </div>
+    
+    <div class="post-content markdown-body">
+        <p>A couple of years ago I was interested in the efficiency of R when it comes to time processing and management of memory and I read a few blog posts about this topic, particularly pointing at the fact that R hasn&rsquo;t been designed to be a very efficient language, especially when it comes to big data processing, and this could be its doom at some point in the future. By that time I also read a great article or blog post regarding the complexity of using the <a href="https://www.tidyverse.org/" target="_blank">tidyverse</a> family of packages in R, especially with the task of teaching R to beginners. The text made excellent points discussing how the syntax of <code>tidyverse</code> packages is so different from the base R functions that it might confuse the people trying to learn R from scratch. Thus, the narration continued towards the use of the packages <code>data.table</code> instead, which maintains a syntax closer to that of base R. And from there, the author also took the opportunity to discuss efficiency of both packages. I apologize for the lack of sources but I could not find the link to the post(s) I&rsquo;m referring to, if any of you knows the post I&rsquo;m talking about please, share the link with me, I&rsquo;d be greatly thankful.</p>
+<p>Regardless of that line of thinking, I believe that we can all feel lucky to have packages such as <code>tidyverse</code> and <code>data.table</code> which make time processing of big data easier, among other advantages. And these are only the beginning to the list of packages. Although I was interested in the topic myself, I never run some &ldquo;formal tests&rdquo; to compare the efficiency of this or other packages (although I was comparing a few languages including Julia, Common Lisp and of course, Python, similarly to niklas-heer in his <a href="https://github.com/niklas-heer/speed-comparison" target="_blank">speed-comparison</a> repo, to whom I also thank for my head image). Nevertheless, in the last couple of weeks I had to do such tests due to the nature of my current job.</p>
+<p>I recently joined a project where the team has been developing a mapper and wrapper of data using R, where the input data can vary from 2 rows to a few millions. The whole process runs through couple of servers to import the data into R, process it accordingly and send it out to a data base from where is served into some other software. The whole process per-se is quite complex and due to the use of servers and Internet connections it can become quite slow. Thus, it is critical that the time processing in R is efficient.</p>
+<p>As mentioned before, a team has been working on this project for a while and they were using the <code>tidyverse</code> family of packages a lot. Myself I prefer to stick to base R functions when it comes to development. I think it makes the work neat, simple and easier, keeps the dependencies to the minimum and, since I know R for more than 10 years, it&rsquo;s easier for me to write code in base R. And please, don&rsquo;t misunderstand me, I like the <code>tidyverse</code> functions but I rather use them when it comes to data analysis: it is great to clean data, prepare it to fit models, explore it, and of course, to make visualizations with the wonderful <code>ggplot</code> preceded by the <code>%&gt;%</code> sequence to provide exactly what is needed. But for me, developing a software in base R is just more straight forward.</p>
+<p>However, as I said, efficiency is critical in this project and thus, I&rsquo;ve been tasked to test it in a few functions already. The most recent was a function to import JSON files line by line using <code>dplyr</code> functions which I could reduce by half the time using <code>data.table</code> functions, but that&rsquo;s a topic for another time. One of the first tasks I was given as a new member was to map a process, very similar to another one but with different input parameters. I could had simply copied the code from the previous mapping process into my own script and just change the parameters, since the mapping logic is exactly the same. However, I decided to create my own code using base R, trusting that is more straight forward and efficient, and at the same time taking the opportunity to show up my skills to my new team. Therefore, I ended up comparing the efficiency of the functions using Monte Carlo simulations and thus, creating the present post. I hope it can be useful for some of you.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img class="img-zoomable" src="/post/2022/comparison_dplyr_vs_base_r/Langs_compare.png" alt="Speed comparison" />
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><b>Image 1. Credits - <a href="https://github.com/niklas-heer/speed-comparison" target="_blank">https://github.com/niklas-heer/speed-comparison</a></b></td>
+</tr>
+</tbody>
+</table>
+<h2 id="the-task">The task</h2>
+<p>The general idea is to map a <code>RESPONSE</code> based on the contents of one column, in this case <code>CODE1</code>: all values get the response &ldquo;BATCH&rdquo;, but only when <code>CODE1</code> is empty, they also get the response &ldquo;GETTING&rdquo;. Rows with value &ldquo;BATCH&rdquo; get renamed the columns <code>NAME</code>, <code>DAY</code> and <code>TIME</code> into <code>TEAM</code>, <code>RESPONSETD</code> and <code>RESPONSESTT</code> respectively, while rows with response &ldquo;GETTING&rdquo; only get one more column: <code>NAME</code> into newly named column <code>TEAM</code>.</p>
+<pre><code class="language-r">(test.df &lt;- data.frame(NAME = as.character(c(1:10)),
+                      DAY = format(Sys.time(), &quot;%d-%m-%y&quot;),
+                      TIME = format(Sys.time(), &quot;%T&quot;),
+                      CODE1 = c(&quot;Code&quot;, NA)))
+</code></pre>
+<pre><code>&gt;    NAME      DAY     TIME CODE1
+&gt; 1     1 20-10-22 18:37:23  Code
+&gt; 2     2 20-10-22 18:37:23  &lt;NA&gt;
+&gt; 3     3 20-10-22 18:37:23  Code
+&gt; 4     4 20-10-22 18:37:23  &lt;NA&gt;
+&gt; 5     5 20-10-22 18:37:23  Code
+&gt; 6     6 20-10-22 18:37:23  &lt;NA&gt;
+&gt; 7     7 20-10-22 18:37:23  Code
+&gt; 8     8 20-10-22 18:37:23  &lt;NA&gt;
+&gt; 9     9 20-10-22 18:37:23  Code
+&gt; 10   10 20-10-22 18:37:23  &lt;NA&gt;
+</code></pre>
+<p>The whole general idea is to create a new table with response values, which follows and is followed by a series of adjustments to the data. For the post I have created a test data frame with simple values, in case somebody would like to reproduce the code execution.</p>
+<pre><code class="language-r">rename_nCols &lt;- function(samples, cols_to_rename, rename = FALSE, ignore_missing = TRUE){
+  for(i in 1:length(cols_to_rename)){
+    old_name &lt;- cols_to_rename[[i]][1] ## Old in position 1 of vector
+    SYS_name &lt;- cols_to_rename[[i]][2] ## New in position 2 of vector
+    ## WHEN NOT PRESENT
+    if(!old_name %in% names(samples)) {
+      warning(paste(&quot;Column&quot;, old_name, &quot;not found.&quot;))
+      if(!ignore_missing){
+        samples[,SYS_name] &lt;- as.character(NA)
+      }
+    }
+    ## RENAMING
+    else if(rename){
+      names(samples)[names(samples) == old_name] &lt;- SYS_name
+    }
+    ## ADDING
+    else {
+      samples[,SYS_name] &lt;- samples[,old_name]
+    }
+  }
+  return(samples)
+}
+
+create_cols_base &lt;- function(samples){
+  require(dplyr)
+  ## First BATCH
+  assay &lt;- cbind(samples, RESPONSE = &quot;BATCH&quot;)
+  cols_to_rename &lt;- list(c('NAME', 'TEAM'),
+                         c('DAY', 'RESPONSETD'),
+                         c('TIME', 'RESPONSESTT'))
+  assay &lt;- rename_nCols(assay, cols_to_rename)
+  ## then GETTING
+  if(&quot;CODE1&quot; %in% names(samples)){
+    if(nrow(samples[is.na(samples$CODE1),]) != 0){
+      receiving &lt;- cbind(samples[is.na(samples$CODE1),], RESPONSE = &quot;GETTING&quot;)
+    }
+    else receiving &lt;- samples[is.na(samples$CODE1),]
+  }
+  else{
+    receiving &lt;- cbind(samples, RESPONSE = &quot;GETTING&quot;)
+  }
+  receiving &lt;- rename_nCols(receiving, list(c('NAME', 'TEAM')))
+  responses &lt;- full_join(assay, receiving)
+  return(responses)
+}
+</code></pre>
+<p>My strategy using base R (function <code>create_cols_base()</code>) was to create two data frames, one per each response, and then join them using <code>full_join()</code> from <code>dplyr</code>. I want to stress that the idea was never to use only base R but rather to follow my own logic and my knowledge of R and then compare it with that of my colleagues. To support my <code>create_cols_base()</code> I created a function <code>rename_nCols</code> which is a great asset to the project since we are constantly renaming columns or creating new ones based on old ones.</p>
+<pre><code class="language-r">create_cols_tidy &lt;- function(samples, responsesToCreate = c(&quot;BATCH&quot;, &quot;GETTING&quot;)){
+    require(dplyr)
+    require(tidyr)
+  responses &lt;- samples %&gt;%
+    mutate(
+      RESPONSE =
+        case_when(
+          is.na(get0('CODE1', ifnotfound = as.character(NA))) |
+          get0('CODE1', ifnotfound = as.character(NA)) == &quot;&quot; ~
+              list(Reduce(intersect,list(responsesToCreate,c(&quot;BATCH&quot;, &quot;GETTING&quot;)))),
+          TRUE ~ list(Reduce(intersect,list(responsesToCreate,c(&quot;BATCH&quot;))))
+        )
+    ) %&gt;%
+      unnest(cols = c(RESPONSE))%&gt;%
+      subset(!is.na(RESPONSE)) %&gt;%
+      mutate(TEAM = get0('NAME', ifnotfound = as.character(NA)),
+             RESPONSESTD = case_when(
+             (RESPONSE == &quot;BATCH&quot;) ~ get0('DAY', ifnotfound = as.character(NA)),
+             TRUE ~ as.character(NA)),
+             RESPONSESTTM = case_when(
+             (RESPONSE == &quot;BATCH&quot;) ~ get0('TIME', ifnotfound = as.character(NA)),
+             TRUE ~ as.character(NA)))
+    return(responses)
+}
+</code></pre>
+<p>As you can see in the code chunk above, my colleagues decided to use a completely different approach, with the function <code>case_when()</code> as the protagonist. An excellent call in my opinion, but one I&rsquo;m not so familiar with in R. They also made use of the strength of <code>mutate()</code> to reduce generation of excessive data frames, as it was my case.</p>
+<h2 id="the-test">The test</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img class="img-zoomable" src="/post/2022/comparison_dplyr_vs_base_r/plotted_results.png" alt="Methods comparison" />
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><b>Image 2. Results of the comparisons using Monte Carlo Simulations.</b></td>
+</tr>
+<tr>
+<td style="text-align:center"><b>Strong lines represent the median, long and short dotted lines the maximum and minimum values, respectively.</b></td>
+</tr>
+</tbody>
+</table>
+<p>To test the time efficiency of each function I iterated each of them a thousand times using datasets of different sizes, going from 1 thousand to 5 million, measuring the time at the beginning and end of the mapping process, and extracting the difference. The graphics presented here are the Minimum, Maximum and Median values of the thousand repetitions per each function. You can see the amount of rows in the data frame plotted against the time that each function took, in seconds.</p>
+<p>The results, as expected, show a direct correlation between time and amount of rows processed. What is interesting is that up to one million rows, the increase is very slow and the difference between methods is almost not noticeable. In the image 3 we can see that differences are smaller than 1 second. However, as the amount of rows increases above a million, the differences between methods are bigger, to a point where they even double the time.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img class="img-zoomable" src="/post/2022/comparison_dplyr_vs_base_r/plotted_results_1m.png" alt="Methods comparison to million" />
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><b>Image 3. Results of the comparisons up to a million rows </b></td>
+</tr>
+<tr>
+<td style="text-align:center"><b>Strong lines represent the median, long and short dotted lines the maximum and minimum values, respectively.</b></td>
+</tr>
+</tbody>
+</table>
+<h2 id="conclusions">Conclusions</h2>
+<p>We are not using datasets above 5 million rows in the project, and even rarely above a million so, we can afford the process to take up to 12 seconds from time to time. However, there was a nice lesson to learn, especially for me: my method using base r functions is twice as slow than a method using <code>tidyverse</code> group of functions. That shows the commitment of <a href="https://www.rstudio.com/" target="_blank">R studio</a> of making not only more human-readable functions, but also more efficient.</p>
+<p>This is also true for a series of new packages appearing in the last years that are helping R to cope better with big data. As I mentioned at the beginning of my post, I consider myself lucky to see how R is evolving and adapting to the challenges of our times when we have the needs to process big amounts of data relatively fast. Rather than see its slow time processing as its future doom, I see it as the potential  where developers are focusing to create packages that can make our job easier and be up to the challenge. And for that, I thank them!.</p>
+
+    </div>
+    <div class="bg-white dark:bg-warmgray-900 p-5 my-4">
+      <div class="post-comment">
+	<script src="https://utteranc.es/client.js"
+            repo="RWhiteDwarf/blog"
+            issue-term="pathname"
+            theme="github-light"
+            crossorigin="anonymous"
+            async>
+</script>
+
+      </div>
+    </div>
+</article>
+
+
+
+            </div>
+            <aside class="col-12 col-md-3 float-left sidebar">
+    
+    <div class="sidebar-item sidebar-pages">
+        <h3>Pages</h3>
+        <ul>
+            
+            <li>
+                <a href="/">Home</a>
+            </li>
+            
+            <li>
+                <a href="/archives/">Archives</a>
+            </li>
+            
+            <li>
+                <a href="/about/">About</a>
+            </li>
+            
+            <li>
+                <a href="/search/">Search</a>
+            </li>
+            
+            <li>
+                <a href="/index.xml">RSS</a>
+            </li>
+            
+        </ul>
+    </div>
+    
+    <div class="sidebar-item sidebar-links">
+        <h3>Links</h3>
+        <ul>
+            
+            <li>
+                <a href="https://github.com/teotenn" target="_blank"><span>GitHub</span></a>
+            </li>
+            
+            <li>
+                <a href="https://www.r-bloggers.com/" target="_blank"><span>R Bloggers</span></a>
+            </li>
+            
+            <li>
+                <a href="https://www.r-project.org/" target="_blank"><span>The R Project</span></a>
+            </li>
+            
+            <li>
+                <a href="https://www.bioconductor.org/" target="_blank"><span>Bioconductor</span></a>
+            </li>
+            
+        </ul>
+    </div>
+    
+    <div class="sidebar-item sidebar-tags">
+        <h3>Tags</h3>
+        <div>
+            
+            <span>
+                <a href="/tags/code-visuals/">Code Visuals</a>
+            </span>
+            
+            <span>
+                <a href="/tags/ggplot2/">ggplot2</a>
+            </span>
+            
+            <span>
+                <a href="/tags/minitutorial/">minitutorial</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-basics/">R basics</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-dev/">R-dev</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-functions/">R functions</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-maps/">R maps</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-shiny/">R shiny</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-tips/">R tips</a>
+            </span>
+            
+        </div>
+    </div>
+    <div class="sidebar-item sidebar-toc">
+        <h3>Table of Contents</h3><nav id="TableOfContents">
+  <ul>
+    <li><a href="#the-task">The task</a></li>
+    <li><a href="#the-test">The test</a></li>
+    <li><a href="#conclusions">Conclusions</a></li>
+  </ul>
+</nav></div>
+</aside>
+
+        </div>
+        <div class="btn">
+    <div class="btn-menu" id="btn-menu">
+        <i class="iconfont icon-grid-sharp"></i>
+    </div>
+    <div class="btn-toggle-mode">
+        <i class="iconfont icon-contrast-sharp"></i>
+    </div>
+    <div class="btn-scroll-top">
+        <i class="iconfont icon-chevron-up-circle-sharp"></i>
+    </div>
+</div>
+<aside class="sidebar-mobile" style="display: none;">
+  <div class="sidebar-wrapper">
+    
+    <div class="sidebar-item sidebar-pages">
+        <h3>Pages</h3>
+        <ul>
+            
+            <li>
+                <a href="/">Home</a>
+            </li>
+            
+            <li>
+                <a href="/archives/">Archives</a>
+            </li>
+            
+            <li>
+                <a href="/about/">About</a>
+            </li>
+            
+            <li>
+                <a href="/search/">Search</a>
+            </li>
+            
+            <li>
+                <a href="/index.xml">RSS</a>
+            </li>
+            
+        </ul>
+    </div>
+    
+    <div class="sidebar-item sidebar-links">
+        <h3>Links</h3>
+        <ul>
+            
+            <li>
+                <a href="https://github.com/teotenn" target="_blank"><span>GitHub</span></a>
+            </li>
+            
+            <li>
+                <a href="https://www.r-bloggers.com/" target="_blank"><span>R Bloggers</span></a>
+            </li>
+            
+            <li>
+                <a href="https://www.r-project.org/" target="_blank"><span>The R Project</span></a>
+            </li>
+            
+            <li>
+                <a href="https://www.bioconductor.org/" target="_blank"><span>Bioconductor</span></a>
+            </li>
+            
+        </ul>
+    </div>
+    
+    <div class="sidebar-item sidebar-tags">
+        <h3>Tags</h3>
+        <div>
+            
+            <span>
+                <a href="/tags/code-visuals/">Code Visuals</a>
+            </span>
+            
+            <span>
+                <a href="/tags/ggplot2/">ggplot2</a>
+            </span>
+            
+            <span>
+                <a href="/tags/minitutorial/">minitutorial</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-basics/">R basics</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-dev/">R-dev</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-functions/">R functions</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-maps/">R maps</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-shiny/">R shiny</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-tips/">R tips</a>
+            </span>
+            
+        </div>
+    </div>
+    
+    
+    
+    <div class="sidebar-item sidebar-toc">
+        <h3>Table of Contents</h3>
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#the-task">The task</a></li>
+    <li><a href="#the-test">The test</a></li>
+    <li><a href="#conclusions">Conclusions</a></li>
+  </ul>
+</nav>
+    </div>
+    
+    
+  </div>
+</aside>
+    </main>
+
+    <footer>
+    <div class="container-lg clearfix">
+        <div class="col-12 footer">
+            
+            <span>&copy; 2021-2022
+                <a href="https://blog.rwhitedwarf.com">R White Dwarf</a>
+                
+                | Powered by <a href="https://github.com/dsrkafuu/hugo-theme-fuji/"
+                   target="_blank">Fuji-v2</a> &amp; <a href="https://gohugo.io/"
+                                                    target="_blank">Hugo</a> 
+            </span>
+        </div>
+    </div>
+</footer>
+
+    
+<script defer src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.6/dist/medium-zoom.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/lazysizes@5.3.2/lazysizes.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/prismjs@1.27.0/components/prism-core.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/prismjs@1.27.0/plugins/autoloader/prism-autoloader.min.js"></script>
+
+
+
+<script defer src="/assets/js/fuji.min.js"></script>
+
+
+
+</body>
+
+</html>
