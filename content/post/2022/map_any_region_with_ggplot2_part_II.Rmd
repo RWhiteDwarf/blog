@@ -37,7 +37,9 @@ I hope you all enjoy it. Feel free to leave any kind of comment and/or question 
 > (result <- fromJSON(site))
 > ```
 
-We start with [Open Street Map](https://www.openstreetmap.org/) and its API [nominatim](https://nominatim.openstreetmap.org/ui/about.html).
+We start with [Open Street Map](https://www.openstreetmap.org/) and its API [nominatim](https://nominatim.openstreetmap.org/ui/about.html). In the piece of code above we can see how to perform a simple query for one city. It is basically the url of nominatim supplemented at the end by the search details: since our main target are cities, we open the search with city using `?city=Texcoco`, in this case I aimed for a city with only few results. Next we are limiting the amount of results to 9 with `&limit=9` and finally requesting the results in format JSON. 
+
+We could basically copy the string that we are passing to `site` and paste it in the web browser to see the results directly there. Feel free to change the city `Texcoco` to any other city, and play a bit more with the rest of the parameters. Particularly have a look at what happens when you remove the `&format=json` part or when you exchange `json` for any other abstract string like `csv` or other non-recognized format. 
 
 > A more specific query
 > ```{r osm_specific_query}
@@ -45,13 +47,15 @@ We start with [Open Street Map](https://www.openstreetmap.org/) and its API [nom
 > state <- '&state=California'
 > country <- '&countrycodes=US'
 > start.nominatim <- "http://nominatim.openstreetmap.org/search?city="
-> end.nominatim <- "&limit=9&format=json"
+> end.nominatim <- "&format=json"
 > 
 > site <- paste0(start.nominatim, city, country, state, end.nominatim)
 > (result <- fromJSON(site))
 > ```
 
-The final form of the function
+If you explore OSM and nominatim a bit you will see that we can add search arguments using `&` followed by the argument we want (i.e., `state`), the symbol equal `=` and the argument. In my example above you can see how we are specifying the State and Country of our query. Additionally it is important to know how to pass spaces in a name, for example, San Francisco will be passed as `San%20Francisco`. 
+
+With this basic information in mind and knowing that the package `RJSONIO` helps us to retrieve the data from the JSON api into an R friendly format, we can easily prepare a function to search for any city quickly, provided a few extra details like a region, state or county, and especially important, the country (try searching for cities like London or Prague without providing a country, you might be surprised of how many cities exist in the world with such names). 
 
 ```{r coords_from_city}
 coords_from_city <- function(City,
@@ -100,6 +104,10 @@ coords_from_city <- function(City,
 }
 ```
 
+My function `coords_from_city` is very primitive but it gets the job done. The reason for that is that when we first developed it we started searching for cities in European countries which are small and usually have unique languages so, names of the cities were not repeated per a given country, so the country name and the city was enough for most of it. But when we started focusing in bigger countries more parameters such as `state`, `county` and `region` started being used, so we started adding `if` commands here and there and the final function stayed in this primitive state. However I am sure you could easily think of a way to pass less parameters or make the function simpler knowing that each parameter has to be preceded by `&` and followed by`=` plus the parameter's value. An important detail to know is that often, providing values to `state` or `region` parameters returns similar results, this is particularly useful in countries where no states are used or other forms of organization are present.
+
+The function returns a data frame that we will use later to create a table with all of our results. Since we are interested in creating maps, we only need the coordinates expressed in latitude and longitude parameters. In case the query is not found, it fills the values with `NA`'s, which later we'll use to keep track of what was found and what wasn't. We are also keeping the values inside `osm_name` which provides enough information to tell the user useful details regarding the search results, including the country of the city found, and other details like state or region. 
+
 # Keeping the info in a database
 
 
@@ -112,11 +120,11 @@ webscrap_to_sqlite <- function(db.name,
                                state = NULL,
                                county = NULL)
 {
-    require(tidyverse)
+    #require(tidyverse)
     require(RSQLite)
     df_len <- length(dat[[city]])
     ## Connect to db and table
-    con <- dbConnect(drv=RSQLite::SQLite(), dbname=db.name)
+    con <- dbConnect(drv=SQLite(), dbname=db.name)
     dbExecute(conn = con,
                 "CREATE TABLE IF NOT EXISTS orgs
                     (ID INTEGER UNIQUE,
