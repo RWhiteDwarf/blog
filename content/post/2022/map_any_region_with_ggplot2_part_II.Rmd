@@ -3,7 +3,7 @@ author: "M. Teodoro Tenango"
 title: "Map any region in the world with R - Part II: Obtaining the coordinates"
 image: ""
 draft: true
-date: 2022-10-24
+date: 2022-11-04
 description: "Part II of making maps of any region in the world with R using ggplot2 and maps packages"
 tags: ["R maps", "ggplot2", "Code Visuals", "R functions"]
 categories: ["R"]
