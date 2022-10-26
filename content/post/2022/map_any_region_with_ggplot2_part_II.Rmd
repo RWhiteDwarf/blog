@@ -104,6 +104,56 @@ coords_from_city <- function(City,
 }
 ```
 
+
+`coords_b` WORKS!!!
+```{r coords_b}
+coords_from_city_b <- function(City,
+                             CountryTwoLetter,
+                             Region = NULL,
+                             State = NULL,
+                             County = NULL){
+    require('RJSONIO')
+    CityCoded <- gsub(' ','%20',City) #remove space for URLs
+    CountryCoded <- paste("&countrycodes=", CountryTwoLetter, sep = '')
+    extras <- c(state = State, region = Region, county = County)
+    extrasCoded <- ''
+    if(!is.null(extras)) {
+        for(i in 1:length(extras)){
+            valCoded <- gsub(' ', '%20', extras[i])
+            extrasCoded <- paste0(extrasCoded, '&', names(extras)[i], '=', valCoded)
+        }
+    }
+    ## get data
+    url <- paste(
+        "http://nominatim.openstreetmap.org/search?city="
+      , CityCoded
+      , CountryCoded
+      , extrasCoded
+      , "&format=json"
+      , sep="")
+    x <- fromJSON(url)
+    ## retrieve coords
+    if(is.vector(x)){
+            message(paste('Found', x[[1]]$display_name))
+            lon <- x[[1]]$lon
+            lat <- x[[1]]$lat
+            osm_name <- x[[1]]$display_name
+            coords <- data.frame('lon' = lon, 'lat' = lat, 'osm_name' = osm_name)
+    }
+    ## When x is not a vector
+    else{
+        message(paste('No results found for', City, CountryTwoLetter))
+        coords <- data.frame('lon' = NA, 'lat' = NA)
+    }
+    ## return a df
+    coords
+}
+
+coords_from_city_b('Sentinel Butte', 'US', State = 'North Dakota', County = 'Golden Valley')
+```
+
+
+
 My function `coords_from_city` is very primitive but it gets the job done. The reason for that is that when we first developed it we started searching for cities in European countries which are small and usually have unique languages so, names of the cities were not repeated per a given country, so the country name and the city was enough for most of it. But when we started focusing in bigger countries more parameters such as `state`, `county` and `region` started being used, so we started adding `if` commands here and there and the final function stayed in this primitive state. However I am sure you could easily think of a way to pass less parameters or make the function simpler knowing that each parameter has to be preceded by `&` and followed by`=` plus the parameter's value. An important detail to know is that often, providing values to `state` or `region` parameters returns similar results, this is particularly useful in countries where no states are used or other forms of organization are present.
 
 The function returns a data frame that we will use later to create a table with all of our results. Since we are interested in creating maps, we only need the coordinates expressed in latitude and longitude parameters. In case the query is not found, it fills the values with `NA`'s, which later we'll use to keep track of what was found and what wasn't. We are also keeping the values inside `osm_name` which provides enough information to tell the user useful details regarding the search results, including the country of the city found, and other details like state or region. 
