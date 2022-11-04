@@ -1,11 +1,11 @@
 ---
-author: "M. Teodoro Tenango"
+author: "Manuel Teodoro Tenango"
 title: "Map any region in the world with R - Part II: Obtaining the coordinates"
-image: ""
-draft: true
+image: "/post/2022/map_any_region_with_ggplot2_part_I/maps_DrawingMap.png"
+draft: false
 date: 2022-11-01
 description: "Part II of making maps of any region in the world with R using ggplot2 and maps packages"
-tags: ["R maps", "ggplot2", "Code Visuals", "R functions"]
+tags: ["R maps", "Code Visuals", "R functions", "web-scrap", "database"]
 categories: ["R"]
 archives: ["2022"]
 ---
@@ -23,9 +23,11 @@ We are creating maps of data showing changes over a span of time for different c
 5. Making a single script for fast replication
 6. Making the code interactive in a shiny app
 	
-It is my way to share the how-to of one of the projects I am most proud of, and at the same time to give back to the R community in hopes that it can help somebody else.
+The ideas is to share the how-to of one of the projects I am most proud of and, at the same time to give back to the R community in hopes that it can help somebody else.
 
 I hope you all enjoy it. Feel free to leave any kind of comment and/or question at the end.
+
+![R Maps](/post/2022/map_any_region_with_ggplot2_part_I/maps_DrawingMap.png)
 
 ## Open Street Maps and Nominatim
 
@@ -115,7 +117,7 @@ I hope you all enjoy it. Feel free to leave any kind of comment and/or question 
 > > [1] "https://nominatim.openstreetmap.org/ui/mapicons/poi_place_village.p.20.png"
 > ```
 
-We start with [Open Street Map](https://www.openstreetmap.org/) and its API [nominatim](https://nominatim.openstreetmap.org/ui/about.html). In the piece of code above we can see how to perform a simple query for one city. It is basically the url of nominatim supplemented at the end by the search details: since our main target are cities, we open the search with city using `?city=Texcoco`, in this case I aimed for a city with only a few results. Next we are limiting the amount of results to 9 with `&limit=9` and finally requesting the results in format JSON. 
+We start with [Open Street Map](https://www.openstreetmap.org/) and its API [nominatim](https://nominatim.openstreetmap.org/ui/about.html). In the piece of code above we can see how to perform a simple query for one city. It is basically one long string containing first the url of nominatim and at the end the search details: here we start the search with city using `?city=Texcoco`, in this case I aimed for a city with only a few results. Next we are limiting the amount of results to 9 with `&limit=9` and finally requesting the results in format JSON. 
 
 We could basically copy the string that we are passing to `site` and paste it in the web browser to see the results directly there. Feel free to change the city `Texcoco` to any other city, and play a bit more with the rest of the parameters. Particularly have a look at what happens when you remove the `&format=json` part or when you exchange `json` for any other abstract string like `csv` or other non-recognized format. 
 
@@ -222,7 +224,9 @@ coords_from_city <- function(City,
 }
 ```
 
-An important detail to know is that often, providing values to `state` or `region` parameters returns similar results, this is particularly useful in countries where no states are used or other forms of organization are present. However, when the country has "States", you cannot pass the name of a State to the parameter `Region`. The function returns a data frame that we will use later to create a table with all of our results. Since we are interested in creating maps, we only need the coordinates expressed in latitude and longitude parameters. In case the query is not found, it fills the values with `NA`'s, which later we'll use to keep track of what was found and what wasn't. We are also keeping the values inside `osm_name` which provides enough information to tell the user useful details regarding the search results, including the country of the city found, and other details like state or region. 
+An important detail to know is that often, providing values to either `state` or `region` parameters returns similar results, this is particularly useful in countries where no states are used or other forms of organization are present. However, when the country has "States", you cannot pass the name of a State to the parameter `Region`. 
+
+The function returns a data frame that we will use later to create a table with all of our results. Since we are interested in creating maps, we only need the coordinates expressed in latitude and longitude parameters. In case the query is not found, it fills the values with `NA`'s, which later we'll use to keep track of what was found and what wasn't. We are also keeping the values inside `osm_name` which provides enough information to tell the user useful details regarding the search results, including the country of the city found, and other details like state or region. 
 
 ![Function coords_from_city() in detail](/post/2022/map_any_region_with_ggplot2_part_II/maps_coords_from_city.png)
 
@@ -285,7 +289,7 @@ webscrap_to_sqlite <- function(db.name,
 
 For storing the data I have chosen to use [SQLite](https://www.sqlite.org/index.html) through the R package [RSQLite](https://rsqlite.r-dbi.org/). If you are not familiar with SQL databases I recommend you to start with a general google search and then come back to the documentation of SQLite and the R package. I chose SQLite because we needed to have something light and portable that would allow us to move the information easily from country to country rather than a centralized database where we could store everything, but a very similar approach can be applied using other types of SQL databases. 
 
-The function `dbConnect()` generates the SQLite file if it does not exist yet then we give SQLite the order to create the tables `orgs` if doesn't exist yet, and the structure for such table. Next we search for the coordinates of one entry using `coords_from_city()` and finally we send it to the database. In that way we could stop the process at any time and continue later by simply retrieving the table `orgs` from the database, compare it with our original data and move forward from what is missing. For that, the column `ID` is critical, it is the column that allows us to link an entry between the original data, the R data.frame and the SQL table. 
+The function `dbConnect()` generates the SQLite file if it does not exist yet. Then we give SQLite the order to create the tables `orgs` if doesn't exist yet, and the structure for such table. Next we search for the coordinates of the entries one by one using `coords_from_city()` and finally we send it to the database. In that way we could stop the process at any time and continue later by simply retrieving the table `orgs` from the database, compare it with our original data and move forward from what is missing. For that, the column `ID` is critical, it is the column that allows us to link an entry between the original data, the R data.frame and the SQL table. 
 
 ![Function webscrap_to_sqlite() in detail](/post/2022/map_any_region_with_ggplot2_part_II/maps_webscrap_to_sqlite.png)
 
@@ -330,7 +334,7 @@ Another detail of our function is the ability to read either from the `csv` file
 
 ## Missing data
 
-As mentioned above, sometimes the results from the query would be incomplete and a second or third run were necessary but with a fewer rows. Some others I just needed to stop the query and continue later from where we left. And yet some other times the data was incomplete or wrong and this could be solved later with the data owner. The 3 scenarios required me read the csv file to R, then the table from the database and compare them to filter the missing values. So I crafted the function `compare_db_data` to compare the database (db) to the original data. 
+As mentioned above, sometimes the results from the query would be incomplete and a second or third run were necessary but with a fewer rows. Some others I just needed to stop the query and continue later from where we left. And yet some other times the data was incomplete or wrong and this could be solved later with the data owner. The 3 scenarios required me to read the csv file to R, then the table from the database and compare them to filter the missing values. So I crafted the function `compare_db_data` to compare the database (db) to the original data. 
 
 
 ```r
@@ -358,121 +362,6 @@ compare_db_data <- function(db.file, dat){
                               as.character(db$ID)))
     filtered
 }
-
-## TESTS 
-mx.df <- data.frame(City = c('Texcoco', 'Monterrey', 'Cancun', 'Texcoco', 'Guadalajara'),
-                    Country = 'MX', ID = c(1:5),
-                    State = c('Estado de Mexico', 'Nuevo Leon', 'Quintana Roo',
-                              'Sonora', 'Jalisco'))
-
-webscrap_to_sqlite('mx.sqlite', mx.df, state = 'State')
-```
-
-```
-> Loading required package: RSQLite
-```
-
-```
-> [1] "Entry 1"
-```
-
-```
-> Found Texcoco de Mora, Texcoco, Estado de México, 56100, México
-```
-
-```
-> [1] "Completed 20 %"
-> [1] "Entry 2"
-```
-
-```
-> Found Monterrey, Nuevo León, México
-```
-
-```
-> [1] "Completed 40 %"
-> [1] "Entry 3"
-```
-
-```
-> Found Cancún, Benito Juárez, Quintana Roo, México
-```
-
-```
-> [1] "Completed 60 %"
-> [1] "Entry 4"
-```
-
-```
-> Found Texcoco, Carbó, Sonora, México
-```
-
-```
-> [1] "Completed 80 %"
-> [1] "Entry 5"
-```
-
-```
-> Found Guadalajara, Jalisco, México
-```
-
-```
-> [1] "Completed 100 %"
-```
-
-```
-> WEB SCRAP FOR COORDINATES SEARCH FINISHED. 0 ENTRIES NOT FOUND
-```
-
-```r
-combine_df_sql('mx.sqlite', mx.df)
-```
-
-```
-> Loading required package: dplyr
-```
-
-```
-> 
-> Attaching package: 'dplyr'
-```
-
-```
-> The following objects are masked from 'package:stats':
-> 
->     filter, lag
-```
-
-```
-> The following objects are masked from 'package:base':
-> 
->     intersect, setdiff, setequal, union
-```
-
-```
->          City Country ID            State
-> 1     Texcoco      MX  1 Estado de Mexico
-> 2   Monterrey      MX  2       Nuevo Leon
-> 3      Cancun      MX  3     Quintana Roo
-> 4     Texcoco      MX  4           Sonora
-> 5 Guadalajara      MX  5          Jalisco
->                                                    osm_name        lon      lat
-> 1 Texcoco de Mora, Texcoco, Estado de México, 56100, México  -98.88213 19.51443
-> 2                             Monterrey, Nuevo León, México -100.31526 25.68020
-> 3               Cancún, Benito Juárez, Quintana Roo, México  -86.85105 21.16179
-> 4                            Texcoco, Carbó, Sonora, México -111.05867 29.63900
-> 5                              Guadalajara, Jalisco, México -103.33840 20.67204
-```
-
-```r
-mx.df <- rbind(mx.df, data.frame(City = 'Fake', Country = 'MX', ID = 6, State = NA))
-
-compare_db_data('mx.sqlite', mx.df)
-```
-
-```
->   City Country ID State
-> 1 Fake      MX  6  <NA>
 ```
 
 As mentioned earlier, sometimes Open Street Maps would simply not have registered certain "cities" (in fact it happened only with really small villages or populations). For that the function `add_coords_manually` would take a csv file with a particular structure to add the missing data. The csv file must have the following columns: 
@@ -509,6 +398,8 @@ add_coords_manually <- function(csv_file, db.name,
 
 ## Next steps
 
-If you are new to R you could probably already had noticed that one of the strengths of R that I'm using a lot here is its use of functions. The first maps that we created were done writing scripts with a few hundreds of lines. Those gave us the basis to craft the necessary functions and so, the rest of the maps were possible using just a few lines. Some of the scripts for the web scrapping of the coordinates consist of less than 10 lines of code. That is possible using the functions above and a few others create for special or particular cases. I will not share absolutely everything but I want to give an idea of how to make the process more efficient. You can always create more functions for your particular cases or modify my proposed functions to adapt to your particular situation. 
+If you are new to R you could probably already had noticed that one of the strengths of R that I'm using a lot here is its use of functions. The first maps that we created were done writing scripts with a few hundreds of lines. Those gave us the basis to craft the necessary functions and so, the rest of the maps were possible using just a few lines. Some of the scripts for the web scrapping of the coordinates consist of less than 10 lines of code. That is possible using the functions above and a few others created for special or particular cases. I will not share absolutely everything but I want to give an idea of how to make the process more efficient. You can always create more functions for your particular cases or modify my proposed functions to adapt to your particular situation. 
 
-Once we got the coordinates of our target cities and we know how to make the basic map, the next step is to add the cities to the base map. In the next post I will show you how I did that and a function to make the process faster and efficient. 
+And speaking of extensibility, just while writting this blog I found out about the package [tmaptools](https://github.com/r-tmap/tmaptools) which contains the function [geocode_OSM](https://www.rdocumentation.org/packages/tmap/versions/1.6-1/topics/geocode_OSM) which uses nominatim to retrieve the coordinates of the searched point. The function has a more user friendly searching format and more possibilities for the return value, while my `coords_from_city()` option stays quite stiff and still with the original format that it was envisioned a few years ago when I created it. If you are truly interested in the topic I invite you to check the package. Myself I have been busy maintaining the code and creating maps that I found little time to do any improvements to the original project. But that's exactly my main task right now so, if I do any changes to the functions presented here using the [tmaptools](https://github.com/r-tmap/tmaptools) package you can be sure that I will create a short post to share it as well. 
+
+Then, once we got the coordinates of our target cities and we know how to make the basic map, the next step is to add the cities to the base map. In the next post I will show you how I did that and a function to make the process faster and efficient. 

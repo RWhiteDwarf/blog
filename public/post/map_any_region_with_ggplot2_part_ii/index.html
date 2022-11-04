@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+<meta name="HandheldFriendly" content="True" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<meta name="generator" content="Hugo 0.104.2" />
+
+
+<link rel="shortcut icon" href="https://cdn.jsdelivr.net/gh/dsrkafuu/dsr-cdn-main@1/images/favicons/dsrca.ico" />
+
+
+
+<title>Map any region in the world with R - Part II: Obtaining the coordinates | R with White Dwarf</title>
+
+
+<meta name="author" content="Manuel Teodoro Tenango" />
+
+
+<meta name="description" content="Part II of making maps of any region in the world with R using ggplot2 and maps packages" />
+
+
+<meta name="keywords" content="R maps, Code Visuals, R functions, web-scrap, database" />
+
+
+<meta property="og:title" content="Map any region in the world with R - Part II: Obtaining the coordinates" />
+<meta name="twitter:title" content="Map any region in the world with R - Part II: Obtaining the coordinates" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://blog.rwhitedwarf.com/post/map_any_region_with_ggplot2_part_ii/" /><meta property="og:description" content="Part II of making maps of any region in the world with R using ggplot2 and maps packages" />
+<meta name="twitter:description" content="Part II of making maps of any region in the world with R using ggplot2 and maps packages" /><meta property="og:image" content="https://blog.rwhitedwarf.com/post/2022/map_any_region_with_ggplot2_part_I/maps_DrawingMap.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://blog.rwhitedwarf.com/post/2022/map_any_region_with_ggplot2_part_I/maps_DrawingMap.png" /><meta property="article:published_time" content="2022-11-01T00:00:00+00:00" /><meta property="article:modified_time" content="2022-11-01T00:00:00+00:00" />
+
+
+<style>
+    @media (prefers-color-scheme: dark) {
+        body[data-theme='auto'] img {
+            filter: brightness(60%);
+        }
+    }
+
+    body[data-theme='dark'] img {
+        filter: brightness(60%);
+    }
+</style>
+
+
+
+
+<link rel="stylesheet" href="https://blog.rwhitedwarf.com/assets/css/fuji.min.css" />
+
+
+
+
+
+<script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+        dataLayer.push(arguments);
+    }
+    gtag('js', new Date());
+    gtag('config', 'G-4BW3ZE1JE8');
+</script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-4BW3ZE1JE8"></script>
+
+
+
+
+
+</head>
+
+<body
+  data-theme="auto"
+  data-theme-auto='true'
+  >
+    <script data-cfasync="false">
+  
+  var fujiThemeData = localStorage.getItem('fuji_data-theme');
+  
+  if (!fujiThemeData) {
+    localStorage.setItem('fuji_data-theme', 'auto');
+  } else {
+    
+    if (fujiThemeData !== 'auto') {
+      document.body.setAttribute('data-theme', fujiThemeData === 'dark' ? 'dark' : 'light');
+    }
+  }
+</script>
+
+    <header>
+    <div class="container-lg clearfix">
+        <div class="col-12 header">
+            <a class="title-main" href="https://blog.rwhitedwarf.com">R with White Dwarf</a>
+            
+            <span class="title-sub">A distant star coding in R</span>
+            
+        </div>
+    </div>
+</header>
+
+    <main>
+        <div class="container-lg clearfix">
+            
+            <div class="col-12 col-md-9 float-left content">
+                
+<article>
+    
+    <h2 class="post-item post-title">
+        <a href="https://blog.rwhitedwarf.com/post/map_any_region_with_ggplot2_part_ii/">Map any region in the world with R - Part II: Obtaining the coordinates</a>
+    </h2>
+    <div class="post-item post-meta">
+        <span><i class="iconfont icon-today-sharp"></i>&nbsp;2022-11-01</span>
+
+<span><i class="iconfont icon-file-tray-sharp"></i>&nbsp;2944 words</span>
+
+<span><i class="iconfont icon-pricetags-sharp"></i>&nbsp;<a href="/tags/r-maps">R maps</a>&nbsp;<a href="/tags/code-visuals">Code Visuals</a>&nbsp;<a href="/tags/r-functions">R functions</a>&nbsp;<a href="/tags/web-scrap">web-scrap</a>&nbsp;<a href="/tags/database">database</a>&nbsp;</span>
+
+    </div>
+    
+    <div class="post-content markdown-body">
+        <h2 id="scope-of-this-post">Scope of this post</h2>
+<p>This is the second part of the series to create a map of any region of the world with R.</p>
+<p>We are creating maps of data showing changes over a span of time for different countries and pointing at all kinds of cities. That basically means that we need to <strong>map any region of the world with R</strong>. Today there are all kinds of packages and techniques to do that. I will share the strategy I used with <a href="https://cran.r-project.org/web/packages/ggplot2/index.html" target="_blank">ggplot2</a> and <a href="https://cran.r-project.org/web/packages/maps/index.html" target="_blank">maps</a> packages, using support of <a href="https://www.openstreetmap.org/" target="_blank">Open Street Map</a> to obtain the coordinates of cities and finally making it interactive with <a href="https://shiny.rstudio.com/" target="_blank">shiny</a>. The project is quite long for a single post, so my idea is to split it into a few smaller blog posts. So far, the list is a follows:</p>
+<ol>
+<li><a href="https://blog.rwhitedwarf.com/post/map_any_region_with_ggplot2_part_i/" target="_blank">The basic map</a></li>
+<li><strong>Web scrapping with nominatim open street maps</strong></li>
+<li>Maps with cities</li>
+<li>Dynamic maps in time</li>
+<li>Making a single script for fast replication</li>
+<li>Making the code interactive in a shiny app</li>
+</ol>
+<p>The ideas is to share the how-to of one of the projects I am most proud of and, at the same time to give back to the R community in hopes that it can help somebody else.</p>
+<p>I hope you all enjoy it. Feel free to leave any kind of comment and/or question at the end.</p>
+<p><img class="img-zoomable" src="/post/2022/map_any_region_with_ggplot2_part_I/maps_DrawingMap.png" alt="R Maps" />
+</p>
+<h2 id="open-street-maps-and-nominatim">Open Street Maps and Nominatim</h2>
+<blockquote>
+<p>A simple query</p>
+<pre><code class="language-r">library('RJSONIO')
+
+site &lt;- (&quot;http://nominatim.openstreetmap.org/search?city=Texcoco&amp;limit=9&amp;format=json&quot;)
+(result &lt;- fromJSON(site))
+</code></pre>
+<pre><code>&gt; [[1]]
+&gt; [[1]]$place_id
+&gt; [1] 1177116
+&gt; 
+&gt; [[1]]$licence
+&gt; [1] &quot;Data © OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright&quot;
+&gt; 
+&gt; [[1]]$osm_type
+&gt; [1] &quot;node&quot;
+&gt; 
+&gt; [[1]]$osm_id
+&gt; [1] 336169214
+&gt; 
+&gt; [[1]]$boundingbox
+&gt; [1] &quot;29.619&quot;       &quot;29.659&quot;       &quot;-111.0786667&quot; &quot;-111.0386667&quot;
+&gt; 
+&gt; [[1]]$lat
+&gt; [1] &quot;29.639&quot;
+&gt; 
+&gt; [[1]]$lon
+&gt; [1] &quot;-111.0586667&quot;
+&gt; 
+&gt; [[1]]$display_name
+&gt; [1] &quot;Texcoco, Carbó, Sonora, México&quot;
+&gt; 
+&gt; [[1]]$class
+&gt; [1] &quot;place&quot;
+&gt; 
+&gt; [[1]]$type
+&gt; [1] &quot;village&quot;
+&gt; 
+&gt; [[1]]$importance
+&gt; [1] 0.385
+&gt; 
+&gt; [[1]]$icon
+&gt; [1] &quot;https://nominatim.openstreetmap.org/ui/mapicons/poi_place_village.p.20.png&quot;
+&gt; 
+&gt; 
+&gt; [[2]]
+&gt; [[2]]$place_id
+&gt; [1] 3448536
+&gt; 
+&gt; [[2]]$licence
+&gt; [1] &quot;Data © OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright&quot;
+&gt; 
+&gt; [[2]]$osm_type
+&gt; [1] &quot;node&quot;
+&gt; 
+&gt; [[2]]$osm_id
+&gt; [1] 458633446
+&gt; 
+&gt; [[2]]$boundingbox
+&gt; [1] &quot;16.551667&quot;  &quot;16.591667&quot;  &quot;-97.053333&quot; &quot;-97.013333&quot;
+&gt; 
+&gt; [[2]]$lat
+&gt; [1] &quot;16.571667&quot;
+&gt; 
+&gt; [[2]]$lon
+&gt; [1] &quot;-97.033333&quot;
+&gt; 
+&gt; [[2]]$display_name
+&gt; [1] &quot;Texcoco, Santa María Sola, Oaxaca, México&quot;
+&gt; 
+&gt; [[2]]$class
+&gt; [1] &quot;place&quot;
+&gt; 
+&gt; [[2]]$type
+&gt; [1] &quot;hamlet&quot;
+&gt; 
+&gt; [[2]]$importance
+&gt; [1] 0.36
+&gt; 
+&gt; [[2]]$icon
+&gt; [1] &quot;https://nominatim.openstreetmap.org/ui/mapicons/poi_place_village.p.20.png&quot;
+</code></pre>
+</blockquote>
+<p>We start with <a href="https://www.openstreetmap.org/" target="_blank">Open Street Map</a> and its API <a href="https://nominatim.openstreetmap.org/ui/about.html" target="_blank">nominatim</a>. In the piece of code above we can see how to perform a simple query for one city. It is basically one long string containing first the url of nominatim and at the end the search details: here we start the search with city using <code>?city=Texcoco</code>, in this case I aimed for a city with only a few results. Next we are limiting the amount of results to 9 with <code>&amp;limit=9</code> and finally requesting the results in format JSON.</p>
+<p>We could basically copy the string that we are passing to <code>site</code> and paste it in the web browser to see the results directly there. Feel free to change the city <code>Texcoco</code> to any other city, and play a bit more with the rest of the parameters. Particularly have a look at what happens when you remove the <code>&amp;format=json</code> part or when you exchange <code>json</code> for any other abstract string like <code>csv</code> or other non-recognized format.</p>
+<blockquote>
+<p>A more specific query</p>
+<pre><code class="language-r">city &lt;- 'San%20Francisco'
+state &lt;- '&amp;state=California'
+country &lt;- '&amp;countrycodes=US'
+start.nominatim &lt;- &quot;http://nominatim.openstreetmap.org/search?city=&quot;
+end.nominatim &lt;- &quot;&amp;format=json&quot;
+
+site &lt;- paste0(start.nominatim, city, country, state, end.nominatim)
+(result &lt;- fromJSON(site))
+</code></pre>
+<pre><code>&gt; [[1]]
+&gt; [[1]]$place_id
+&gt; [1] 297054975
+&gt; 
+&gt; [[1]]$licence
+&gt; [1] &quot;Data © OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright&quot;
+&gt; 
+&gt; [[1]]$osm_type
+&gt; [1] &quot;relation&quot;
+&gt; 
+&gt; [[1]]$osm_id
+&gt; [1] 111968
+&gt; 
+&gt; [[1]]$boundingbox
+&gt; [1] &quot;37.6403143&quot;  &quot;37.929811&quot;   &quot;-123.173825&quot; &quot;-122.281479&quot;
+&gt; 
+&gt; [[1]]$lat
+&gt; [1] &quot;37.7790262&quot;
+&gt; 
+&gt; [[1]]$lon
+&gt; [1] &quot;-122.419906&quot;
+&gt; 
+&gt; [[1]]$display_name
+&gt; [1] &quot;San Francisco, CAL Fire Northern Region, California, United States&quot;
+&gt; 
+&gt; [[1]]$class
+&gt; [1] &quot;boundary&quot;
+&gt; 
+&gt; [[1]]$type
+&gt; [1] &quot;administrative&quot;
+&gt; 
+&gt; [[1]]$importance
+&gt; [1] 1.035131
+&gt; 
+&gt; [[1]]$icon
+&gt; [1] &quot;https://nominatim.openstreetmap.org/ui/mapicons/poi_boundary_administrative.p.20.png&quot;
+</code></pre>
+</blockquote>
+<p>If you explore OSM and nominatim a bit you will see that we can add search arguments using <code>&amp;</code> followed by the argument we want (i.e., <code>state</code>), the symbol equal <code>=</code> and the argument. In my example above you can see how we are specifying the State and Country of our query. Additionally it is important to know how to pass spaces in a name, for example, San Francisco will be passed as <code>San%20Francisco</code>.</p>
+<p>With this basic information in mind and knowing that the package <code>RJSONIO</code> helps us to retrieve the data from the JSON api into an R-friendly format, we can easily prepare a function to search for any city quickly, provided a few extra details like a region, state or county, and especially important, the country (try searching for cities like London or Prague without providing a country, you might be surprised of how many cities exist in the world with such names).</p>
+<pre><code class="language-r">coords_from_city &lt;- function(City,
+                             CountryTwoLetter,
+                             Region = NULL,
+                             State = NULL,
+                             County = NULL){
+    require('RJSONIO')
+    CityCoded &lt;- gsub(' ','%20',City) #remove space for URLs
+    CountryCoded &lt;- paste(&quot;&amp;countrycodes=&quot;, CountryTwoLetter, sep = '')
+    extras &lt;- c(state = State, region = Region, county = County)
+    extrasCoded &lt;- ''
+    if(!is.null(extras)) {
+        for(i in 1:length(extras)){
+            if(extras[i] != '' &amp;&amp; !is.na(extras[i]) &amp;&amp; !grepl(&quot;^\\s*$&quot;, extras[i])){
+                valCoded &lt;- gsub(' ', '%20', extras[i])
+                extrasCoded &lt;- paste0(extrasCoded, '&amp;', names(extras)[i], '=', valCoded)
+            }
+        }
+    }
+    ## get data
+    url &lt;- paste(
+        &quot;http://nominatim.openstreetmap.org/search?city=&quot;
+      , CityCoded
+      , CountryCoded
+      , extrasCoded
+      , &quot;&amp;format=json&quot;
+      , sep=&quot;&quot;)
+    x &lt;- fromJSON(url)
+    ## retrieve coords
+    if(is.vector(x)){
+            message(paste('Found', x[[1]]$display_name))
+            lon &lt;- x[[1]]$lon
+            lat &lt;- x[[1]]$lat
+            osm_name &lt;- x[[1]]$display_name
+            coords &lt;- data.frame('lon' = lon, 'lat' = lat, 'osm_name' = osm_name)
+    }
+    ## When x is not a vector
+    else{
+        message(paste('No results found for', City, CountryTwoLetter))
+        coords &lt;- data.frame('lon' = NA, 'lat' = NA)
+    }
+    ## return a df
+    coords
+}
+</code></pre>
+<p>An important detail to know is that often, providing values to either <code>state</code> or <code>region</code> parameters returns similar results, this is particularly useful in countries where no states are used or other forms of organization are present. However, when the country has &ldquo;States&rdquo;, you cannot pass the name of a State to the parameter <code>Region</code>.</p>
+<p>The function returns a data frame that we will use later to create a table with all of our results. Since we are interested in creating maps, we only need the coordinates expressed in latitude and longitude parameters. In case the query is not found, it fills the values with <code>NA</code>&rsquo;s, which later we&rsquo;ll use to keep track of what was found and what wasn&rsquo;t. We are also keeping the values inside <code>osm_name</code> which provides enough information to tell the user useful details regarding the search results, including the country of the city found, and other details like state or region.</p>
+<p><img class="img-zoomable" src="/post/2022/map_any_region_with_ggplot2_part_II/maps_coords_from_city.png" alt="Function coords_from_city() in detail" />
+</p>
+<p>An important point to consider in <code>coords_from_city</code> is that it will return only the top result from the query. It means that the more information you provide, the more accurate your result will be. For our project it worked well because for big countries we were always collecting enough info about regions and states, while for smaller countries often the options were too small. But if you use the function it is important to know that if you provide a city name like <code>Springfield</code>, <code>Country = 'US'</code> and give no info about State and County, the function will retrieve only the top result from the search and discard the remaining options.</p>
+<h2 id="keeping-the-info-in-a-database">Keeping the info in a database</h2>
+<p>The function <code>coords_from_city</code> could be enough if we need to retrieve info about a few cities; we could make a for loop, retrieve all the coords we need and sore them in a data frame to later save as csv, <code>Rdata</code> or any format we choose. The same is true when we are searching for hundreds or thousands of cities but with data increasing the searching time also increases. If, for any reason, the R session breaks, the information would be lost and we will have to start all over again from row 1. Therefore, we are going to send every single result to a database. In that way, no matter when we stop the process or how this happens, the data is safely stored outside of R.</p>
+<pre><code class="language-r">webscrap_to_sqlite &lt;- function(db.name,
+                               dat,
+                               col.city = 'City',
+                               col.country = 'Country',
+                               region = NULL,
+                               state = NULL,
+                               county = NULL)
+{
+    require(RSQLite)
+    df_len &lt;- nrow(dat)
+    ## Connect to db and table
+    con &lt;- dbConnect(drv=SQLite(), dbname=db.name)
+    dbExecute(conn = con,
+                &quot;CREATE TABLE IF NOT EXISTS orgs
+                    (ID INTEGER UNIQUE,
+                     City TEXT, osm_name TEXT,
+                     lon REAL,lat REAL)&quot;)
+    ## -- Iteration to web-scrap data -- ##
+    ccount &lt;- 0
+    ## For loop to webscrapping
+    for(i in 1:df_len){
+        rg &lt;- ifelse(is.null(region), '', dat[[region]][i])
+        st &lt;- ifelse(is.null(state), '', dat[[state]][i])
+        ct &lt;- ifelse(is.null(county), '', dat[[county]][i])
+        print(paste('Entry', i))
+        ## Do the webscrap
+        coords &lt;- coords_from_city(dat[[col.city]][i],
+                                   dat[[col.country]][i],
+                                   Region = rg, State = st, County = ct)
+        ## DB send query ONLY if coords were found
+        if(is.na(coords$lon[1])){
+            ccount &lt;- ccount + 1
+        }
+        else{
+            sq &lt;- dbExecute(con, 'INSERT OR IGNORE INTO orgs
+                             (ID, City, osm_name, lon, lat)
+                             VALUES (?, ?, ?, ?, ?);',
+                        list(dat[['ID']][i], dat[[col.city]][i],
+                             coords$osm_name, coords$lon[1], coords$lat[1]))
+        }
+        print(paste('Completed', (i/df_len)*100, '%'))
+    }
+    ## Close db
+    dbDisconnect(con)
+    message(paste(&quot;WEB SCRAP FOR COORDINATES SEARCH FINISHED.&quot;,
+                ccount, &quot;ENTRIES NOT FOUND&quot;))
+}
+</code></pre>
+<p>For storing the data I have chosen to use <a href="https://www.sqlite.org/index.html" target="_blank">SQLite</a> through the R package <a href="https://rsqlite.r-dbi.org/" target="_blank">RSQLite</a>. If you are not familiar with SQL databases I recommend you to start with a general google search and then come back to the documentation of SQLite and the R package. I chose SQLite because we needed to have something light and portable that would allow us to move the information easily from country to country rather than a centralized database where we could store everything, but a very similar approach can be applied using other types of SQL databases.</p>
+<p>The function <code>dbConnect()</code> generates the SQLite file if it does not exist yet. Then we give SQLite the order to create the tables <code>orgs</code> if doesn&rsquo;t exist yet, and the structure for such table. Next we search for the coordinates of the entries one by one using <code>coords_from_city()</code> and finally we send it to the database. In that way we could stop the process at any time and continue later by simply retrieving the table <code>orgs</code> from the database, compare it with our original data and move forward from what is missing. For that, the column <code>ID</code> is critical, it is the column that allows us to link an entry between the original data, the R data.frame and the SQL table.</p>
+<p><img class="img-zoomable" src="/post/2022/map_any_region_with_ggplot2_part_II/maps_webscrap_to_sqlite.png" alt="Function webscrap_to_sqlite() in detail" />
+</p>
+<p>Our function also has a variable <code>ccount</code> that counts each time an entry was not found. In that way, once the query is finished it will print the amount of entries that were not found. The reasons for not finding an entry can be many, among the most common ones that I encountered are the following:</p>
+<ul>
+<li>Wrong spelling of the City name or excess of info (i.e., value &ldquo;Prague, District 3&rdquo; when the city name is simply &ldquo;Prague&rdquo;).</li>
+<li>Wrong spelling of the State, Region and/or County name.</li>
+<li>The given City is simply not in the database of Open Street Maps (it happened specially for very small villages).</li>
+<li>Breaks of the internet connection. This one is particularly important because sometimes running the query a second or third time would find cities that were not found the first time.</li>
+</ul>
+<p>To read the data back to R from SQL we simply need to make a connection to the database, read the table, and close the connection. The function <code>combine_df_sql</code> takes care of that and at the same time joins our original data to the data stored in the database by the ID and the city name. This was important for the project because we wanted to keep the coordinates of the cities separated from the rest of the information due to some internal practical reasons. But I think that keeping all the data in SQL at once can facilitate many things. Among others, you could identify when a particular city was already found in the past and retrieve the coordinates from the database directly rather than making a connection to nominatim. I did that for a few countries and it reduces the querying time considerably. For the present post I decided to show the separated version of data in order to provide more tools to the reader.</p>
+<pre><code class="language-r">combine_df_sql &lt;- function(db.file, original.data){
+    require(dplyr)
+    require(RSQLite)
+    if(is.character(original.data)){
+        if(grepl('.csv', original.data, fixed = T)){
+            df &lt;- read.csv(original.data)
+        }
+        else{
+            stop(&quot;Incorrect file format for data&quot;)
+        }
+    }
+    else if(is.data.frame(original.data)){
+        df &lt;- original.data
+    }
+    else{
+        stop(&quot;Incorrect data format&quot;)
+    }
+    con &lt;- dbConnect(drv=RSQLite::SQLite(), dbname = db.file)
+    db &lt;- dbReadTable(con, &quot;orgs&quot;)
+    dbDisconnect(con)
+    result &lt;- left_join(df, db, by = c('ID', 'City'))
+    return(result)
+}
+</code></pre>
+<p>Another detail of our function is the ability to read either from the <code>csv</code> file or from a <code>data.frame</code>. Since we were working mainly with csv files and I used data frames for the unit tests, these 2 formats were enough. Feel free to modify or extend the function for the data formats that you might need.</p>
+<h2 id="missing-data">Missing data</h2>
+<p>As mentioned above, sometimes the results from the query would be incomplete and a second or third run were necessary but with a fewer rows. Some others I just needed to stop the query and continue later from where we left. And yet some other times the data was incomplete or wrong and this could be solved later with the data owner. The 3 scenarios required me to read the csv file to R, then the table from the database and compare them to filter the missing values. So I crafted the function <code>compare_db_data</code> to compare the database (db) to the original data.</p>
+<pre><code class="language-r">compare_db_data &lt;- function(db.file, dat){
+    require(dplyr)
+    require(RSQLite)
+    if(is.character(dat)){
+        if(grepl('.csv', dat, fixed = T)){
+            df &lt;- read.csv(dat)
+        }
+        else{
+            stop(&quot;Incorrect file format for data&quot;)
+        }
+    }
+    else if(is.data.frame(dat)){
+        df &lt;- dat
+    }
+    else{
+        stop(&quot;Incorrect data format&quot;)
+    }
+    con &lt;- dbConnect(drv=RSQLite::SQLite(), dbname = db.file)
+    db &lt;- dbReadTable(con, &quot;orgs&quot;)
+    dbDisconnect(con)
+    filtered &lt;- filter(df, !(as.character(ID) %in%
+                              as.character(db$ID)))
+    filtered
+}
+</code></pre>
+<p>As mentioned earlier, sometimes Open Street Maps would simply not have registered certain &ldquo;cities&rdquo; (in fact it happened only with really small villages or populations). For that the function <code>add_coords_manually</code> would take a csv file with a particular structure to add the missing data. The csv file must have the following columns:</p>
+<ul>
+<li><code>ID</code> column named exactly like that and containing the same ID as the original data.</li>
+<li>A column containing the name of the city</li>
+<li>Columns containing the Latitude and Longitude were we want to point at the city</li>
+<li>A value for <code>osm_name</code>. This could be left empty or we can provide the value we want in this slot. What is important is to have the column present in the csv file.</li>
+</ul>
+<p>Then, as in previous function, we pass to <code>add_coords_manually</code> the name of the csv file with the complementary information, the name of the SQLite database and the names of the columns where we have the values for <code>city</code> names, <code>osm_name</code>, <code>lat</code> and <code>long</code>, all as strings. The rest of the function is self descriptive, provided basic knowledge of SQL syntax.</p>
+<pre><code class="language-r">add_coords_manually &lt;- function(csv_file, db.name,
+                                city, osm_name, lat, lon){
+    require(tidyverse)
+    require(RSQLite)
+    csv_dat &lt;- read_csv(csv_file)
+    csv_len &lt;- length(csv_dat$ID)
+    con &lt;- dbConnect(drv=RSQLite::SQLite(), dbname=db.name)
+    for(i in 1:csv_len){
+        dbSendQuery(con, 'INSERT OR IGNORE INTO orgs
+                      (ID, City, osm_name, lon, lat)
+                      VALUES (?, ?, ?, ?, ?);',
+                    list(csv_dat[['ID']][i],
+                         csv_dat[[city]][i],
+                         csv_dat[[osm_name]][i],
+                         csv_dat[[lat]][i],
+                         csv_dat[[lon]][i]))
+    }
+    dbDisconnect(con)
+    print(paste(csv_len, 'inserted'))
+}
+</code></pre>
+<h2 id="next-steps">Next steps</h2>
+<p>If you are new to R you could probably already had noticed that one of the strengths of R that I&rsquo;m using a lot here is its use of functions. The first maps that we created were done writing scripts with a few hundreds of lines. Those gave us the basis to craft the necessary functions and so, the rest of the maps were possible using just a few lines. Some of the scripts for the web scrapping of the coordinates consist of less than 10 lines of code. That is possible using the functions above and a few others created for special or particular cases. I will not share absolutely everything but I want to give an idea of how to make the process more efficient. You can always create more functions for your particular cases or modify my proposed functions to adapt to your particular situation.</p>
+<p>And speaking of extensibility, just while writting this blog I found out about the package <a href="https://github.com/r-tmap/tmaptools" target="_blank">tmaptools</a> which contains the function <a href="https://www.rdocumentation.org/packages/tmap/versions/1.6-1/topics/geocode_OSM" target="_blank">geocode_OSM</a> which uses nominatim to retrieve the coordinates of the searched point. The function has a more user friendly searching format and more possibilities for the return value, while my <code>coords_from_city()</code> option stays quite stiff and still with the original format that it was envisioned a few years ago when I created it. If you are truly interested in the topic I invite you to check the package. Myself I have been busy maintaining the code and creating maps that I found little time to do any improvements to the original project. But that&rsquo;s exactly my main task right now so, if I do any changes to the functions presented here using the <a href="https://github.com/r-tmap/tmaptools" target="_blank">tmaptools</a> package you can be sure that I will create a short post to share it as well.</p>
+<p>Then, once we got the coordinates of our target cities and we know how to make the basic map, the next step is to add the cities to the base map. In the next post I will show you how I did that and a function to make the process faster and efficient.</p>
+
+    </div>
+    <div class="bg-white dark:bg-warmgray-900 p-5 my-4">
+      <div class="post-comment">
+	<script src="https://utteranc.es/client.js"
+            repo="RWhiteDwarf/blog"
+            issue-term="pathname"
+            theme="github-light"
+            crossorigin="anonymous"
+            async>
+</script>
+
+      </div>
+    </div>
+</article>
+
+
+
+            </div>
+            <aside class="col-12 col-md-3 float-left sidebar">
+    
+    <div class="sidebar-item sidebar-pages">
+        <h3>Pages</h3>
+        <ul>
+            
+            <li>
+                <a href="/">Home</a>
+            </li>
+            
+            <li>
+                <a href="/archives/">Archives</a>
+            </li>
+            
+            <li>
+                <a href="/about/">About</a>
+            </li>
+            
+            <li>
+                <a href="/search/">Search</a>
+            </li>
+            
+            <li>
+                <a href="/index.xml">RSS</a>
+            </li>
+            
+        </ul>
+    </div>
+    
+    <div class="sidebar-item sidebar-links">
+        <h3>Links</h3>
+        <ul>
+            
+            <li>
+                <a href="https://github.com/teotenn" target="_blank"><span>GitHub</span></a>
+            </li>
+            
+            <li>
+                <a href="https://www.r-bloggers.com/" target="_blank"><span>R Bloggers</span></a>
+            </li>
+            
+            <li>
+                <a href="https://www.r-project.org/" target="_blank"><span>The R Project</span></a>
+            </li>
+            
+            <li>
+                <a href="https://www.bioconductor.org/" target="_blank"><span>Bioconductor</span></a>
+            </li>
+            
+        </ul>
+    </div>
+    
+    <div class="sidebar-item sidebar-tags">
+        <h3>Tags</h3>
+        <div>
+            
+            <span>
+                <a href="/tags/code-visuals/">Code Visuals</a>
+            </span>
+            
+            <span>
+                <a href="/tags/database/">database</a>
+            </span>
+            
+            <span>
+                <a href="/tags/ggplot2/">ggplot2</a>
+            </span>
+            
+            <span>
+                <a href="/tags/minitutorial/">minitutorial</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-basics/">R basics</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-dev/">R-dev</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-functions/">R functions</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-maps/">R maps</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-shiny/">R shiny</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-tips/">R tips</a>
+            </span>
+            
+            <span>
+                <a href="/tags/web-scrap/">web-scrap</a>
+            </span>
+            
+        </div>
+    </div>
+    <div class="sidebar-item sidebar-toc">
+        <h3>Table of Contents</h3><nav id="TableOfContents">
+  <ul>
+    <li><a href="#scope-of-this-post">Scope of this post</a></li>
+    <li><a href="#open-street-maps-and-nominatim">Open Street Maps and Nominatim</a></li>
+    <li><a href="#keeping-the-info-in-a-database">Keeping the info in a database</a></li>
+    <li><a href="#missing-data">Missing data</a></li>
+    <li><a href="#next-steps">Next steps</a></li>
+  </ul>
+</nav></div>
+</aside>
+
+        </div>
+        <div class="btn">
+    <div class="btn-menu" id="btn-menu">
+        <i class="iconfont icon-grid-sharp"></i>
+    </div>
+    <div class="btn-toggle-mode">
+        <i class="iconfont icon-contrast-sharp"></i>
+    </div>
+    <div class="btn-scroll-top">
+        <i class="iconfont icon-chevron-up-circle-sharp"></i>
+    </div>
+</div>
+<aside class="sidebar-mobile" style="display: none;">
+  <div class="sidebar-wrapper">
+    
+    <div class="sidebar-item sidebar-pages">
+        <h3>Pages</h3>
+        <ul>
+            
+            <li>
+                <a href="/">Home</a>
+            </li>
+            
+            <li>
+                <a href="/archives/">Archives</a>
+            </li>
+            
+            <li>
+                <a href="/about/">About</a>
+            </li>
+            
+            <li>
+                <a href="/search/">Search</a>
+            </li>
+            
+            <li>
+                <a href="/index.xml">RSS</a>
+            </li>
+            
+        </ul>
+    </div>
+    
+    <div class="sidebar-item sidebar-links">
+        <h3>Links</h3>
+        <ul>
+            
+            <li>
+                <a href="https://github.com/teotenn" target="_blank"><span>GitHub</span></a>
+            </li>
+            
+            <li>
+                <a href="https://www.r-bloggers.com/" target="_blank"><span>R Bloggers</span></a>
+            </li>
+            
+            <li>
+                <a href="https://www.r-project.org/" target="_blank"><span>The R Project</span></a>
+            </li>
+            
+            <li>
+                <a href="https://www.bioconductor.org/" target="_blank"><span>Bioconductor</span></a>
+            </li>
+            
+        </ul>
+    </div>
+    
+    <div class="sidebar-item sidebar-tags">
+        <h3>Tags</h3>
+        <div>
+            
+            <span>
+                <a href="/tags/code-visuals/">Code Visuals</a>
+            </span>
+            
+            <span>
+                <a href="/tags/database/">database</a>
+            </span>
+            
+            <span>
+                <a href="/tags/ggplot2/">ggplot2</a>
+            </span>
+            
+            <span>
+                <a href="/tags/minitutorial/">minitutorial</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-basics/">R basics</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-dev/">R-dev</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-functions/">R functions</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-maps/">R maps</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-shiny/">R shiny</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-tips/">R tips</a>
+            </span>
+            
+            <span>
+                <a href="/tags/web-scrap/">web-scrap</a>
+            </span>
+            
+        </div>
+    </div>
+    
+    
+    
+    <div class="sidebar-item sidebar-toc">
+        <h3>Table of Contents</h3>
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#scope-of-this-post">Scope of this post</a></li>
+    <li><a href="#open-street-maps-and-nominatim">Open Street Maps and Nominatim</a></li>
+    <li><a href="#keeping-the-info-in-a-database">Keeping the info in a database</a></li>
+    <li><a href="#missing-data">Missing data</a></li>
+    <li><a href="#next-steps">Next steps</a></li>
+  </ul>
+</nav>
+    </div>
+    
+    
+  </div>
+</aside>
+    </main>
+
+    <footer>
+    <div class="container-lg clearfix">
+        <div class="col-12 footer">
+            
+            <span>&copy; 2021-2022
+                <a href="https://blog.rwhitedwarf.com">R White Dwarf</a>
+                
+                | Powered by <a href="https://github.com/dsrkafuu/hugo-theme-fuji/"
+                   target="_blank">Fuji-v2</a> &amp; <a href="https://gohugo.io/"
+                                                    target="_blank">Hugo</a> 
+            </span>
+        </div>
+    </div>
+</footer>
+
+    
+<script defer src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.6/dist/medium-zoom.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/lazysizes@5.3.2/lazysizes.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/prismjs@1.27.0/components/prism-core.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/prismjs@1.27.0/plugins/autoloader/prism-autoloader.min.js"></script>
+
+
+
+<script defer src="/assets/js/fuji.min.js"></script>
+
+
+
+</body>
+
+</html>
