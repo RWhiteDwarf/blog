@@ -6,11 +6,11 @@
     <description>Recent content in Posts on R with White Dwarf</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Tue, 01 Nov 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.rwhitedwarf.com/post/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 04 Nov 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.rwhitedwarf.com/post/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Map any region in the world with R - Part II: Obtaining the coordinates</title>
       <link>https://blog.rwhitedwarf.com/post/map_any_region_with_ggplot2_part_ii/</link>
-      <pubDate>Tue, 01 Nov 2022 00:00:00 +0000</pubDate>
+      <pubDate>Fri, 04 Nov 2022 00:00:00 +0000</pubDate>
       
       <guid>https://blog.rwhitedwarf.com/post/map_any_region_with_ggplot2_part_ii/</guid>
       <description>&lt;h2 id=&#34;scope-of-this-post&#34;&gt;Scope of this post&lt;/h2&gt;
