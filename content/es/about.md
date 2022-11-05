@@ -1,12 +1,9 @@
 ---
-aliases:
-- about-us
-- contact
 author: White Dwarf
-date: "2021-11-28"
-description: R with White Dwarf
+title: "Acerca de"
+date: 2022-11-05
+description: R con White Dwarf
 title: About
-showComments: false
 showToc: false
 ---
 

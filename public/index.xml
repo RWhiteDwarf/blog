@@ -6,7 +6,19 @@
     <description>Recent content on R with White Dwarf</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Fri, 04 Nov 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.rwhitedwarf.com/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 05 Nov 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.rwhitedwarf.com/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>About</title>
+      <link>https://blog.rwhitedwarf.com/es/about/</link>
+      <pubDate>Sat, 05 Nov 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.rwhitedwarf.com/es/about/</guid>
+      <description>&lt;p&gt;&lt;strong&gt;White Dwarf&lt;/strong&gt; esta comprometido con promover el uso de R y llevarlo a mas personas.&lt;/p&gt;
+&lt;h2 id=&#34;manuel-teodoro-tenango-teoten&#34;&gt;Manuel Teodoro Tenango (teoten)&lt;/h2&gt;
+&lt;p&gt;Teoten es estadístico y analista de datos con estudios en ecología y ciencias ambientales. Cuando no está trabajando por dinero o idealismo (voluntariado) está programando y aprendiendo cosas nuevas. La programación ha sido su pasión y pasatiempo por mucho tiempo, pero a partir de 2022 se convirtió en su trabajo de tiempo completo. Es promotor del software libre y fan de R. Además está interesado en Common Lisp y Julia.&lt;/p&gt;
+</description>
+    </item>
+    
     <item>
       <title>Map any region in the world with R - Part II: Obtaining the coordinates</title>
       <link>https://blog.rwhitedwarf.com/post/map_any_region_with_ggplot2_part_ii/</link>
@@ -656,34 +668,6 @@ map_country(&amp;quot;Germany&amp;quot;, c(-2, 22), c(47, 55))
 &lt;/p&gt;
 &lt;p&gt;I hope you get some fun mapping different countries. Because different countries have different sizes and shapes, one way to improve the visuals related to this is by adjusting the ratio, for example, my own map of Germany looks out of shape, but it improves considerably if instead of 1.3 we give a ratio of 1.4, check the documentation to learn more about it.&lt;/p&gt;
 &lt;p&gt;Once that we have the basic map, we could add the cities were we want to add data values. Unfortunately, for cities there are many limitations, specially for countries where no special packages has been created to be mapped, and even there, most packages of particular countries don&amp;rsquo;t contain all the cities, especially minor ones. Thus, in our second part I will show how I tackled this problem doing some web scrapping to open street maps.&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>Minitutorial: make_logical any string</title>
-      <link>https://blog.rwhitedwarf.com/es/post/2022/minitut_makebool/</link>
-      <pubDate>Sun, 18 Sep 2022 00:00:00 +0000</pubDate>
-      
-      <guid>https://blog.rwhitedwarf.com/es/post/2022/minitut_makebool/</guid>
-      <description>&lt;h2 id=&#34;welcome-to-r-minitutorials-of-r-white-dwarf&#34;&gt;Welcome to R minitutorials of R White Dwarf&lt;/h2&gt;
-&lt;p&gt;Since the beginning of this year I&amp;rsquo;ve been forced to abandon completely the blog for countless and rather abstract personal reasons that include personal health, family matters and changes in my daily activities including volunteer work as well as main job. As part of the last, I finally got hired for a position as R developer, which brings great joy to me.&lt;/p&gt;
-&lt;p&gt;Thus, I&amp;rsquo;ve been using R more lately in all kinds of forms, including review and debug of small or simple code pieces that can result in practical quick hints for other R users, especially beginners or people with not much experience using R.&lt;/p&gt;
-&lt;p&gt;With that aim in mind while regaining a little bit of my free time and a piece of mental stability, and celebrating my new position, I decided to take care of the blog again with simple yet useful posts called &lt;strong&gt;minitutorials&lt;/strong&gt;, starting with a very simple, even silly, but useful example.&lt;/p&gt;
-&lt;p&gt;I hope they can be useful for you or your friends. Enjoy them!&lt;/p&gt;
-&lt;h2 id=&#34;minitutorial-make_logical_any_string&#34;&gt;Minitutorial: make_logical_any_string&lt;/h2&gt;
-&lt;p&gt;A function to make logical any string&lt;/p&gt;
-&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;make_logical_any_string &amp;lt;- function(a_string){
-    a_string &amp;lt;- as.character(a_string)
-    logical_result &amp;lt;- as.logical(a_string)
-    if(is.na(logical_result)){logical_result &amp;lt;- FALSE}
-    return(logical_result)
-}
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;The function takes any value, convert it to character and returns &lt;code&gt;TRUE&lt;/code&gt; ONLY IF the value takes either of the following forms: &lt;code&gt;&amp;quot;T&amp;quot;&lt;/code&gt;, &lt;code&gt;&amp;quot;TRUE&amp;quot;&lt;/code&gt;, &lt;code&gt;&amp;quot;True&amp;quot;&lt;/code&gt;, &lt;code&gt;&amp;quot;true&amp;quot;&lt;/code&gt; or &lt;code&gt;TRUE&lt;/code&gt;, the last one the logical value, not the string.&lt;/p&gt;
-&lt;h3 id=&#34;logic-of-the-function&#34;&gt;Logic of the function&lt;/h3&gt;
-&lt;p&gt;The function &lt;code&gt;as.character()&lt;/code&gt; will convert any of the true strings listed above into a logical &lt;code&gt;TRUE&lt;/code&gt;. If the string is rather &lt;code&gt;&amp;quot;False&amp;quot;&lt;/code&gt; or its equivalent forms, the function will return &lt;code&gt;FALSE&lt;/code&gt;. If any other character is passed to the function, the result will be &lt;code&gt;NA&lt;/code&gt;. Therefore, we need to tweak the results when NA&amp;rsquo;s are produced since we forcefully need a True/False result. Thus, we implement &lt;code&gt;if(is.na(logical_result)){logical_result &amp;lt;- FALSE}&lt;/code&gt; which will force any other string to return &lt;code&gt;FALSE&lt;/code&gt;.&lt;/p&gt;
-&lt;p&gt;We are using this code for running R scripts in the terminal which passes a series of arguments for its functioning, some of which are required to be &lt;code&gt;TRUE&lt;/code&gt; only when specified so, and &lt;code&gt;FALSE&lt;/code&gt; in any other case, hence the trick of converting any other value to &lt;code&gt;FALSE&lt;/code&gt; rather than &lt;code&gt;NA&lt;/code&gt;.&lt;/p&gt;
-&lt;p&gt;Something to keep in mind is that the arguments are always passed to R script as character and thus, I wrote the example for this post converting everything into character in the first line of the function, which is not necessary in our original code executed in the terminal. In this way, if any number is passed to the function, it will also return &lt;code&gt;FALSE&lt;/code&gt;, emulating what would happen if a number is entered into the console. This behavior &lt;strong&gt;is different for the function&lt;/strong&gt; &lt;code&gt;as.logical()&lt;/code&gt; itself, which returns &lt;code&gt;FALSE&lt;/code&gt; if you enter the numerical value &lt;code&gt;0&lt;/code&gt; and &lt;code&gt;TRUE&lt;/code&gt; if any other numerical value is passed.&lt;/p&gt;
 </description>
     </item>
     
@@ -1479,18 +1463,6 @@ sum_other_vector()
       <description>&lt;p&gt;&lt;strong&gt;White Dwarf&lt;/strong&gt; is committed with promoting the use of R and make it available for more people.&lt;/p&gt;
 &lt;h2 id=&#34;manuel-teodoro-tenango-teoten&#34;&gt;Manuel Teodoro Tenango (teoten)&lt;/h2&gt;
 &lt;p&gt;Teoten is a statistician and data analyst with background in Ecology and Environmental Sciences. When he is not working for money or for idealism (volunteer) is programming and learning new stuff. Programming has been his biggest hobby for long time and as from 2022 it became his full time job. He is supporter of free software and big fan and user of R. Also interested in Common Lisp and Julia.&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>About</title>
-      <link>https://blog.rwhitedwarf.com/es/about/</link>
-      <pubDate>Sun, 28 Nov 2021 00:00:00 +0000</pubDate>
-      
-      <guid>https://blog.rwhitedwarf.com/es/about/</guid>
-      <description>&lt;p&gt;&lt;strong&gt;White Dwarf&lt;/strong&gt; esta comprometido con promover el uso de R y llevarlo a mas personas.&lt;/p&gt;
-&lt;h2 id=&#34;manuel-teodoro-tenango-teoten&#34;&gt;Manuel Teodoro Tenango (teoten)&lt;/h2&gt;
-&lt;p&gt;Teoten es estadístico y analista de datos con estudios en ecología y ciencias ambientales. Cuando no está trabajando por dinero o idealismo (voluntariado) está programando y aprendiendo cosas nuevas. La programación ha sido su pasión y pasatiempo por mucho tiempo, pero a partir de 2022 se convirtió en su trabajo de tiempo completo. Es promotor del software libre y fan de R. Además está interesado en Common Lisp y Julia.&lt;/p&gt;
 </description>
     </item>
     

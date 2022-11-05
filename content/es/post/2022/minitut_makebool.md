@@ -1,44 +1,42 @@
 ---
 author: "M. Teodoro Tenango"
-title: "Minitutorial: make_logical any string"
+title: "Mini tutorial: hacer tipo lógico cualquier texto"
 image: 
-draft: false
+draft: true
 date: 2022-09-18
-description: "First minitutorial: A function that makes any string into logical"
-tags: ["minitutorial", "R functions", "R tips"]
+description: "Primer mini tutorial: Una función que toma cualquier string de texto y lo convierte en tipo lógico"
+tags: ["minitutorial", "R funciones", "R tips"]
 categories: ["R"]
 archives: ["2022"]
 ---
 
-## Welcome to R minitutorials of R White Dwarf
+## Acerca de este post.
 
-Since the beginning of this year I've been forced to abandon completely the blog for countless and rather abstract personal reasons that include personal health, family matters and changes in my daily activities including volunteer work as well as main job. As part of the last, I finally got hired for a position as R developer, which brings great joy to me. 
+Este es mi primer post en español. Es en realidad la traducción de un post que escribí originalmente en inglés hace un par de meses. Pueden ver el post original [aqui](https://blog.rwhitedwarf.com/post/minitut_makebool/). Espero que sea útil para la comunidad hispanohablante de usuarios de R. 
 
-Thus, I've been using R more lately in all kinds of forms, including review and debug of small or simple code pieces that can result in practical quick hints for other R users, especially beginners or people with not much experience using R. 
+Este post se basa en un trabajo reciente donde mi tarea fue la revisión y depuración de piezas de código pequeñas o simples que pueden resultar en consejos prácticos y rápidos para otros usuarios de R, especialmente principiantes o personas sin mucha experiencia en el uso de R.
 
-With that aim in mind while regaining a little bit of my free time and a piece of mental stability, and celebrating my new position, I decided to take care of the blog again with simple yet useful posts called **minitutorials**, starting with a very simple, even silly, but useful example.
+Con ese objetivo en mente, mientras recuperaba un poco de mi tiempo libre y un poco de estabilidad mental, y celebraba mi nuevo puesto como programador en R, decidí crear publicaciones simples pero útiles llamadas **mini tutoriales**, comenzando con un ejemplo muy simple, incluso tonto, pero útil.
 
-I hope they can be useful for you or your friends. Enjoy them!
+## Mini tutorial: Hacer lógico cualquier texto (make_logical_any_string).
 
-## Minitutorial: make_logical_any_string
-
-A function to make logical any string
-
+Una función para hacer lógica cualquier texto en R.
 
 ```r
-make_logical_any_string <- function(a_string){
-    a_string <- as.character(a_string)
-    logical_result <- as.logical(a_string)
-    if(is.na(logical_result)){logical_result <- FALSE}
-    return(logical_result)
+make_logical_any_string <- function(texto){
+    texto <- as.character(texto)
+    resultado_logico <- as.logical(texto)
+    if(is.na(resultado_logico)){resultado_logico <- FALSE}
+    return(resultado_logico)
 }
 ```
 
-The function takes any value, convert it to character and returns `TRUE` ONLY IF the value takes either of the following forms: `"T"`, `"TRUE"`, `"True"`, `"true"` or `TRUE`, the last one the logical value, not the string.
+La función toma cualquier valor, lo convierte en texto (character) y devuelve `TRUE` SÓLO SI el valor adopta cualquiera de las siguientes formas: `"T"`, `"TRUE"`, `"true"`, `"true"` o `TRUE`, el último el valor lógico, no en formato texto.
 
-### Logic of the function
-The function `as.character()` will convert any of the true strings listed above into a logical `TRUE`. If the string is rather `"False"` or its equivalent forms, the function will return `FALSE`. If any other character is passed to the function, the result will be `NA`. Therefore, we need to tweak the results when NA's are produced since we forcefully need a True/False result. Thus, we implement `if(is.na(logical_result)){logical_result <- FALSE}` which will force any other string to return `FALSE`.
+### Lógica de la función
 
-We are using this code for running R scripts in the terminal which passes a series of arguments for its functioning, some of which are required to be `TRUE` only when specified so, and `FALSE` in any other case, hence the trick of converting any other value to `FALSE` rather than `NA`.
+La función `as.character()` convierte cualquier forma de texto "true" listado arriba en un `TRUE` lógico. Si el texto es `"False"` o sus formas equivalentes, la función devolverá `FALSE`. Si se pasa cualquier otro valor a la función, el resultado será `NA`. Por lo tanto, necesitamos modificar los resultados cuando se producen NA, ya que necesitamos un resultado de Verdadero/Falso. Así que implementamos `if(is.na(resultado_logico)){resultado_logico <- FALSE}` que obligará a cualquier otra cadena de texto a devolver `FALSE`.
 
-Something to keep in mind is that the arguments are always passed to R script as character and thus, I wrote the example for this post converting everything into character in the first line of the function, which is not necessary in our original code executed in the terminal. In this way, if any number is passed to the function, it will also return `FALSE`, emulating what would happen if a number is entered into the console. This behavior **is different for the function** `as.logical()` itself, which returns `FALSE` if you enter the numerical value `0` and `TRUE` if any other numerical value is passed. 
+Estamos usando este código para ejecutar scripts de R en la consola que pasa una serie de argumentos para su funcionamiento, algunos de los cuales deben ser "TRUE" solo cuando se especifica, y "FALSE" en cualquier otro caso, de ahí el truco de convertir cualquier otro valor a `FALSE` en lugar de `NA`.
+
+Algo importante a tomar en cuenta es que los argumentos siempre se pasan al script R como texto y, por lo tanto, escribí el ejemplo para esta publicación convirtiendo todo en texto en la primera línea de la función, lo cual no es necesario en nuestro código original ejecutado en el Terminal. De esta forma, si se le pasa algún número a la función, también devolverá `FALSE`, emulando lo que pasaría si se ingresa un número en la consola. Este comportamiento **es diferente para la función** `as.logical()`, que devuelve `FALSE` si ingresa el valor numérico `0` y `TRUE` si se ingresa cualquier otro valor numérico.
