@@ -1,0 +1,55 @@
+[sidebarToc]
+    other = "Contenido"
+
+[sidebarPages]
+    other = "Paginas"
+
+[sidebarTags]
+    other = "Etiquetas"
+
+[sidebarLinks]
+    other = "Links"
+
+[sidebarBangumiChart]
+    other = "Bangumi"
+
+[footerPoweredFront]
+    other = "Powered by "
+
+[footerPoweredEnd]
+    other = " "
+
+[postMetaNoTag]
+    other = "Sin etiqueta"
+
+[postMetaWordCount]
+    one = "{{.Count}} palabra"
+    other = "{{.Count}} palabras"
+
+[postMetaReadingTime]
+    one = "{{.Count}} minuto"
+    other = "{{.Count}} minutos"
+
+[postCopyrightFront]
+    other = "El contenido esta bajo la licencia"
+
+[postCopyrightEnd]
+    other = "."
+
+[postComment]
+    other = "Cargar comentarios"
+
+[archivesTotalPages]
+    other = "Número de entradas: "
+
+[tagsCurrentTag]
+    other = "Posts con la etiqueta {{ .Title }}: "
+
+[searchSuccess]
+    other = "[NUM] resultados ([TIME] ms)"
+
+[searchNotFound]
+    other = "Resultados no encontrados"
+
+[searchFailed]
+    other = "Fallo al cargar el archivo índice"
