@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Es on R con White Dwarf</title>
+    <link>https://blog.rwhitedwarf.com/es/es/</link>
+    <description>Recent content in Es on R con White Dwarf</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Sun, 28 Nov 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.rwhitedwarf.com/es/es/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>About</title>
+      <link>https://blog.rwhitedwarf.com/es/es/about/</link>
+      <pubDate>Sun, 28 Nov 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.rwhitedwarf.com/es/es/about/</guid>
+      <description>&lt;p&gt;&lt;strong&gt;White Dwarf&lt;/strong&gt; esta comprometido con promover el uso de R y llevarlo a mas personas.&lt;/p&gt;
+&lt;h2 id=&#34;manuel-teodoro-tenango-teoten&#34;&gt;Manuel Teodoro Tenango (teoten)&lt;/h2&gt;
+&lt;p&gt;Teoten es estadístico y analista de datos con estudios en ecología y ciencias ambientales. Cuando no está trabajando por dinero o idealismo (voluntariado) está programando y aprendiendo cosas nuevas. La programación ha sido su pasión y pasatiempo por mucho tiempo, pero a partir de 2022 se convirtió en su trabajo de tiempo completo. Es promotor del software libre y fan de R. Además está interesado en Common Lisp y Julia.&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

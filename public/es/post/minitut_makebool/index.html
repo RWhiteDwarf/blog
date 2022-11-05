@@ -21,23 +21,25 @@
 
 
 
-<title>R con White Dwarf | A distant star coding in R</title>
+<title>Minitutorial: make_logical any string | R con White Dwarf</title>
 
 
-<meta name="author" content="R White Dwarf" />
+<meta name="author" content="M. Teodoro Tenango" />
 
 
-<meta name="description" content="A minimal Hugo theme with nice theme color." />
+<meta name="description" content="First minitutorial: A function that makes any string into logical" />
 
 
-<link rel="alternate" type="application/rss+xml" href="https://blog.rwhitedwarf.com/es/index.xml" title="R con White Dwarf" />
+<meta name="keywords" content="minitutorial, R functions, R tips" />
 
-<meta property="og:title" content="R con White Dwarf" />
-<meta name="twitter:title" content="R con White Dwarf" />
-<meta property="og:type" content="website" />
-<meta property="og:url" content="https://blog.rwhitedwarf.com/es/" /><meta property="og:image" content="https://blog.rwhitedwarf.com/favicon/RWD-favicon-48x48.png" />
+
+<meta property="og:title" content="Minitutorial: make_logical any string" />
+<meta name="twitter:title" content="Minitutorial: make_logical any string" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://blog.rwhitedwarf.com/es/post/minitut_makebool/" /><meta property="og:description" content="First minitutorial: A function that makes any string into logical" />
+<meta name="twitter:description" content="First minitutorial: A function that makes any string into logical" /><meta property="og:image" content="https://blog.rwhitedwarf.com/favicon/RWD-favicon-48x48.png" />
 <meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:image" content="https://blog.rwhitedwarf.com/favicon/RWD-favicon-48x48.png" /><meta property="og:updated_time" content="2022-09-18T00:00:00+00:00" />
+<meta name="twitter:image" content="https://blog.rwhitedwarf.com/favicon/RWD-favicon-48x48.png" /><meta property="article:published_time" content="2022-09-18T00:00:00+00:00" /><meta property="article:modified_time" content="2022-09-18T00:00:00+00:00" />
 
 
 <style>
@@ -100,10 +102,8 @@
             
             <div class="col-12 col-md-9 float-left content">
                 
-
-
-
-<div class="post">
+<article>
+    
     <h2 class="post-item post-title">
         <a href="https://blog.rwhitedwarf.com/es/post/minitut_makebool/">Minitutorial: make_logical any string</a>
     </h2>
@@ -115,10 +115,44 @@
 <span><i class="iconfont icon-pricetags-sharp"></i>&nbsp;<a href="/tags/minitutorial">minitutorial</a>&nbsp;<a href="/tags/r-functions">R functions</a>&nbsp;<a href="/tags/r-tips">R tips</a>&nbsp;</span>
 
     </div>
-    <div class="post-item post-summary markdown-body">
-        Welcome to R minitutorials of R White Dwarf Since the beginning of this year I&rsquo;ve been forced to abandon completely the blog for countless and rather abstract personal reasons that include personal health, family matters and changes in my daily activities including volunteer work as well as main job. As part of the last, I finally got hired for a position as R developer, which brings great joy to me.
+    
+    <div class="post-content markdown-body">
+        <h2 id="welcome-to-r-minitutorials-of-r-white-dwarf">Welcome to R minitutorials of R White Dwarf</h2>
+<p>Since the beginning of this year I&rsquo;ve been forced to abandon completely the blog for countless and rather abstract personal reasons that include personal health, family matters and changes in my daily activities including volunteer work as well as main job. As part of the last, I finally got hired for a position as R developer, which brings great joy to me.</p>
+<p>Thus, I&rsquo;ve been using R more lately in all kinds of forms, including review and debug of small or simple code pieces that can result in practical quick hints for other R users, especially beginners or people with not much experience using R.</p>
+<p>With that aim in mind while regaining a little bit of my free time and a piece of mental stability, and celebrating my new position, I decided to take care of the blog again with simple yet useful posts called <strong>minitutorials</strong>, starting with a very simple, even silly, but useful example.</p>
+<p>I hope they can be useful for you or your friends. Enjoy them!</p>
+<h2 id="minitutorial-make_logical_any_string">Minitutorial: make_logical_any_string</h2>
+<p>A function to make logical any string</p>
+<pre><code class="language-r">make_logical_any_string &lt;- function(a_string){
+    a_string &lt;- as.character(a_string)
+    logical_result &lt;- as.logical(a_string)
+    if(is.na(logical_result)){logical_result &lt;- FALSE}
+    return(logical_result)
+}
+</code></pre>
+<p>The function takes any value, convert it to character and returns <code>TRUE</code> ONLY IF the value takes either of the following forms: <code>&quot;T&quot;</code>, <code>&quot;TRUE&quot;</code>, <code>&quot;True&quot;</code>, <code>&quot;true&quot;</code> or <code>TRUE</code>, the last one the logical value, not the string.</p>
+<h3 id="logic-of-the-function">Logic of the function</h3>
+<p>The function <code>as.character()</code> will convert any of the true strings listed above into a logical <code>TRUE</code>. If the string is rather <code>&quot;False&quot;</code> or its equivalent forms, the function will return <code>FALSE</code>. If any other character is passed to the function, the result will be <code>NA</code>. Therefore, we need to tweak the results when NA&rsquo;s are produced since we forcefully need a True/False result. Thus, we implement <code>if(is.na(logical_result)){logical_result &lt;- FALSE}</code> which will force any other string to return <code>FALSE</code>.</p>
+<p>We are using this code for running R scripts in the terminal which passes a series of arguments for its functioning, some of which are required to be <code>TRUE</code> only when specified so, and <code>FALSE</code> in any other case, hence the trick of converting any other value to <code>FALSE</code> rather than <code>NA</code>.</p>
+<p>Something to keep in mind is that the arguments are always passed to R script as character and thus, I wrote the example for this post converting everything into character in the first line of the function, which is not necessary in our original code executed in the terminal. In this way, if any number is passed to the function, it will also return <code>FALSE</code>, emulating what would happen if a number is entered into the console. This behavior <strong>is different for the function</strong> <code>as.logical()</code> itself, which returns <code>FALSE</code> if you enter the numerical value <code>0</code> and <code>TRUE</code> if any other numerical value is passed.</p>
+
     </div>
-</div>
+    <div class="bg-white dark:bg-warmgray-900 p-5 my-4">
+      <div class="post-comment">
+	<script src="https://utteranc.es/client.js"
+            repo="RWhiteDwarf/blog"
+            issue-term="pathname"
+            theme="github-light"
+            crossorigin="anonymous"
+            async>
+</script>
+
+      </div>
+    </div>
+</article>
+
+
 
             </div>
             <aside class="col-12 col-md-3 float-left sidebar">
@@ -175,9 +209,17 @@
             
         </div>
     </div>
-    
-    
-    
+    <div class="sidebar-item sidebar-toc">
+        <h3>Contenido</h3><nav id="TableOfContents">
+  <ul>
+    <li><a href="#welcome-to-r-minitutorials-of-r-white-dwarf">Welcome to R minitutorials of R White Dwarf</a></li>
+    <li><a href="#minitutorial-make_logical_any_string">Minitutorial: make_logical_any_string</a>
+      <ul>
+        <li><a href="#logic-of-the-function">Logic of the function</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav></div>
 </aside>
 
         </div>
@@ -246,6 +288,22 @@
             </span>
             
         </div>
+    </div>
+    
+    
+    
+    <div class="sidebar-item sidebar-toc">
+        <h3>Contenido</h3>
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#welcome-to-r-minitutorials-of-r-white-dwarf">Welcome to R minitutorials of R White Dwarf</a></li>
+    <li><a href="#minitutorial-make_logical_any_string">Minitutorial: make_logical_any_string</a>
+      <ul>
+        <li><a href="#logic-of-the-function">Logic of the function</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
     </div>
     
     

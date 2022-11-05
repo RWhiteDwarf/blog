@@ -15,11 +15,34 @@ ignoreErrors = ["error-disable-taxonomy"]
 languageCode = "en"           # For RSS, view https://www.rssboard.org/rss-language-codes
 defaultContentLanguage = "en" # For HTML page, now support: en, zh-hans, zh-hant, ja, nl, pl, it
 [languages]
-	[languages.en]
-		weight = 1
-	[languages.es]
-		title = 'R con White Dwarf'
-    		weight = 2
+   [languages.en]
+     weight = 1
+   [languages.es]
+     title = 'R con White Dwarf'
+     contentDir = 'content/es'	
+     weight = 2
+     [languages.es.menu]
+     [[languages.es.menu.nav]]
+       name = 'Inicio'
+       url = '/es/'
+       weight = 1
+     [[languages.es.menu.nav]]
+       name = "Archivos"
+       url = "/archives/"
+       weight = 2
+     [[languages.es.menu.nav]]
+       name = "Acerca de"
+       url = "/es/about/"
+       weight = 3
+     [[languages.es.menu.nav]]
+       name = "Busqueda"
+       url = "/search/"
+       weight = 4
+     [[languages.es.menu.nav]]
+       name = "RSS"
+       url = "/index.xml"
+       weight = 5
+
 
 
 summaryLength = 100 # Custom summary length, add <!--more--> in post file to custom split point
