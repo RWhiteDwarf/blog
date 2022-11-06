@@ -2,7 +2,7 @@
 author: "M. Teodoro Tenango"
 title: "Mini tutorial: hacer tipo lógico cualquier texto"
 image: 
-draft: true
+draft: false
 date: 2022-09-18
 description: "Primer mini tutorial: Una función que toma cualquier string de texto y lo convierte en tipo lógico"
 tags: ["minitutorial", "R funciones", "R tips"]
