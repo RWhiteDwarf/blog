@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>R con White Dwarf</title>
+    <link>https://blog.rwhitedwarf.com/es/</link>
+    <description>Recent content on R con White Dwarf</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Sun, 18 Sep 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.rwhitedwarf.com/es/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Acerca de R White Dwarf</title>
+      <link>https://blog.rwhitedwarf.com/es/about/</link>
+      <pubDate>Sun, 06 Nov 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.rwhitedwarf.com/es/about/</guid>
+      <description>&lt;p&gt;&lt;strong&gt;White Dwarf&lt;/strong&gt; esta comprometido con promover el uso de R y llevarlo a mas personas.&lt;/p&gt;
+&lt;h2 id=&#34;manuel-teodoro-tenango-teoten&#34;&gt;Manuel Teodoro Tenango (teoten)&lt;/h2&gt;
+&lt;p&gt;Teoten es estad�stico y analista de datos con estudios en ecolog�a y ciencias ambientales. Cuando no est� trabajando por dinero o idealismo (voluntariado) est� programando y aprendiendo cosas nuevas. La programaci�n ha sido su pasi�n y pasatiempo por mucho tiempo, pero a partir de 2022 se convirti� en su trabajo de tiempo completo. Es promotor del software libre y fan de R. Adem�s est� interesado en Common Lisp y Julia.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Mini tutorial: hacer tipo lógico cualquier texto</title>
+      <link>https://blog.rwhitedwarf.com/es/post/minitut_makebool/</link>
+      <pubDate>Sun, 18 Sep 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.rwhitedwarf.com/es/post/minitut_makebool/</guid>
+      <description>&lt;h2 id=&#34;acerca-de-este-post&#34;&gt;Acerca de este post.&lt;/h2&gt;
+&lt;p&gt;Este es mi primer post en español. Es en realidad la traducción de un post que escribí originalmente en inglés hace un par de meses. Pueden ver el post original &lt;a href=&#34;https://blog.rwhitedwarf.com/post/minitut_makebool/&#34; target=&#34;_blank&#34;&gt;aqui&lt;/a&gt;. Espero que sea útil para la comunidad hispanohablante de usuarios de R.&lt;/p&gt;
+&lt;p&gt;Este post se basa en un trabajo reciente donde mi tarea fue la revisión y depuración de piezas de código pequeñas o simples que pueden resultar en consejos prácticos y rápidos para otros usuarios de R, especialmente principiantes o personas sin mucha experiencia en el uso de R.&lt;/p&gt;
+&lt;p&gt;Con ese objetivo en mente, mientras recuperaba un poco de mi tiempo libre y un poco de estabilidad mental, y celebraba mi nuevo puesto como programador en R, decidí crear publicaciones simples pero útiles llamadas &lt;strong&gt;mini tutoriales&lt;/strong&gt;, comenzando con un ejemplo muy simple, incluso tonto, pero útil.&lt;/p&gt;
+&lt;h2 id=&#34;mini-tutorial-hacer-lógico-cualquier-texto-make_logical_any_string&#34;&gt;Mini tutorial: Hacer lógico cualquier texto (make_logical_any_string).&lt;/h2&gt;
+&lt;p&gt;Una función para hacer lógica cualquier texto en R.&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;make_logical_any_string &amp;lt;- function(texto){
+    texto &amp;lt;- as.character(texto)
+    resultado_logico &amp;lt;- as.logical(texto)
+    if(is.na(resultado_logico)){resultado_logico &amp;lt;- FALSE}
+    return(resultado_logico)
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;La función toma cualquier valor, lo convierte en texto (character) y devuelve &lt;code&gt;TRUE&lt;/code&gt; SÓLO SI el valor adopta cualquiera de las siguientes formas: &lt;code&gt;&amp;quot;T&amp;quot;&lt;/code&gt;, &lt;code&gt;&amp;quot;TRUE&amp;quot;&lt;/code&gt;, &lt;code&gt;&amp;quot;true&amp;quot;&lt;/code&gt;, &lt;code&gt;&amp;quot;true&amp;quot;&lt;/code&gt; o &lt;code&gt;TRUE&lt;/code&gt;, el último el valor lógico, no en formato texto.&lt;/p&gt;
+&lt;h3 id=&#34;lógica-de-la-función&#34;&gt;Lógica de la función&lt;/h3&gt;
+&lt;p&gt;La función &lt;code&gt;as.character()&lt;/code&gt; convierte cualquier forma de texto &amp;ldquo;true&amp;rdquo; listado arriba en un &lt;code&gt;TRUE&lt;/code&gt; lógico. Si el texto es &lt;code&gt;&amp;quot;False&amp;quot;&lt;/code&gt; o sus formas equivalentes, la función devolverá &lt;code&gt;FALSE&lt;/code&gt;. Si se pasa cualquier otro valor a la función, el resultado será &lt;code&gt;NA&lt;/code&gt;. Por lo tanto, necesitamos modificar los resultados cuando se producen NA, ya que necesitamos un resultado de Verdadero/Falso. Así que implementamos &lt;code&gt;if(is.na(resultado_logico)){resultado_logico &amp;lt;- FALSE}&lt;/code&gt; que obligará a cualquier otra cadena de texto a devolver &lt;code&gt;FALSE&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;Estamos usando este código para ejecutar scripts de R en la consola que pasa una serie de argumentos para su funcionamiento, algunos de los cuales deben ser &amp;ldquo;TRUE&amp;rdquo; solo cuando se especifica, y &amp;ldquo;FALSE&amp;rdquo; en cualquier otro caso, de ahí el truco de convertir cualquier otro valor a &lt;code&gt;FALSE&lt;/code&gt; en lugar de &lt;code&gt;NA&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;Algo importante a tomar en cuenta es que los argumentos siempre se pasan al script R como texto y, por lo tanto, escribí el ejemplo para esta publicación convirtiendo todo en texto en la primera línea de la función, lo cual no es necesario en nuestro código original ejecutado en el Terminal. De esta forma, si se le pasa algún número a la función, también devolverá &lt;code&gt;FALSE&lt;/code&gt;, emulando lo que pasaría si se ingresa un número en la consola. Este comportamiento &lt;strong&gt;es diferente para la función&lt;/strong&gt; &lt;code&gt;as.logical()&lt;/code&gt;, que devuelve &lt;code&gt;FALSE&lt;/code&gt; si ingresa el valor numérico &lt;code&gt;0&lt;/code&gt; y &lt;code&gt;TRUE&lt;/code&gt; si se ingresa cualquier otro valor numérico.&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>
