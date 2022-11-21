@@ -167,10 +167,10 @@ create_cols_base &amp;lt;- function(samples){
     
     <item>
       <title>Mini tutorial: hacer tipo lógico cualquier texto</title>
-      <link>https://blog.rwhitedwarf.com/es/post/2022/minitut_makebool/</link>
+      <link>https://blog.rwhitedwarf.com/es/post/2022/minitut_hacer_bool/</link>
       <pubDate>Sun, 18 Sep 2022 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.rwhitedwarf.com/es/post/2022/minitut_makebool/</guid>
+      <guid>https://blog.rwhitedwarf.com/es/post/2022/minitut_hacer_bool/</guid>
       <description>&lt;h2 id=&#34;acerca-de-este-post&#34;&gt;Acerca de este post.&lt;/h2&gt;
 &lt;p&gt;Este es mi primer post en español. Es en realidad la traducción de un post que escribí originalmente en inglés hace un par de meses. Pueden ver el post original &lt;a href=&#34;https://blog.rwhitedwarf.com/post/minitut_makebool/&#34; target=&#34;_blank&#34;&gt;aqui&lt;/a&gt;. Espero que sea útil para la comunidad hispanohablante de usuarios de R.&lt;/p&gt;
 &lt;p&gt;Este post se basa en un trabajo reciente donde mi tarea fue la revisión y depuración de piezas de código pequeñas o simples que pueden resultar en consejos prácticos y rápidos para otros usuarios de R, especialmente principiantes o personas sin mucha experiencia en el uso de R.&lt;/p&gt;

@@ -4,14 +4,12 @@ title: "EDA de datos de INEGI"
 image: ""
 draft: true
 date: 2022-11-21
-description: " "
+description: "Análisis exploratorio de datos obtenidos de INEGI"
 tags: ["ggplot2", "R basics", "R funciones", "R tips", "data analysis"]
 categories: ["R"]
 archives: ["2022"]
 ---
-```{r setup, include=FALSE} 
-knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
-```
+
 
 ## Introducción
 
@@ -24,7 +22,8 @@ una fórmula o receta para realizar una exploración, sea general o
 exhaustiva. Una exploración correcta depende de las habilidades del analista tanto
 para entender los datos como para utilizar las herramientas 
 adecuadas. Este post no pretende ser una explicación detallada
-de como realizar un EDA, si no mas bien un ejemplo específico.
+de como realizar un EDA, más bien intento compartir una de mis
+experiencias haciendo haciendo ayuda de la programación funcional.
 
 La información que presento aquí son los resultados del primer
 EDA que realicé cuando decidí cambiar mi carrera hacía el análisis
@@ -65,12 +64,14 @@ realizado conforme se va utilizando, sin embargo es recomendable
 importar todas las librerías y archivos al inicio de nuestro código
 o script, para evitar errores o problemas de organización.
 
-```r start
+
+```r
   library(tidyverse)
   library(cowplot)
 
-  export.rows <- read_csv("exportations_activity_rows.csv")
-  export.cols <- read_csv("exportations_activity_cols.csv")
+  path.to.files <- "https://raw.githubusercontent.com/teotenn/INEGI-export/master/"
+  export.rows <- read_csv(paste0(path.to.files, "exportations_activity_rows.csv"))
+  export.cols <- read_csv(paste0(path.to.files, "exportations_activity_cols.csv"))
 ```
 
 Las librerías son básicamente programas escritos en R que contienen
@@ -120,9 +121,43 @@ primero fue guardar los nombres en español en un vector, para
 utilizarlos más tarde en la traducción; también generamos un vector
 del mismo tamaño, con su equivalente en Inglés (en exactamente el mismo orden).
 
-```r categorias
+
+```r
    ## Nombres en español en un vector
    colnames(export.cols)
+```
+
+```
+>  [1] "state"                                                                                                                 
+>  [2] "year"                                                                                                                  
+>  [3] "Exportaciones totales"                                                                                                 
+>  [4] "Industria alimentaria"                                                                                                 
+>  [5] "Industria de las bebidas y el tabaco"                                                                                  
+>  [6] "Fabricación de insumos textiles y acabado de textiles"                                                                 
+>  [7] "Fabricación de productos textiles, excepto prendas de vestir"                                                          
+>  [8] "Fabricación de prendas de vestir"                                                                                      
+>  [9] "Industria del papel"                                                                                                   
+> [10] "Industria química"                                                                                                     
+> [11] "Industria del plástico y del hule"                                                                                     
+> [12] "Fabricación de productos a base de minerales no metálicos"                                                             
+> [13] "Industrias metálicas básicas"                                                                                          
+> [14] "Fabricación de productos metálicos"                                                                                    
+> [15] "Fabricación de maquinaria y equipo"                                                                                    
+> [16] "Fabricación de equipo de computación, comunicación, medición y de otros equipos, componentes y accesorios electrónicos"
+> [17] "Fabricación de equipo de transporte"                                                                                   
+> [18] "Fabricación de muebles, colchones y persianas"                                                                         
+> [19] "Otras industrias manufactureras"                                                                                       
+> [20] "Subsectores no especificados"                                                                                          
+> [21] "Minería de minerales metálicos y no metálicos, excepto petróleo y gas"                                                 
+> [22] "Curtido y acabado de cuero y piel, y fabricación de productos de cuero, piel y materiales sucedáneos"                  
+> [23] "Industria de la madera"                                                                                                
+> [24] "Impresión e industrias conexas"                                                                                        
+> [25] "Fabricación de accesorios, aparatos eléctricos y equipo de generación de energía eléctrica"                            
+> [26] "Extracción de petróleo y gas"                                                                                          
+> [27] "Fabricación de productos derivados del petróleo y del carbón"
+```
+
+```r
    categorias <- colnames(export.cols)[3:27]
 
    ## Equivalentes en inglés 
@@ -142,7 +177,8 @@ directamente con la función `colnames`, seleccionando la posición
 de los valores que queremos cambiar (en este caso, 3 al 27) y
 colocando ahí los nuevos valores en inglés.
 
-```r colnames
+
+```r
    ## Cambio de nombres
    colnames(export.cols)[3:27] <- activities.en
 ```
@@ -159,7 +195,8 @@ buscar el equivalente en inglés de la frase en español. Así pues,
 basado en `translatete`, vamos llenando los huecos, creando la 
 función `equivalent` que haga exactamente lo que necesito.
 
-```r translate
+
+```r
    translate <- function(vector.es){
     vector.en <- c()
     for (i in 1:length(vector.es)){
@@ -182,11 +219,28 @@ función `equivalent` que haga exactamente lo que necesito.
    equivalent("Impresión e industrias conexas")
 ```
 
+```
+> [1] "Printing"
+```
+
 Como podemos ver, `equivalent` toma la expresión de nuestro vector
 en español, y arroja el equivalente que le hemos elegido en inglés.
 
-```r translate-in-action
+
+```r
    translate(categorias)
+```
+
+```
+>  [1] "Total"               "Food"                "Drinks and tobacco" 
+>  [4] "Textiles"            "Textile products"    "Tailoring"          
+>  [7] "Paper"               "Chemistry"           "Plastic"            
+> [10] "Minerals based"      "Metal industry"      "Metal products"     
+> [13] "Machinery"           "Electronics"         "Transport equipment"
+> [16] "Furniture"           "Other manufactures"  "Not specified"      
+> [19] "Mining"              "Leather"             "Wood"               
+> [22] "Printing"            "Electricity"         "Petroleum"          
+> [25] "Petroleum products"
 ```
 
 `translate` toma todos los elementos en el vector, y nos arroja sus
@@ -195,9 +249,27 @@ valores en la columna `Descripción` a su equivalente en inglés he
 decidido generar una nueva columna, utilizando mi función
 `translate`. Esto es muy fácil utilizando `mutate`
 
-```r minimal-mutate
+
+```r
   (export.rows <- mutate(export.rows,
                          Activity = translate(`Descripción`)))
+```
+
+```
+> # A tibble: 5,255 × 6
+>    Código Descripción           state           year     USD Activity
+>     <dbl> <chr>                 <chr>          <dbl>   <dbl> <chr>   
+>  1     NA Exportaciones totales Aguascalientes  2007 4389841 Total   
+>  2     NA Exportaciones totales Aguascalientes  2008 4456893 Total   
+>  3     NA Exportaciones totales Aguascalientes  2009 3951108 Total   
+>  4     NA Exportaciones totales Aguascalientes  2010 5647929 Total   
+>  5     NA Exportaciones totales Aguascalientes  2011 6051640 Total   
+>  6     NA Exportaciones totales Aguascalientes  2012 6183782 Total   
+>  7     NA Exportaciones totales Aguascalientes  2013 6726207 Total   
+>  8     NA Exportaciones totales Aguascalientes  2014 8466007 Total   
+>  9     NA Exportaciones totales Aguascalientes  2015 8495445 Total   
+> 10     NA Exportaciones totales Aguascalientes  2016 7870962 Total   
+> # … with 5,245 more rows
 ```
 
 ### Exploración visual
@@ -218,7 +290,8 @@ los totales por estado, podemos pedirle a R que haga lo siguiente
 
 La versión en R utilizando el paquete `dplyr` es:
 
-```r pipes
+
+```r
 export.cols %>%
     group_by(state) %>%
     summarise(`total export` = sum(Total)) %>%
@@ -226,11 +299,50 @@ export.cols %>%
     print(n = Inf)
 ```
 
+```
+> # A tibble: 32 × 2
+>    state                           `total export`
+>    <chr>                                    <dbl>
+>  1 Chihuahua                            466861927
+>  2 Baja California                      398935507
+>  3 Coahuila de Zaragoza                 355638907
+>  4 Nuevo León                           330267052
+>  5 Tamaulipas                           284435973
+>  6 Campeche                             264100465
+>  7 Jalisco                              213931233
+>  8 México                               188357470
+>  9 Sonora                               179661021
+> 10 Guanajuato                           167191962
+> 11 Puebla                               127934390
+> 12 Tabasco                              115797563
+> 13 San Luis Potosí                       94812554
+> 14 Querétaro                             88633615
+> 15 Aguascalientes                        79688240
+> 16 Veracruz de Ignacio de la Llave       68556313
+> 17 Morelos                               37397175
+> 18 Zacatecas                             34010223
+> 19 Ciudad de México                      32037661
+> 20 Hidalgo                               19504479
+> 21 Durango                               17431796
+> 22 Yucatán                               14496875
+> 23 Michoacán de Ocampo                   13411397
+> 24 Chiapas                               13291536
+> 25 Tlaxcala                              12987607
+> 26 Oaxaca                                11023551
+> 27 Sinaloa                                7825439
+> 28 Guerrero                               5918438
+> 29 Colima                                 2518028
+> 30 Baja California Sur                    2303491
+> 31 Nayarit                                1146388
+> 32 Quinta Roo                              517674
+```
+
 Gracias a la agrupación de tidyverse, podemos utilizar estas 
 herramientas con muchas otras funciones, entre otras, podemos
 mandar resultados a un gráfico `ggplot`
 
-```r primer-ggplot
+
+```r
    ## Visualización
   export.cols %>%
       group_by(state) %>%
@@ -241,8 +353,9 @@ mandar resultados a un gráfico `ggplot`
                    fill = `total export`),
                stat = 'identity') +
       coord_flip()
-
 ```
+
+![plot of chunk primer-ggplot](/post/2022/EDA_INEGI_data/primer-ggplot-1.png)
 
 En el bloque anterior comenzamos con algo similar, y mandamos los
 resultados a `ggplot()`, así que ya no es necesario especificar 
@@ -266,13 +379,44 @@ barras, y cambiar el eje de las Y por X, respectivamente.
 Ahora podemos hacer lo mismo pero por categoría, 
 usando nuestra otra tabla `export.rows`
 
-```r repeat-plot
+
+```r
 export.rows %>%
     filter(Activity != "Total") %>%
     group_by(Activity) %>%
     summarise(Total = sum(USD)) %>%
     arrange(desc(Total)) %>%
     print(n = Inf)
+```
+
+```
+> # A tibble: 24 × 2
+>    Activity                 Total
+>    <chr>                    <dbl>
+>  1 Transport equipment 1226859499
+>  2 Electronics          747959073
+>  3 Petroleum            397933968
+>  4 Electricity          208582754
+>  5 Other manufactures   147915402
+>  6 Machinery            136957553
+>  7 Chemistry            133570853
+>  8 Metal industry       117915995
+>  9 Metal products        82889135
+> 10 Food                  81653585
+> 11 Plastic               80126816
+> 12 Mining                52953993
+> 13 Not specified         51470567
+> 14 Tailoring             43913959
+> 15 Drinks and tobacco    31059501
+> 16 Minerals based        30584505
+> 17 Furniture             19883596
+> 18 Petroleum products    14565067
+> 19 Paper                 13876523
+> 20 Leather                9863853
+> 21 Printing               6915538
+> 22 Textiles               6260722
+> 23 Textile products       4954252
+> 24 Wood                   1959275
 ```
 
 Para variar un poco y hacerlo mas didáctico, vamos a cambiar 
@@ -282,7 +426,8 @@ algunos detalles, manteniéndolo simple:
    - Vamos a renombrar el eje de las X
    - Vamos a darle un título
 
-```r new-plot
+
+```r
 export.rows %>%
     filter(Activity != "Total") %>%
     group_by(Activity) %>%
@@ -298,17 +443,38 @@ export.rows %>%
     coord_flip()
 ```
 
+![plot of chunk new-plot](/post/2022/EDA_INEGI_data/new-plot-1.png)
+
 Ahora de manera fácil e intuitiva podemos observar que cambios
 en el código fueron responsables de que cambios en el gráfico.
 
 Por último, podemos hacer algo similar con las exportaciones 
 totales por año.
 
-```r export-year-table
+
+```r
 export.cols %>%
     group_by(year) %>%
     summarise(`total export` = sum(Total)) %>%
     print(n = Inf)
+```
+
+```
+> # A tibble: 12 × 2
+>     year `total export`
+>    <dbl>          <dbl>
+>  1  2007      237809741
+>  2  2008      257967777
+>  3  2009      198234125
+>  4  2010      258504747
+>  5  2011      299732519
+>  6  2012      320014188
+>  7  2013      329562705
+>  8  2014      347559680
+>  9  2015      337170197
+> 10  2016      324901419
+> 11  2017      351726063
+> 12  2018      387442789
 ```
 
 Ahora en lugar de hacer un gráfico de barras, vamos a hacer líneas
@@ -320,7 +486,8 @@ podemos especificarlo dentro de la función principal del gráfico
 tomados como los valores principales, y no necesitamos darle mas
 detalles a `geom_line` ni `geom_point`.
 
-```r ggplot-detailed
+
+```r
    ## Visualization
 export.rows %>%
     filter(Activity == "Total") %>%
@@ -331,11 +498,14 @@ export.rows %>%
     geom_point() 
 ```
 
+![plot of chunk ggplot-detailed](/post/2022/EDA_INEGI_data/ggplot-detailed-1.png)
+
 Podemos hacer lo mismo por estado. Aquí, debido a la complejidad de
 los nombres de algunos estados, he decidido abreviar los nombres
 de cada estado a sólo 6 letras, usando la función `abbreviate`
 
-```r abbreviate
+
+```r
    ## Por estado
 export.rows %>%
     filter(Activity == "Total") %>%
@@ -345,6 +515,8 @@ export.rows %>%
     geom_line(aes(colour = abbreviate(state, 6)))+
     geom_point(aes(colour = abbreviate(state, 6)))
 ```
+
+![plot of chunk abbreviate](/post/2022/EDA_INEGI_data/abbreviate-1.png)
 
 Gracias a `abbreviate` los nombres de los estados se pueden 
 entender, sin embargo, a pesar de los colores y el texto, es 
@@ -356,13 +528,33 @@ actividad produciendo la mayor cantidad de dolares en exportaciones, o
 si esto cambió con el tiempo. Debido a la complejidad de nuestro
 gráfico anterior, necesitamos un acercamiento diferente:
 
-```r state-per-year
+
+```r
    ## Principal estado en cada año
 export.cols %>%
     group_by(year) %>%
     filter(Total == max(Total)) %>%
     select(year, state, Total) %>%
     arrange(year)
+```
+
+```
+> # A tibble: 12 × 3
+> # Groups:   year [12]
+>     year state              Total
+>    <dbl> <chr>              <dbl>
+>  1  2007 Baja California 31858677
+>  2  2008 Baja California 32988913
+>  3  2009 Baja California 26741828
+>  4  2010 Chihuahua       34633881
+>  5  2011 Chihuahua       38446014
+>  6  2012 Chihuahua       41764861
+>  7  2013 Chihuahua       43770979
+>  8  2014 Chihuahua       45594451
+>  9  2015 Chihuahua       40302945
+> 10  2016 Chihuahua       43342067
+> 11  2017 Chihuahua       46491551
+> 12  2018 Chihuahua       51944047
 ```
 
 Los resultados son interesantes: el principal exportador hasta 2009
@@ -376,7 +568,8 @@ Capeche es el principal exportador de Petroleo, y se mantiene en
 primer lugar cuando ordenamos por actividad, sin embargo pasa al
 sexto lugar cuando ordenamos por estado.
 
-```r activity-per-year
+
+```r
 ## Activity
 export.rows %>%
     filter(Activity != "Total") %>%
@@ -384,6 +577,25 @@ export.rows %>%
     filter(USD == max(USD)) %>%
     arrange(year) %>%
     select(Activity, state, year)
+```
+
+```
+> # A tibble: 12 × 3
+> # Groups:   year [12]
+>    Activity            state                 year
+>    <chr>               <chr>                <dbl>
+>  1 Petroleum           Campeche              2007
+>  2 Petroleum           Campeche              2008
+>  3 Petroleum           Campeche              2009
+>  4 Petroleum           Campeche              2010
+>  5 Petroleum           Campeche              2011
+>  6 Petroleum           Campeche              2012
+>  7 Petroleum           Campeche              2013
+>  8 Transport equipment Coahuila de Zaragoza  2014
+>  9 Transport equipment Coahuila de Zaragoza  2015
+> 10 Transport equipment Coahuila de Zaragoza  2016
+> 11 Transport equipment Coahuila de Zaragoza  2017
+> 12 Transport equipment Coahuila de Zaragoza  2018
 ```
 
 Sería interesante cambiar la manera de analizar los datos y 
@@ -413,7 +625,8 @@ las principales actividades por estado, por ejemplo, actividades
 que generen mas de 5 millones de dolares. Podríamos escribir lo
 siguiente
 
-```r five-mil-code
+
+```r
   export.rows %>%
       filter(Activity != "Total") %>%
       group_by(state, Activity)  %>%
@@ -431,6 +644,8 @@ siguiente
       theme(legend.position="none")
 ```
 
+![plot of chunk five-mil-code](/post/2022/EDA_INEGI_data/five-mil-code-1.png)
+
 Sin embargo, tendríamos que repetir el mismo bloque de código por 
 cada estado que queremos visualizar, o si queremos cambiar el límite de 5 millones. 
 La mejor opción en este caso
@@ -446,7 +661,8 @@ de 5 millones por default.
 
 Veamos el siguiente bloque para entender mejor.
 
-```r five-mil-func
+
+```r
   ## Funcion para ver principal actividad por estado
   plot_state <- function(estado, USD_min = 5000000){
       export.rows %>%
@@ -512,12 +728,25 @@ si dentro de la función otorgamos un valor diferente a
 `export.rows`, la función utilizará su nuevo valor. Veamos un 
 ejemplo:
 
-```r primeros-empty
+
+```r
   primeros <- function(){
       head(export.rows)
   }
 
   primeros()
+```
+
+```
+> # A tibble: 6 × 6
+>   Código Descripción           state           year     USD Activity
+>    <dbl> <chr>                 <chr>          <dbl>   <dbl> <chr>   
+> 1     NA Exportaciones totales Aguascalientes  2007 4389841 Total   
+> 2     NA Exportaciones totales Aguascalientes  2008 4456893 Total   
+> 3     NA Exportaciones totales Aguascalientes  2009 3951108 Total   
+> 4     NA Exportaciones totales Aguascalientes  2010 5647929 Total   
+> 5     NA Exportaciones totales Aguascalientes  2011 6051640 Total   
+> 6     NA Exportaciones totales Aguascalientes  2012 6183782 Total
 ```
 
 Generamos una función sin variables, que nos devuelve los primeros
@@ -526,7 +755,8 @@ dentro del cuerpo de la función, por lo tanto R lo busca en la
 memoria general, encuentra nuestra tabla, y la utiliza. Sin embargo
 esto podría cambiar, veamos:
 
-```r primeros-modified
+
+```r
   primeros <- function(){
       export.rows <- c(1:100)
       head(export.rows)
@@ -534,15 +764,30 @@ esto podría cambiar, veamos:
 
   primeros()
 ```
-x
-**STOP HERE**
+
+```
+> [1] 1 2 3 4 5 6
+```
 
 Ahora que le hemos dado un valor a `export.rows` dentro del
 cuerpo de la función, el resultado es diferente. Sin embargo,
 el objeto `export.rows` en la memoria general no cambió
 
-```r :session
+
+```r
   head(export.rows)
+```
+
+```
+> # A tibble: 6 × 6
+>   Código Descripción           state           year     USD Activity
+>    <dbl> <chr>                 <chr>          <dbl>   <dbl> <chr>   
+> 1     NA Exportaciones totales Aguascalientes  2007 4389841 Total   
+> 2     NA Exportaciones totales Aguascalientes  2008 4456893 Total   
+> 3     NA Exportaciones totales Aguascalientes  2009 3951108 Total   
+> 4     NA Exportaciones totales Aguascalientes  2010 5647929 Total   
+> 5     NA Exportaciones totales Aguascalientes  2011 6051640 Total   
+> 6     NA Exportaciones totales Aguascalientes  2012 6183782 Total
 ```
 
 En este ejemplo perecería estúpido, sin embargo al generar 
@@ -552,23 +797,27 @@ objeto que ya existe y que necesitamos dentro de la función.
 Diferentes lenguajes de programación protegen esto de diferentes
 maneras, por ejemplo en python, para llamar un objeto de la memoria
 general dentro de una función, es necesario utilizar el comando
-`global`, lo cual le indica que debe buscar este objeto en la 
-memoria global, y resulta más fácil para nosotros el visualizar
-que objetos estamos utilizando desde la memoria global. En R
+`global`, lo cual le indica que debe buscar este objeto en el ambiente
+global, y resulta más fácil para nosotros el notar
+que objetos estamos utilizando desde el ambiente global. En R
 es importante ser conscientes de nuestros objetos globales y
 locales.
 
 Continuando con nuestro EDA, podemos ver que ahora nuestra función
 facilita la visualización por estado:
 
-```r :session :file figure10.png :results value graphics file :results output :exports both
+
+```r
    plot_state("Chihuahua")
 ```
+
+![plot of chunk plot-chihuahua](/post/2022/EDA_INEGI_data/plot-chihuahua-1.png)
 
 Podemos utilizar el paquete `cowplot` para observar varios estados
 juntos en un sólo gráfico.
 
-```r :session :file figure6.png :results value graphics file :results output :exports both
+
+```r
    plot_grid(
     plot_state("Chihuahua") ,
     plot_state("Baja California"),
@@ -578,6 +827,8 @@ juntos en un sólo gráfico.
     plot_state("Campeche", USD_min = 10000),
     ncol = 2)
 ```
+
+![plot of chunk varios-estados](/post/2022/EDA_INEGI_data/varios-estados-1.png)
 
 La función `plot_grid` resulta útil y conveniente, organiza varios
 gráficos de forma simétrica, podemos especificar el número de
@@ -599,7 +850,8 @@ actividades de exportación. Sin embargo, si observamos las
 principales actividades a lo largo del tiempo, exportación de 
 petroleo se encuentra en el tercer lugar:
 
-```r :session :file figure7.png :results value graphics file :results output :exports both
+
+```r
    export.rows %>%
     filter(Activity == "Electronics" |
            Activity == "Transport equipment" |
@@ -610,6 +862,8 @@ petroleo se encuentra en el tercer lugar:
     geom_line(aes(colour = Activity)) +
     geom_point(aes(colour = Activity))
 ```
+
+![plot of chunk 3-activities](/post/2022/EDA_INEGI_data/3-activities-1.png)
 
 Al menos desde 2007, exportación de petroleo genera menos ingresos
 que exportación de electrodomésticos y equipo de transporte. Otro
@@ -623,7 +877,8 @@ Podemos generar otra función similar a `plot_state` pero por
 actividad, `plot_activity` para observar los principales estados
 exportadores de petroleo.
 
-```r :session :file figure8.png :results value graphics file :results output :exports both
+
+```r
   ## Funcion para ver principal estado por actividad
   plot_activity <- function(activity, USD_min = 5000000){
       export.cols %>%
@@ -646,15 +901,20 @@ exportadores de petroleo.
    plot_activity("Petroleum")
 ```
 
+![plot of chunk plot-activity-fun](/post/2022/EDA_INEGI_data/plot-activity-fun-1.png)
+
 Sólo 4 estados exportaron más de 5,000 millones de USD en petroleo.
 
-```r :session :file figure9.png :results value graphics file :results output :exports both
+
+```r
    plot_grid(
     plot_state("Campeche", USD_min = 1000000),
     plot_state("Tabasco", USD_min = 1000000),
     plot_state("Veracruz de Ignacio de la Llave"),
     plot_state("Chiapas", USD_min = 1000000))
 ```
+
+![plot of chunk activity-states](/post/2022/EDA_INEGI_data/activity-states-1.png)
 
 Parece ser que la economía de Tabasco, Campeche y Chiapas dependen
 en alto grado de la extracción de petroleo, diferente a Veracruz,

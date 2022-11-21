@@ -21,23 +21,25 @@
 
 
 
-<title>minitutorial | R with White Dwarf</title>
+<title>Mini tutorial: hacer tipo lógico cualquier texto | R with White Dwarf</title>
 
 
-<meta name="author" content="R White Dwarf" />
+<meta name="author" content="M. Teodoro Tenango" />
 
 
-<meta name="description" content="A minimal Hugo theme with nice theme color." />
+<meta name="description" content="Primer mini tutorial: Una función que toma cualquier string de texto y lo convierte en tipo lógico" />
 
 
-<link rel="alternate" type="application/rss+xml" href="https://blog.rwhitedwarf.com/tags/minitutorial/index.xml" title="R with White Dwarf" />
+<meta name="keywords" content="minitutorial, R funciones, R tips" />
 
-<meta property="og:title" content="minitutorial" />
-<meta name="twitter:title" content="minitutorial" />
-<meta property="og:type" content="website" />
-<meta property="og:url" content="https://blog.rwhitedwarf.com/tags/minitutorial/" /><meta property="og:image" content="https://blog.rwhitedwarf.com/favicon/RWD-favicon-48x48.png" />
+
+<meta property="og:title" content="Mini tutorial: hacer tipo lógico cualquier texto" />
+<meta name="twitter:title" content="Mini tutorial: hacer tipo lógico cualquier texto" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://blog.rwhitedwarf.com/es/post/2022/minitut_hacer_bool/" /><meta property="og:description" content="Primer mini tutorial: Una función que toma cualquier string de texto y lo convierte en tipo lógico" />
+<meta name="twitter:description" content="Primer mini tutorial: Una función que toma cualquier string de texto y lo convierte en tipo lógico" /><meta property="og:image" content="https://blog.rwhitedwarf.com/favicon/RWD-favicon-48x48.png" />
 <meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:image" content="https://blog.rwhitedwarf.com/favicon/RWD-favicon-48x48.png" /><meta property="og:updated_time" content="2022-09-18T00:00:00+00:00" />
+<meta name="twitter:image" content="https://blog.rwhitedwarf.com/favicon/RWD-favicon-48x48.png" /><meta property="article:published_time" content="2022-09-18T00:00:00+00:00" /><meta property="article:modified_time" content="2022-09-18T00:00:00+00:00" />
 
 
 <style>
@@ -100,47 +102,54 @@
             
             <div class="col-12 col-md-9 float-left content">
                 
-
-<div class="page-info">
-  <span>Posts with the tag minitutorial: </span>
-</div>
-
-
-
-<div class="post">
-  <h2 class="post-item post-title">
-    <a href="https://blog.rwhitedwarf.com/es/post/2022/minitut_hacer_bool/">Mini tutorial: hacer tipo lógico cualquier texto</a>
-  </h2>
-  <div class="post-item post-meta">
-    <span><i class="iconfont icon-today-sharp"></i>&nbsp;2022-09-18</span>
+<article>
+    
+    <h2 class="post-item post-title">
+        <a href="https://blog.rwhitedwarf.com/es/post/2022/minitut_hacer_bool/">Mini tutorial: hacer tipo lógico cualquier texto</a>
+    </h2>
+    <div class="post-item post-meta">
+        <span><i class="iconfont icon-today-sharp"></i>&nbsp;2022-09-18</span>
 
 <span><i class="iconfont icon-file-tray-sharp"></i>&nbsp;448 words</span>
 
 <span><i class="iconfont icon-pricetags-sharp"></i>&nbsp;<a href="/tags/minitutorial">minitutorial</a>&nbsp;<a href="/tags/r-funciones">R funciones</a>&nbsp;<a href="/tags/r-tips">R tips</a>&nbsp;</span>
 
-  </div>
-  <div class="post-item post-summary markdown-body">
-    Acerca de este post. Este es mi primer post en español. Es en realidad la traducción de un post que escribí originalmente en inglés hace un par de meses. Pueden ver el post original aqui. Espero que sea útil para la comunidad hispanohablante de usuarios de R.
-Este post se basa en un trabajo reciente donde mi tarea fue la revisión y depuración de piezas de código pequeñas o simples que pueden resultar en consejos prácticos y rápidos para otros usuarios de R, especialmente principiantes o personas sin mucha experiencia en el uso de R.
-  </div>
-</div>
+    </div>
+    
+    <div class="post-content markdown-body">
+        <h2 id="acerca-de-este-post">Acerca de este post.</h2>
+<p>Este es mi primer post en español. Es en realidad la traducción de un post que escribí originalmente en inglés hace un par de meses. Pueden ver el post original <a href="https://blog.rwhitedwarf.com/post/minitut_makebool/" target="_blank">aqui</a>. Espero que sea útil para la comunidad hispanohablante de usuarios de R.</p>
+<p>Este post se basa en un trabajo reciente donde mi tarea fue la revisión y depuración de piezas de código pequeñas o simples que pueden resultar en consejos prácticos y rápidos para otros usuarios de R, especialmente principiantes o personas sin mucha experiencia en el uso de R.</p>
+<p>Con ese objetivo en mente, mientras recuperaba un poco de mi tiempo libre y un poco de estabilidad mental, y celebraba mi nuevo puesto como programador en R, decidí crear publicaciones simples pero útiles llamadas <strong>mini tutoriales</strong>, comenzando con un ejemplo muy simple, incluso tonto, pero útil.</p>
+<h2 id="mini-tutorial-hacer-lógico-cualquier-texto-make_logical_any_string">Mini tutorial: Hacer lógico cualquier texto (make_logical_any_string).</h2>
+<p>Una función para hacer lógica cualquier texto en R.</p>
+<pre><code class="language-r">make_logical_any_string &lt;- function(texto){
+    texto &lt;- as.character(texto)
+    resultado_logico &lt;- as.logical(texto)
+    if(is.na(resultado_logico)){resultado_logico &lt;- FALSE}
+    return(resultado_logico)
+}
+</code></pre>
+<p>La función toma cualquier valor, lo convierte en texto (character) y devuelve <code>TRUE</code> SÓLO SI el valor adopta cualquiera de las siguientes formas: <code>&quot;T&quot;</code>, <code>&quot;TRUE&quot;</code>, <code>&quot;true&quot;</code>, <code>&quot;true&quot;</code> o <code>TRUE</code>, el último el valor lógico, no en formato texto.</p>
+<h3 id="lógica-de-la-función">Lógica de la función</h3>
+<p>La función <code>as.character()</code> convierte cualquier forma de texto &ldquo;true&rdquo; listado arriba en un <code>TRUE</code> lógico. Si el texto es <code>&quot;False&quot;</code> o sus formas equivalentes, la función devolverá <code>FALSE</code>. Si se pasa cualquier otro valor a la función, el resultado será <code>NA</code>. Por lo tanto, necesitamos modificar los resultados cuando se producen NA, ya que necesitamos un resultado de Verdadero/Falso. Así que implementamos <code>if(is.na(resultado_logico)){resultado_logico &lt;- FALSE}</code> que obligará a cualquier otra cadena de texto a devolver <code>FALSE</code>.</p>
+<p>Estamos usando este código para ejecutar scripts de R en la consola que pasa una serie de argumentos para su funcionamiento, algunos de los cuales deben ser &ldquo;TRUE&rdquo; solo cuando se especifica, y &ldquo;FALSE&rdquo; en cualquier otro caso, de ahí el truco de convertir cualquier otro valor a <code>FALSE</code> en lugar de <code>NA</code>.</p>
+<p>Algo importante a tomar en cuenta es que los argumentos siempre se pasan al script R como texto y, por lo tanto, escribí el ejemplo para esta publicación convirtiendo todo en texto en la primera línea de la función, lo cual no es necesario en nuestro código original ejecutado en el Terminal. De esta forma, si se le pasa algún número a la función, también devolverá <code>FALSE</code>, emulando lo que pasaría si se ingresa un número en la consola. Este comportamiento <strong>es diferente para la función</strong> <code>as.logical()</code>, que devuelve <code>FALSE</code> si ingresa el valor numérico <code>0</code> y <code>TRUE</code> si se ingresa cualquier otro valor numérico.</p>
 
-<div class="post">
-  <h2 class="post-item post-title">
-    <a href="https://blog.rwhitedwarf.com/post/minitut_makebool/">Minitutorial: make_logical any string</a>
-  </h2>
-  <div class="post-item post-meta">
-    <span><i class="iconfont icon-today-sharp"></i>&nbsp;2022-09-18</span>
+    </div>
+    <div class="bg-white dark:bg-warmgray-900 p-5 my-4">
+      <div class="post-comment">
+	<script src="https://utteranc.es/client.js"
+            repo="RWhiteDwarf/blog"
+            issue-term="pathname"
+            theme="github-light"
+            crossorigin="anonymous"
+            async>
+</script>
 
-<span><i class="iconfont icon-file-tray-sharp"></i>&nbsp;476 words</span>
-
-<span><i class="iconfont icon-pricetags-sharp"></i>&nbsp;<a href="/tags/minitutorial">minitutorial</a>&nbsp;<a href="/tags/r-functions">R functions</a>&nbsp;<a href="/tags/r-tips">R tips</a>&nbsp;</span>
-
-  </div>
-  <div class="post-item post-summary markdown-body">
-    Welcome to R minitutorials of R White Dwarf Since the beginning of this year I&rsquo;ve been forced to abandon completely the blog for countless and rather abstract personal reasons that include personal health, family matters and changes in my daily activities including volunteer work as well as main job. As part of the last, I finally got hired for a position as R developer, which brings great joy to me.
-  </div>
-</div>
+      </div>
+    </div>
+</article>
 
 
 
@@ -251,9 +260,17 @@ Este post se basa en un trabajo reciente donde mi tarea fue la revisión y depur
             
         </div>
     </div>
-    
-    
-    
+    <div class="sidebar-item sidebar-toc">
+        <h3>Table of Contents</h3><nav id="TableOfContents">
+  <ul>
+    <li><a href="#acerca-de-este-post">Acerca de este post.</a></li>
+    <li><a href="#mini-tutorial-hacer-lógico-cualquier-texto-make_logical_any_string">Mini tutorial: Hacer lógico cualquier texto (make_logical_any_string).</a>
+      <ul>
+        <li><a href="#lógica-de-la-función">Lógica de la función</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav></div>
 </aside>
 
         </div>
