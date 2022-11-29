@@ -25,8 +25,6 @@ adecuadas. Este post no pretende ser una explicación detallada
 de como realizar un EDA, más bien intento compartir una de mis
 experiencias haciendo haciendo ayuda de la programación funcional.
 
-![INEGI](/post/2022/EDA_INEGI_data/INEGI.jpg)
-
 La información que presento aquí son los resultados del primer
 EDA que realicé cuando decidí cambiar mi carrera hacía el análisis
 de datos. Es una serie de datos obtenidos del Instituto Nacional
@@ -44,6 +42,8 @@ en R o como analista de datos te recomiendo darle un vistazo.
 Aquí presento una versión de los datos que yo mismo he arreglado para
 su uso en R, los cuales pueden ser descargados en formato CSV 
 desde mi repositorio de github [INEGI-export](https://github.com/teotenn/INEGI-export).
+
+![INEGI](/post/2022/EDA_INEGI_data/INEGI.jpg)
 
 El proceso de EDA resulta útil no sólo para profesionales analistas
 de datos, si no en un amplio rango de actividades para conocer y
