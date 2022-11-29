@@ -1,9 +1,9 @@
 ---
 author: "Manuel Teodoro Tenango"
 title: "EDA de datos de INEGI"
-image: ""
-draft: true
-date: 2022-11-21
+image: "/post/2022/EDA_INEGI_data/INEGI.jpg"
+draft: false
+date: 2022-11-29
 description: "Análisis exploratorio de datos obtenidos de INEGI"
 tags: ["ggplot2", "R basics", "R funciones", "R tips", "data analysis"]
 categories: ["R"]
@@ -24,6 +24,8 @@ para entender los datos como para utilizar las herramientas
 adecuadas. Este post no pretende ser una explicación detallada
 de como realizar un EDA, más bien intento compartir una de mis
 experiencias haciendo haciendo ayuda de la programación funcional.
+
+![INEGI](/post/2022/EDA_INEGI_data/INEGI.jpg)
 
 La información que presento aquí son los resultados del primer
 EDA que realicé cuando decidí cambiar mi carrera hacía el análisis
