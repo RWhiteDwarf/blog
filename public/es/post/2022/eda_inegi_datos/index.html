@@ -1,0 +1,1181 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+<meta name="HandheldFriendly" content="True" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<meta name="generator" content="Hugo 0.104.2" />
+
+
+<link rel="apple-touch-icon" sizes="180x180" href="favicon/RWD-apple-touch-icon.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="favicon/RWD-favicon-32x32.png" />
+<link rel="icon" type="image/png" sizes="16x16" href="favicon/RWD-favicon-16x16.png" />
+<link rel="manifest" href="favicon/site.webmanifest" />
+<link rel="shortcut icon" type="image/x-icon" href="favicon/RWD-favicon.ico" />
+<meta name="theme-color" content="#ffffff">
+
+
+
+<title>EDA de datos de INEGI | R with White Dwarf</title>
+
+
+<meta name="author" content="Manuel Teodoro Tenango" />
+
+
+<meta name="description" content="Análisis exploratorio de datos obtenidos de INEGI" />
+
+
+<meta name="keywords" content="ggplot2, R basics, R funciones, R tips, data analysis" />
+
+
+<meta property="og:title" content="EDA de datos de INEGI" />
+<meta name="twitter:title" content="EDA de datos de INEGI" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://blog.rwhitedwarf.com/es/post/2022/eda_inegi_datos/" /><meta property="og:description" content="Análisis exploratorio de datos obtenidos de INEGI" />
+<meta name="twitter:description" content="Análisis exploratorio de datos obtenidos de INEGI" /><meta property="og:image" content="https://blog.rwhitedwarf.com/post/2022/EDA_INEGI_data/INEGI.jpg" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://blog.rwhitedwarf.com/post/2022/EDA_INEGI_data/INEGI.jpg" /><meta property="article:published_time" content="2022-11-29T00:00:00+00:00" /><meta property="article:modified_time" content="2022-11-29T00:00:00+00:00" />
+
+
+<style>
+    @media (prefers-color-scheme: dark) {
+        body[data-theme='auto'] img {
+            filter: brightness(60%);
+        }
+    }
+
+    body[data-theme='dark'] img {
+        filter: brightness(60%);
+    }
+</style>
+
+
+
+
+<link rel="stylesheet" href="https://blog.rwhitedwarf.com/assets/css/fuji.min.css" />
+
+
+
+
+
+
+
+
+</head>
+
+<body
+  data-theme="auto"
+  data-theme-auto='true'
+  >
+    <script data-cfasync="false">
+  
+  var fujiThemeData = localStorage.getItem('fuji_data-theme');
+  
+  if (!fujiThemeData) {
+    localStorage.setItem('fuji_data-theme', 'auto');
+  } else {
+    
+    if (fujiThemeData !== 'auto') {
+      document.body.setAttribute('data-theme', fujiThemeData === 'dark' ? 'dark' : 'light');
+    }
+  }
+</script>
+
+    <header>
+    <div class="container-lg clearfix">
+        <div class="col-12 header">
+            <a class="title-main" href="https://blog.rwhitedwarf.com">R with White Dwarf</a>
+            
+            <span class="title-sub">A distant star coding in R</span>
+            
+        </div>
+    </div>
+</header>
+
+    <main>
+        <div class="container-lg clearfix">
+            
+            <div class="col-12 col-md-9 float-left content">
+                
+<article>
+    
+    <h2 class="post-item post-title">
+        <a href="https://blog.rwhitedwarf.com/es/post/2022/eda_inegi_datos/">EDA de datos de INEGI</a>
+    </h2>
+    <div class="post-item post-meta">
+        <span><i class="iconfont icon-today-sharp"></i>&nbsp;2022-11-29</span>
+
+<span><i class="iconfont icon-file-tray-sharp"></i>&nbsp;4819 words</span>
+
+<span><i class="iconfont icon-pricetags-sharp"></i>&nbsp;<a href="/tags/ggplot2">ggplot2</a>&nbsp;<a href="/tags/r-basics">R basics</a>&nbsp;<a href="/tags/r-funciones">R funciones</a>&nbsp;<a href="/tags/r-tips">R tips</a>&nbsp;<a href="/tags/data-analysis">data analysis</a>&nbsp;</span>
+
+    </div>
+    
+    <div class="post-content markdown-body">
+        <h2 id="introducción">Introducción</h2>
+<p>El análisis exploratorio de datos (EDA en inglés, &ldquo;Exploratory Data
+Analysis&rdquo;) es una de las herramientas más útiles en varias áreas
+de análisis de datos. El concepto de EDA ha sido utilizado
+popularmente en los últimos años para referirse a los procesos de
+exploración primaria de un grupo de datos. Por lo tanto, no existe
+una fórmula o receta para realizar una exploración, sea general o
+exhaustiva. Una exploración correcta depende de las habilidades del analista tanto
+para entender los datos como para utilizar las herramientas
+adecuadas. Este post no pretende ser una explicación detallada
+de como realizar un EDA, más bien intento compartir una de mis
+experiencias haciendo haciendo ayuda de la programación funcional.</p>
+<p>La información que presento aquí son los resultados del primer
+EDA que realicé cuando decidí cambiar mi carrera hacía el análisis
+de datos. Es una serie de datos obtenidos del Instituto Nacional
+de Estadística, Geografía e Informática de México, contiene información sobre
+la cantidad, expresada en miles de dolares, de las exportaciones por año de
+cada estado. Me pareció un ejemplo adecuado ya que yo no tengo
+mucho conocimiento en economía o exportación, por lo tanto este
+ejemplo no contiene ningún análisis numérico detallado o complicado,
+si no mas bien una exploración general de los datos obtenidos.
+Los datos han sido tomados de la pagina oficial de <a href="https://www.inegi.org.mx/" target="_blank">INEGI</a> en formato
+de excel. El INEGI es una de las bases de datos más importantes de México,
+su web contiene bases de datos públicas en temas de geografía y
+estadística. Si estas buscando datos para practicar tus habilidades
+en R o como analista de datos te recomiendo darle un vistazo.
+Aquí presento una versión de los datos que yo mismo he arreglado para
+su uso en R, los cuales pueden ser descargados en formato CSV
+desde mi repositorio de github <a href="https://github.com/teotenn/INEGI-export" target="_blank">INEGI-export</a>.</p>
+<p><img class="img-zoomable" src="/post/2022/EDA_INEGI_data/INEGI.jpg" alt="INEGI" />
+</p>
+<p>El proceso de EDA resulta útil no sólo para profesionales analistas
+de datos, si no en un amplio rango de actividades para conocer y
+entender los datos que se manejan. En muchos casos los análisis de
+datos incluyen complicadas fórmula matemáticas en grandes series
+numéricas que no son entendidas, simplemente procesadas y reducidas
+a pequeños números que representan algo, como medias, rangos,
+estadísticos, etc. El análisis exploratorio de datos nos permite
+entender un poco mas que significan esos número, de donde vienen,
+y que se puede extraer de ellos. Los datos son siempre generados en
+base a la información, el EDA es una herramienta para entender esa
+información.</p>
+<h2 id="análisis-exploratorio-exploratory-data-analysis-eda">Análisis exploratorio (Exploratory Data Analysis, EDA)</h2>
+<p>Vamos a comenzar llamando directamente las librerías o módulos
+(en R <code>library</code>) que necesitamos para hacer nuestro análisis, y
+leyendo los archivos CSV en la memoria de R. Esto puede ser
+realizado conforme se va utilizando, sin embargo es recomendable
+importar todas las librerías y archivos al inicio de nuestro código
+o script, para evitar errores o problemas de organización.</p>
+<pre><code class="language-r">  library(tidyverse)
+  library(cowplot)
+
+  path.to.files &lt;- &quot;https://raw.githubusercontent.com/teotenn/INEGI-export/master/&quot;
+  export.rows &lt;- read_csv(paste0(path.to.files, &quot;exportations_activity_rows.csv&quot;))
+  export.cols &lt;- read_csv(paste0(path.to.files, &quot;exportations_activity_cols.csv&quot;))
+</code></pre>
+<p>Las librerías son básicamente programas escritos en R que contienen
+el código necesario para realizar, o más bien llamar ciertas funciones especificas
+de cada librería. En español son popularmente conocidas como
+paquetes o módulos. En este caso vamos a utilizar <code>tidyverse</code> y
+<code>cowplot</code>. La librería <code>cowplot</code> nos va a ayudar a colocar varias gráficas de forma
+fácil y ordenada en un sólo espacio.</p>
+<p>En cuanto a la librería <code>tidyverse</code> ofrece enormes ventajas (aunque también
+pocas desventajas) para el análisis de datos. Al llamar esta
+librería incluye una serie de librerías que contienen diferentes
+tipos de herramientas para facilitar y organizar el análisis de
+datos. En este post vamos a utilizar principalmente:</p>
+<ul>
+<li><code>ggplot2</code> Que facilita la creación de gráficas con el sistema de capas (The Language of Graphics escrito por Leland Wilkinson, 2000)</li>
+<li><code>dplyr</code> que nos ayuda a mandar resultados de un proceso al siguiente utilizando los famosos <code>%&gt;%</code></li>
+<li><code>tibble</code> que facilita la manipulación de tablas, transformando los tradicionales <code>data.frame</code> de R a un formato mas amigable visualmente.</li>
+</ul>
+<p>Si lo deseas, también podrías llamar estas tres librerías de una por una en
+lugar de llamar todo el tidyverse de principio. El resultado será el mismo.</p>
+<p>Entre otras desventajas de estos paquetes es que no funcionan
+muy bien cuando la cantidad de datos es muy grande (miles de
+millones de filas), en cuyo caso se recomiendan otras herramientas
+como <a href="https://cran.r-project.org/web/packages/data.table/vignettes/datatable-intro.html" target="_blank">Data Table</a> que funciona de forma un poco mas similar al tradicional
+<code>data.frame</code> de R. Más información sobre <code>tidyverse</code> puede ser
+encontrada en su página oficial,
+(<a href="https://www.tidyverse.org/" target="_blank">https://www.tidyverse.org/</a>) o en el e-book <a href="https://r4ds.had.co.nz/" target="_blank">R for data science</a>
+escrito por uno de los creadores de la librería. Un buen libro en
+español es <a href="https://www.datanalytics.com/libro_r/index.html" target="_blank">R para profesionales de los datos</a>.</p>
+<h3 id="organizando-los-datos">Organizando los datos</h3>
+<p>Lo primero que debemos hacer es organizar los datos a un formato que sea mas amigable con R, y también con nuestras necesidades de análisis. Como ya he mencionado antes, yo manipulé los datos con anterioridad para tenerlos en un formato amigable con R. Por otro lado, algunas variables presentan nombres demasiado largos, por lo que he decididos reducirlos un poco para facilitar mi trabajo.</p>
+<p>Este análisis lo realicé primordialmente en inglés, por lo tanto
+he decidido mantener
+el código en inglés por facilidad para mi por un lado, pero también
+por el beneficio de ser mas amigable con R en general, y de generar
+nombres mas cortos. Así pues, algunos valores se mantendrán en español
+y otros han sido traducidos para la manipulación de los datos.</p>
+<p>El siguiente bloque contiene la traducción de las actividades de exportación,
+para generar nombres en inglés mas accesibles. Lo
+primero fue guardar los nombres en español en un vector, para
+utilizarlos más tarde en la traducción; también generamos un vector
+del mismo tamaño, con su equivalente en Inglés (en exactamente el mismo orden).</p>
+<pre><code class="language-r">   ## Nombres en español en un vector
+   colnames(export.cols)
+</code></pre>
+<pre><code>&gt;  [1] &quot;state&quot;                                                                                                                 
+&gt;  [2] &quot;year&quot;                                                                                                                  
+&gt;  [3] &quot;Exportaciones totales&quot;                                                                                                 
+&gt;  [4] &quot;Industria alimentaria&quot;                                                                                                 
+&gt;  [5] &quot;Industria de las bebidas y el tabaco&quot;                                                                                  
+&gt;  [6] &quot;Fabricación de insumos textiles y acabado de textiles&quot;                                                                 
+&gt;  [7] &quot;Fabricación de productos textiles, excepto prendas de vestir&quot;                                                          
+&gt;  [8] &quot;Fabricación de prendas de vestir&quot;                                                                                      
+&gt;  [9] &quot;Industria del papel&quot;                                                                                                   
+&gt; [10] &quot;Industria química&quot;                                                                                                     
+&gt; [11] &quot;Industria del plástico y del hule&quot;                                                                                     
+&gt; [12] &quot;Fabricación de productos a base de minerales no metálicos&quot;                                                             
+&gt; [13] &quot;Industrias metálicas básicas&quot;                                                                                          
+&gt; [14] &quot;Fabricación de productos metálicos&quot;                                                                                    
+&gt; [15] &quot;Fabricación de maquinaria y equipo&quot;                                                                                    
+&gt; [16] &quot;Fabricación de equipo de computación, comunicación, medición y de otros equipos, componentes y accesorios electrónicos&quot;
+&gt; [17] &quot;Fabricación de equipo de transporte&quot;                                                                                   
+&gt; [18] &quot;Fabricación de muebles, colchones y persianas&quot;                                                                         
+&gt; [19] &quot;Otras industrias manufactureras&quot;                                                                                       
+&gt; [20] &quot;Subsectores no especificados&quot;                                                                                          
+&gt; [21] &quot;Minería de minerales metálicos y no metálicos, excepto petróleo y gas&quot;                                                 
+&gt; [22] &quot;Curtido y acabado de cuero y piel, y fabricación de productos de cuero, piel y materiales sucedáneos&quot;                  
+&gt; [23] &quot;Industria de la madera&quot;                                                                                                
+&gt; [24] &quot;Impresión e industrias conexas&quot;                                                                                        
+&gt; [25] &quot;Fabricación de accesorios, aparatos eléctricos y equipo de generación de energía eléctrica&quot;                            
+&gt; [26] &quot;Extracción de petróleo y gas&quot;                                                                                          
+&gt; [27] &quot;Fabricación de productos derivados del petróleo y del carbón&quot;
+</code></pre>
+<pre><code class="language-r">   categorias &lt;- colnames(export.cols)[3:27]
+
+   ## Equivalentes en inglés 
+   activities.en &lt;- c(&quot;Total&quot;, &quot;Food&quot;, &quot;Drinks and tobacco&quot;,
+                   &quot;Textiles&quot;, &quot;Textile products&quot;, &quot;Tailoring&quot;,
+                   &quot;Paper&quot;, &quot;Chemistry&quot;, &quot;Plastic&quot;,
+                   &quot;Minerals based&quot;, &quot;Metal industry&quot;, &quot;Metal products&quot;,
+                   &quot;Machinery&quot;, &quot;Electronics&quot;, &quot;Transport equipment&quot;,
+                   &quot;Furniture&quot;, &quot;Other manufactures&quot;, &quot;Not specified&quot;,
+                   &quot;Mining&quot;, &quot;Leather&quot;, &quot;Wood&quot;,
+                   &quot;Printing&quot;, &quot;Electricity&quot;, &quot;Petroleum&quot;,
+                   &quot;Petroleum products&quot;)
+</code></pre>
+<p>Para cambiar los nombres de las columnas, podemos hacerlo
+directamente con la función <code>colnames</code>, seleccionando la posición
+de los valores que queremos cambiar (en este caso, 3 al 27) y
+colocando ahí los nuevos valores en inglés.</p>
+<pre><code class="language-r">   ## Cambio de nombres
+   colnames(export.cols)[3:27] &lt;- activities.en
+</code></pre>
+<p>Para cambiar los valores en <code>export.rows</code> vamos a necesitar la
+conversión de las expresiones en español a las mismas en inglés.
+Aquí he utilizado herramientas de programación basada en funciones
+(Functional Programming) para generar primero la función
+principal para traducir <code>translate</code>. Aquí le estoy diciendo a
+<code>translate</code> exactamente lo que necesito hacer, sin preocuparme si
+R puede hacerlo o no. Por ejemplo, utilizo la función <code>equivalent</code>,
+que no existe en R, pero que, basado en mis expectaciones, debe
+buscar el equivalente en inglés de la frase en español. Así pues,
+basado en <code>translatete</code>, vamos llenando los huecos, creando la
+función <code>equivalent</code> que haga exactamente lo que necesito.</p>
+<pre><code class="language-r">   translate &lt;- function(vector.es){
+    vector.en &lt;- c()
+    for (i in 1:length(vector.es)){
+        expression.es &lt;- vector.es[i]
+        expression.en &lt;- equivalent(expression.es)
+        ## &quot;equivalent&quot; toma expression.es y regresa el
+        ## equivalente en ingles
+        vector.en &lt;- append(vector.en, expression.en)
+    }
+    vector.en
+   }
+   
+  equivalent &lt;- function(expression.es){
+      position &lt;- match(expression.es, categorias)
+      expression.en &lt;- activities.en[position]
+      expression.en
+  }
+
+## Probando nuestra nueva función
+   equivalent(&quot;Impresión e industrias conexas&quot;)
+</code></pre>
+<pre><code>&gt; [1] &quot;Printing&quot;
+</code></pre>
+<p>Como podemos ver, <code>equivalent</code> toma la expresión de nuestro vector
+en español, y arroja el equivalente que le hemos elegido en inglés.</p>
+<pre><code class="language-r">   translate(categorias)
+</code></pre>
+<pre><code>&gt;  [1] &quot;Total&quot;               &quot;Food&quot;                &quot;Drinks and tobacco&quot; 
+&gt;  [4] &quot;Textiles&quot;            &quot;Textile products&quot;    &quot;Tailoring&quot;          
+&gt;  [7] &quot;Paper&quot;               &quot;Chemistry&quot;           &quot;Plastic&quot;            
+&gt; [10] &quot;Minerals based&quot;      &quot;Metal industry&quot;      &quot;Metal products&quot;     
+&gt; [13] &quot;Machinery&quot;           &quot;Electronics&quot;         &quot;Transport equipment&quot;
+&gt; [16] &quot;Furniture&quot;           &quot;Other manufactures&quot;  &quot;Not specified&quot;      
+&gt; [19] &quot;Mining&quot;              &quot;Leather&quot;             &quot;Wood&quot;               
+&gt; [22] &quot;Printing&quot;            &quot;Electricity&quot;         &quot;Petroleum&quot;          
+&gt; [25] &quot;Petroleum products&quot;
+</code></pre>
+<p><code>translate</code> toma todos los elementos en el vector, y nos arroja sus
+equivalentes en inglés. Así pues, para transformar todos los
+valores en la columna <code>Descripción</code> a su equivalente en inglés he
+decidido generar una nueva columna, utilizando mi función
+<code>translate</code>. Esto es muy fácil utilizando <code>mutate</code></p>
+<pre><code class="language-r">  (export.rows &lt;- mutate(export.rows,
+                         Activity = translate(`Descripción`)))
+</code></pre>
+<pre><code>&gt; # A tibble: 5,255 × 6
+&gt;    Código Descripción           state           year     USD Activity
+&gt;     &lt;dbl&gt; &lt;chr&gt;                 &lt;chr&gt;          &lt;dbl&gt;   &lt;dbl&gt; &lt;chr&gt;   
+&gt;  1     NA Exportaciones totales Aguascalientes  2007 4389841 Total   
+&gt;  2     NA Exportaciones totales Aguascalientes  2008 4456893 Total   
+&gt;  3     NA Exportaciones totales Aguascalientes  2009 3951108 Total   
+&gt;  4     NA Exportaciones totales Aguascalientes  2010 5647929 Total   
+&gt;  5     NA Exportaciones totales Aguascalientes  2011 6051640 Total   
+&gt;  6     NA Exportaciones totales Aguascalientes  2012 6183782 Total   
+&gt;  7     NA Exportaciones totales Aguascalientes  2013 6726207 Total   
+&gt;  8     NA Exportaciones totales Aguascalientes  2014 8466007 Total   
+&gt;  9     NA Exportaciones totales Aguascalientes  2015 8495445 Total   
+&gt; 10     NA Exportaciones totales Aguascalientes  2016 7870962 Total   
+&gt; # … with 5,245 more rows
+</code></pre>
+<h3 id="exploración-visual">Exploración visual</h3>
+<p>Ahora para empezar formalmente nuestro EDA, vamos a darle un vistazo
+a los totales por estado, utilizando nuestra tabla <code>export.cols</code>.
+Aquí utilizamos los famosos pipe <code>%&gt;%</code> que mandan los resultados
+de un proceso, al siguiente proceso, por ejemplo, si queremos ver
+los totales por estado, podemos pedirle a R que haga lo siguiente</p>
+<pre><code>   toma la tabla export.cols %&gt;%
+      agrupa los datos por estado (state) %&gt;%
+      redúcelos a la sumatoria del total, nómbrala total export %&gt;%
+      organiza en forma descendente basado en total export %&gt;%
+      muestra en pantalla todo (n = Inf)
+</code></pre>
+<p>La versión en R utilizando el paquete <code>dplyr</code> es:</p>
+<pre><code class="language-r">export.cols %&gt;%
+    group_by(state) %&gt;%
+    summarise(`total export` = sum(Total)) %&gt;%
+    arrange(desc(`total export`)) %&gt;%
+    print(n = Inf)
+</code></pre>
+<pre><code>&gt; # A tibble: 32 × 2
+&gt;    state                           `total export`
+&gt;    &lt;chr&gt;                                    &lt;dbl&gt;
+&gt;  1 Chihuahua                            466861927
+&gt;  2 Baja California                      398935507
+&gt;  3 Coahuila de Zaragoza                 355638907
+&gt;  4 Nuevo León                           330267052
+&gt;  5 Tamaulipas                           284435973
+&gt;  6 Campeche                             264100465
+&gt;  7 Jalisco                              213931233
+&gt;  8 México                               188357470
+&gt;  9 Sonora                               179661021
+&gt; 10 Guanajuato                           167191962
+&gt; 11 Puebla                               127934390
+&gt; 12 Tabasco                              115797563
+&gt; 13 San Luis Potosí                       94812554
+&gt; 14 Querétaro                             88633615
+&gt; 15 Aguascalientes                        79688240
+&gt; 16 Veracruz de Ignacio de la Llave       68556313
+&gt; 17 Morelos                               37397175
+&gt; 18 Zacatecas                             34010223
+&gt; 19 Ciudad de México                      32037661
+&gt; 20 Hidalgo                               19504479
+&gt; 21 Durango                               17431796
+&gt; 22 Yucatán                               14496875
+&gt; 23 Michoacán de Ocampo                   13411397
+&gt; 24 Chiapas                               13291536
+&gt; 25 Tlaxcala                              12987607
+&gt; 26 Oaxaca                                11023551
+&gt; 27 Sinaloa                                7825439
+&gt; 28 Guerrero                               5918438
+&gt; 29 Colima                                 2518028
+&gt; 30 Baja California Sur                    2303491
+&gt; 31 Nayarit                                1146388
+&gt; 32 Quinta Roo                              517674
+</code></pre>
+<p>Gracias a la agrupación de tidyverse, podemos utilizar estas
+herramientas con muchas otras funciones, entre otras, podemos
+mandar resultados a un gráfico <code>ggplot</code></p>
+<pre><code class="language-r">   ## Visualización
+  export.cols %&gt;%
+      group_by(state) %&gt;%
+      summarise(`total export` = sum(Total)) %&gt;%
+      ggplot() +
+      geom_bar(aes(y = `total export`,
+                   x = reorder(state, `total export`, FUN = abs),
+                   fill = `total export`),
+               stat = 'identity') +
+      coord_flip()
+</code></pre>
+<p><img class="img-zoomable" src="/post/2022/EDA_INEGI_data/primer-ggplot-1.png" alt="plot of chunk primer-ggplot" />
+</p>
+<p>En el bloque anterior comenzamos con algo similar, y mandamos los
+resultados a <code>ggplot()</code>, así que ya no es necesario especificar
+dentro de la función <code>ggplot</code> de donde tomar los datos, por lo
+tanto esta función se queda vacía. <code>geom_bar</code> genera un gráfico de barras,
+que de forma típica toma los valores numéricos en el eje Y y los
+valores categóricos en el eje X. Esto lo especificamos dentro de
+la función <code>aes</code> (por &ldquo;aestetics&rdquo;, o estética). Otra de las ventajas es que podemos llamar funciones dentro de funciones de gráficos
+ggplot, por ejemplo, en <code>x</code> utilizo la función <code>reorder</code> para
+ordenar los resultados por los valores de <code>total export</code>, basado
+en el valor absoluto (<code>FUN = abs</code>). También, dentro de <code>aes</code> he
+declarado <code>fill = total export</code> para que llene las barras en base
+a los valores de <code>total export</code>. Es importante no confundir <code>fill</code>
+con <code>color</code>, el cual cambia simplemente los contornos de las
+barras. También es importante especificar <code>fill</code> dentro de <code>aes</code>
+cuando queremos darle un valor basado en nuestros datos categóricos; o bien,
+se puede colocar fuera de <code>aes</code> para darle un valor constante.
+<code>stat = 'identity'</code> y <code>coord_flip()</code> nos ayudan a ordenar las
+barras, y cambiar el eje de las Y por X, respectivamente.</p>
+<p>Ahora podemos hacer lo mismo pero por categoría,
+usando nuestra otra tabla <code>export.rows</code></p>
+<pre><code class="language-r">export.rows %&gt;%
+    filter(Activity != &quot;Total&quot;) %&gt;%
+    group_by(Activity) %&gt;%
+    summarise(Total = sum(USD)) %&gt;%
+    arrange(desc(Total)) %&gt;%
+    print(n = Inf)
+</code></pre>
+<pre><code>&gt; # A tibble: 24 × 2
+&gt;    Activity                 Total
+&gt;    &lt;chr&gt;                    &lt;dbl&gt;
+&gt;  1 Transport equipment 1226859499
+&gt;  2 Electronics          747959073
+&gt;  3 Petroleum            397933968
+&gt;  4 Electricity          208582754
+&gt;  5 Other manufactures   147915402
+&gt;  6 Machinery            136957553
+&gt;  7 Chemistry            133570853
+&gt;  8 Metal industry       117915995
+&gt;  9 Metal products        82889135
+&gt; 10 Food                  81653585
+&gt; 11 Plastic               80126816
+&gt; 12 Mining                52953993
+&gt; 13 Not specified         51470567
+&gt; 14 Tailoring             43913959
+&gt; 15 Drinks and tobacco    31059501
+&gt; 16 Minerals based        30584505
+&gt; 17 Furniture             19883596
+&gt; 18 Petroleum products    14565067
+&gt; 19 Paper                 13876523
+&gt; 20 Leather                9863853
+&gt; 21 Printing               6915538
+&gt; 22 Textiles               6260722
+&gt; 23 Textile products       4954252
+&gt; 24 Wood                   1959275
+</code></pre>
+<p>Para variar un poco y hacerlo mas didáctico, vamos a cambiar
+algunos detalles, manteniéndolo simple:</p>
+<ul>
+<li>Vamos a colocar <code>fill</code> afuera de <code>aes</code></li>
+<li>Vamos a cambiar el valor de <code>color</code> para observar la diferencia</li>
+<li>Vamos a renombrar el eje de las X</li>
+<li>Vamos a darle un título</li>
+</ul>
+<pre><code class="language-r">export.rows %&gt;%
+    filter(Activity != &quot;Total&quot;) %&gt;%
+    group_by(Activity) %&gt;%
+    summarise(Total = sum(USD)) %&gt;%
+    ggplot() +
+    geom_bar(aes(y = Total,
+                 x = reorder(Activity, Total, FUN = abs)),
+             fill = &quot;darkblue&quot;,
+             color = &quot;purple&quot;,
+             stat = 'identity') +
+    labs(title = &quot;Exportaciones totales por actividad&quot;,
+         x = &quot;Activity&quot;) +
+    coord_flip()
+</code></pre>
+<p><img class="img-zoomable" src="/post/2022/EDA_INEGI_data/new-plot-1.png" alt="plot of chunk new-plot" />
+</p>
+<p>Ahora de manera fácil e intuitiva podemos observar que cambios
+en el código fueron responsables de que cambios en el gráfico.</p>
+<p>Por último, podemos hacer algo similar con las exportaciones
+totales por año.</p>
+<pre><code class="language-r">export.cols %&gt;%
+    group_by(year) %&gt;%
+    summarise(`total export` = sum(Total)) %&gt;%
+    print(n = Inf)
+</code></pre>
+<pre><code>&gt; # A tibble: 12 × 2
+&gt;     year `total export`
+&gt;    &lt;dbl&gt;          &lt;dbl&gt;
+&gt;  1  2007      237809741
+&gt;  2  2008      257967777
+&gt;  3  2009      198234125
+&gt;  4  2010      258504747
+&gt;  5  2011      299732519
+&gt;  6  2012      320014188
+&gt;  7  2013      329562705
+&gt;  8  2014      347559680
+&gt;  9  2015      337170197
+&gt; 10  2016      324901419
+&gt; 11  2017      351726063
+&gt; 12  2018      387442789
+</code></pre>
+<p>Ahora en lugar de hacer un gráfico de barras, vamos a hacer líneas
+y puntos. Vamos a cambiar otro detalle: en lugar de especificar
+<code>aes</code> dentro del geometric, que en este caso tendría que escribirse dos
+veces exactamente lo mismo, uno dentro de <code>geom_line</code> y otro en <code>geom_point</code>,
+podemos especificarlo dentro de la función principal del gráfico
+<code>ggplot()</code>, de esta forma los valores que especifiquemos ahí serán
+tomados como los valores principales, y no necesitamos darle mas
+detalles a <code>geom_line</code> ni <code>geom_point</code>.</p>
+<pre><code class="language-r">   ## Visualization
+export.rows %&gt;%
+    filter(Activity == &quot;Total&quot;) %&gt;%
+    group_by(year) %&gt;%
+    summarise(Total = sum(USD)) %&gt;%
+    ggplot(aes(x = year, y = Total)) +
+    geom_line() +
+    geom_point() 
+</code></pre>
+<p><img class="img-zoomable" src="/post/2022/EDA_INEGI_data/ggplot-detailed-1.png" alt="plot of chunk ggplot-detailed" />
+</p>
+<p>Podemos hacer lo mismo por estado. Aquí, debido a la complejidad de
+los nombres de algunos estados, he decidido abreviar los nombres
+de cada estado a sólo 6 letras, usando la función <code>abbreviate</code></p>
+<pre><code class="language-r">   ## Por estado
+export.rows %&gt;%
+    filter(Activity == &quot;Total&quot;) %&gt;%
+    group_by(year, state) %&gt;%
+    summarise(Total = sum(USD)) %&gt;%
+    ggplot(aes(x = year, y = Total)) +
+    geom_line(aes(colour = abbreviate(state, 6)))+
+    geom_point(aes(colour = abbreviate(state, 6)))
+</code></pre>
+<p><img class="img-zoomable" src="/post/2022/EDA_INEGI_data/abbreviate-1.png" alt="plot of chunk abbreviate" />
+</p>
+<p>Gracias a <code>abbreviate</code> los nombres de los estados se pueden
+entender, sin embargo, a pesar de los colores y el texto, es
+difícil apreciar propiamente 32 líneas (número total de estados en el país).</p>
+<p>Por otro lado nos gustaría ver si cada año fue el mismo estado o
+la misma
+actividad produciendo la mayor cantidad de dolares en exportaciones, o
+si esto cambió con el tiempo. Debido a la complejidad de nuestro
+gráfico anterior, necesitamos un acercamiento diferente:</p>
+<pre><code class="language-r">   ## Principal estado en cada año
+export.cols %&gt;%
+    group_by(year) %&gt;%
+    filter(Total == max(Total)) %&gt;%
+    select(year, state, Total) %&gt;%
+    arrange(year)
+</code></pre>
+<pre><code>&gt; # A tibble: 12 × 3
+&gt; # Groups:   year [12]
+&gt;     year state              Total
+&gt;    &lt;dbl&gt; &lt;chr&gt;              &lt;dbl&gt;
+&gt;  1  2007 Baja California 31858677
+&gt;  2  2008 Baja California 32988913
+&gt;  3  2009 Baja California 26741828
+&gt;  4  2010 Chihuahua       34633881
+&gt;  5  2011 Chihuahua       38446014
+&gt;  6  2012 Chihuahua       41764861
+&gt;  7  2013 Chihuahua       43770979
+&gt;  8  2014 Chihuahua       45594451
+&gt;  9  2015 Chihuahua       40302945
+&gt; 10  2016 Chihuahua       43342067
+&gt; 11  2017 Chihuahua       46491551
+&gt; 12  2018 Chihuahua       51944047
+</code></pre>
+<p>Los resultados son interesantes: el principal exportador hasta 2009
+es Baja California, y después Chihuahua. Sin embargo, si observamos
+las principales actividades exportadores, tenemos en primer lugar
+a Campeche hasta 2013 y después  es Coahuila. Parece ser que
+ciertas actividades no tienen mucha diferencia en la cantidad de
+ingresos entre ellas, y por eso ciertas combinaciones resultan
+en mayor nivel de exportación para ciertos estados. Por ejemplo,
+Capeche es el principal exportador de Petroleo, y se mantiene en
+primer lugar cuando ordenamos por actividad, sin embargo pasa al
+sexto lugar cuando ordenamos por estado.</p>
+<pre><code class="language-r">## Activity
+export.rows %&gt;%
+    filter(Activity != &quot;Total&quot;) %&gt;%
+    group_by(year) %&gt;%
+    filter(USD == max(USD)) %&gt;%
+    arrange(year) %&gt;%
+    select(Activity, state, year)
+</code></pre>
+<pre><code>&gt; # A tibble: 12 × 3
+&gt; # Groups:   year [12]
+&gt;    Activity            state                 year
+&gt;    &lt;chr&gt;               &lt;chr&gt;                &lt;dbl&gt;
+&gt;  1 Petroleum           Campeche              2007
+&gt;  2 Petroleum           Campeche              2008
+&gt;  3 Petroleum           Campeche              2009
+&gt;  4 Petroleum           Campeche              2010
+&gt;  5 Petroleum           Campeche              2011
+&gt;  6 Petroleum           Campeche              2012
+&gt;  7 Petroleum           Campeche              2013
+&gt;  8 Transport equipment Coahuila de Zaragoza  2014
+&gt;  9 Transport equipment Coahuila de Zaragoza  2015
+&gt; 10 Transport equipment Coahuila de Zaragoza  2016
+&gt; 11 Transport equipment Coahuila de Zaragoza  2017
+&gt; 12 Transport equipment Coahuila de Zaragoza  2018
+</code></pre>
+<p>Sería interesante cambiar la manera de analizar los datos y
+observar los principales exportadores junto con las principales
+actividades.</p>
+<h2 id="visualizaciones-interactivas-utilizando-funciones">Visualizaciones interactivas utilizando funciones</h2>
+<p>En el área del análisis de datos, el uso de funciones resulta útil
+en varios casos. Como vimos anteriormente, nuestra función
+<code>translate</code> nos ayudó a aplicarla en cada elemento de un vector
+(en este caso, una columna). Este procesos de aplicar una función
+en todos los elementos de una lista se conoce tradicionalmente en
+el albur de programación como &ldquo;map&rdquo;. Otra uso importante de
+funciones personalizadas es para hacer más eficiente el análisis,
+por ejemplo cuando necesitamos repetir un proceso mas de una vez.</p>
+<p>En programación se tienen estándares al escribir código sobre no repetirte
+a ti mismo, y se crean funciones o macros para básicamente cualquier
+tarea que deba ser repetida al menos una vez. Como analista de datos
+esto no es estrictamente necesario, sin embargo nos ahorra tiempo y
+esfuerzo y al mismo tiempo nos ayuda a entender mejor el lenguaje
+de programación que estamos utilizando para analizar nuestros datos.</p>
+<p>Como ejemplo, supongamos que queremos hacer visualizaciones de
+las principales actividades por estado, por ejemplo, actividades
+que generen mas de 5 millones de dolares. Podríamos escribir lo
+siguiente</p>
+<pre><code class="language-r">  export.rows %&gt;%
+      filter(Activity != &quot;Total&quot;) %&gt;%
+      group_by(state, Activity)  %&gt;%
+      summarise(Total = sum(USD)) %&gt;%
+      filter(state == &quot;Chihuahua&quot; &amp;
+             Total &gt;= 5000000) %&gt;%
+      ggplot() +
+      geom_bar(aes(y = Total,
+                   x = reorder(Activity, Total, FUN = abs),
+                   fill = Total),
+               stat = 'identity') +
+      coord_flip() +
+      labs(title = &quot;Chihuahua&quot;,
+           y = &quot;Total USD&quot;, x = NULL) +
+      theme(legend.position=&quot;none&quot;)
+</code></pre>
+<p><img class="img-zoomable" src="/post/2022/EDA_INEGI_data/five-mil-code-1.png" alt="plot of chunk five-mil-code" />
+</p>
+<p>Sin embargo, tendríamos que repetir el mismo bloque de código por
+cada estado que queremos visualizar, o si queremos cambiar el límite de 5 millones.
+La mejor opción en este caso
+es generar una función que nos permita hacer lo mismo cambiando
+simplemente las variables que queremos. La manera mas fácil es repetir
+el código anterior dentro de una función, cambiando el nombre
+&ldquo;Chihuahua&rdquo; por una variable que podamos modificar cada vez que
+llamemos la función, vamos a llamarla <code>estado</code>. Por otro lado,
+en lugar de filtrar sólo actividades
+que producen mas de 5 millones de dolares, vamos a permitir que
+este filtro también sea interactivo, sin embargo tomando el valor
+de 5 millones por default.</p>
+<p>Veamos el siguiente bloque para entender mejor.</p>
+<pre><code class="language-r">  ## Funcion para ver principal actividad por estado
+  plot_state &lt;- function(estado, USD_min = 5000000){
+      export.rows %&gt;%
+          filter(Activity != &quot;Total&quot;) %&gt;%
+          group_by(state, Activity)  %&gt;%
+          summarise(Total = sum(USD)) %&gt;%
+          filter(state == estado &amp;
+                 Total &gt;= USD_min) %&gt;%
+          ggplot() +
+          geom_bar(aes(y = Total,
+                       x = reorder(Activity, Total, FUN = abs),
+                       fill = Total),
+                   stat = 'identity') +
+          coord_flip() +
+          labs(title = estado,
+               y = &quot;Total USD&quot;, x = NULL) +
+          theme(legend.position=&quot;none&quot;)
+  }
+</code></pre>
+<p>El nombre de nuestra función es <code>plot_state</code> y lo definimos como
+cualquier otro objeto en R, utilizando <code>&lt;-</code> y la función
+<code>function</code>. Dentro de los paréntesis de <code>function</code> debemos colocar
+nuestras variables, aquellos valores que podrán ser modificados al
+llamar la función. En este caso definimos <code>estado</code> que nos ayudará
+a seleccionar el estado a visualizar, y <code>USD_min</code> para definir
+la cantidad mínima de dolares a visualizar (por ejemplo, si hacemos
+<code>USD_min = 0</code> nuestra función graficaría todas las actividades,
+siempre y cuando produzcan mas de cero). También podemos ver que
+aquí he definido <code>USD_min = 5000000</code>, esto genera un valor por
+default, es decir, si llamamos nuestra función
+<code>plot_state(&quot;Chihuahua&quot;)</code> obtendremos las actividades que producen
+mas de 5 millones en Chiuahua, sin embargo, si llamamos
+<code>plot_state(&quot;Chihuahua&quot;, USD_min = 8000)</code> obtendremos todas las
+actividades que producen mas de 8 mil.</p>
+<p>Una vez definido el nombre y las variables de nuestra función,
+podemos especificar el cuerpo dentro de corchetes <code>{}</code>, es decir,
+la función de nuestra función. En este caso podemos observar que
+el código que forma el cuerpo de la función es exactamente el mismo
+que utilizamos para visualizar Chihuahua, los únicos cambios son
+que en el sitio donde habíamos escrito &ldquo;Chihuahua&rdquo; y &ldquo;5000000&rdquo;,
+ahora están <code>estado</code> y <code>USD_min</code>. Hay dos consideraciones que deben
+ser tomadas en cuenta al crear una función de este tipo en R:
+primero que los valores definidos dentro del cuerpo de una función,
+en este caso <code>estado</code> y <code>USD_min</code>, sólo existen dentro del cuerpo
+de la función. Si vamos a la consola y tecleamos <code>ls()</code> veremos que
+estos objetos no existen en la memoria donde estamos trabajando.
+Otro aspecto importante es que en R, a diferencia de otros
+lenguajes de programación, una función puede tomar cualquier objeto
+que exista en la memoria donde es ejecutado. Por ejemplo, en este
+caso nuestra función utiliza la tabla <code>export.rows</code>. Si esta tabla
+no existiera (por ejemplo, si no la hemos creado vía <code>read_csv</code>),
+nuestra función generará un error.</p>
+<p>Es importante entender el proceso de como la ejecución de funciones
+busca los valores, para no cometer errores. Al ser ejecutada, la
+función buscará valores de los objetos PRIMERO dentro del cuerpo
+de la función, y al no encontrarlos, irá a buscarlos a la memoria
+general o global de R, que es donde estamos trabajando, si tampoco
+existen aquí, generará un error. Esto significa que
+si dentro de la función otorgamos un valor diferente a
+<code>export.rows</code>, la función utilizará su nuevo valor. Veamos un
+ejemplo:</p>
+<pre><code class="language-r">  primeros &lt;- function(){
+      head(export.rows)
+  }
+
+  primeros()
+</code></pre>
+<pre><code>&gt; # A tibble: 6 × 6
+&gt;   Código Descripción           state           year     USD Activity
+&gt;    &lt;dbl&gt; &lt;chr&gt;                 &lt;chr&gt;          &lt;dbl&gt;   &lt;dbl&gt; &lt;chr&gt;   
+&gt; 1     NA Exportaciones totales Aguascalientes  2007 4389841 Total   
+&gt; 2     NA Exportaciones totales Aguascalientes  2008 4456893 Total   
+&gt; 3     NA Exportaciones totales Aguascalientes  2009 3951108 Total   
+&gt; 4     NA Exportaciones totales Aguascalientes  2010 5647929 Total   
+&gt; 5     NA Exportaciones totales Aguascalientes  2011 6051640 Total   
+&gt; 6     NA Exportaciones totales Aguascalientes  2012 6183782 Total
+</code></pre>
+<p>Generamos una función sin variables, que nos devuelve los primeros
+valores en <code>export.rows</code>. En este caso, <code>export.rows</code> no existe
+dentro del cuerpo de la función, por lo tanto R lo busca en la
+memoria general, encuentra nuestra tabla, y la utiliza. Sin embargo
+esto podría cambiar, veamos:</p>
+<pre><code class="language-r">  primeros &lt;- function(){
+      export.rows &lt;- c(1:100)
+      head(export.rows)
+  }
+
+  primeros()
+</code></pre>
+<pre><code>&gt; [1] 1 2 3 4 5 6
+</code></pre>
+<p>Ahora que le hemos dado un valor a <code>export.rows</code> dentro del
+cuerpo de la función, el resultado es diferente. Sin embargo,
+el objeto <code>export.rows</code> en la memoria general no cambió</p>
+<pre><code class="language-r">  head(export.rows)
+</code></pre>
+<pre><code>&gt; # A tibble: 6 × 6
+&gt;   Código Descripción           state           year     USD Activity
+&gt;    &lt;dbl&gt; &lt;chr&gt;                 &lt;chr&gt;          &lt;dbl&gt;   &lt;dbl&gt; &lt;chr&gt;   
+&gt; 1     NA Exportaciones totales Aguascalientes  2007 4389841 Total   
+&gt; 2     NA Exportaciones totales Aguascalientes  2008 4456893 Total   
+&gt; 3     NA Exportaciones totales Aguascalientes  2009 3951108 Total   
+&gt; 4     NA Exportaciones totales Aguascalientes  2010 5647929 Total   
+&gt; 5     NA Exportaciones totales Aguascalientes  2011 6051640 Total   
+&gt; 6     NA Exportaciones totales Aguascalientes  2012 6183782 Total
+</code></pre>
+<p>En este ejemplo perecería estúpido, sin embargo al generar
+funciones muy largas, que utilizan objetos que tenemos creados en
+la memoria, es fácil cometer errores y otorgarle un valor a un
+objeto que ya existe y que necesitamos dentro de la función.
+Diferentes lenguajes de programación protegen esto de diferentes
+maneras, por ejemplo en python, para llamar un objeto de la memoria
+general dentro de una función, es necesario utilizar el comando
+<code>global</code>, lo cual le indica que debe buscar este objeto en el ambiente
+global, y resulta más fácil para nosotros el notar
+que objetos estamos utilizando desde el ambiente global. En R
+es importante ser conscientes de nuestros objetos globales y
+locales.</p>
+<p>Continuando con nuestro EDA, podemos ver que ahora nuestra función
+facilita la visualización por estado:</p>
+<pre><code class="language-r">   plot_state(&quot;Chihuahua&quot;)
+</code></pre>
+<p><img class="img-zoomable" src="/post/2022/EDA_INEGI_data/plot-chihuahua-1.png" alt="plot of chunk plot-chihuahua" />
+</p>
+<p>Podemos utilizar el paquete <code>cowplot</code> para observar varios estados
+juntos en un sólo gráfico.</p>
+<pre><code class="language-r">   plot_grid(
+    plot_state(&quot;Chihuahua&quot;) ,
+    plot_state(&quot;Baja California&quot;),
+    plot_state(&quot;Coahuila de Zaragoza&quot;),
+    plot_state(&quot;Nuevo León&quot;),
+    plot_state(&quot;Tamaulipas&quot;),
+    plot_state(&quot;Campeche&quot;, USD_min = 10000),
+    ncol = 2)
+</code></pre>
+<p><img class="img-zoomable" src="/post/2022/EDA_INEGI_data/varios-estados-1.png" alt="plot of chunk varios-estados" />
+</p>
+<p>La función <code>plot_grid</code> resulta útil y conveniente, organiza varios
+gráficos de forma simétrica, podemos especificar el número de
+columnas <code>ncol</code> o número de filas <code>nrow</code> en las que nuestros
+gráficos deben ser visualizados.</p>
+<p>A pesar de que cada estado obtiene sus principales ingresos en
+exportaciones a partir de diferentes actividades, podemos observar
+que en general, electrodomésticos (Electronics) y Equipo de
+Transporte (Transport equipment) son las principales actividades.
+Otras actividades como Maquinaria (Machinery) y metalúrgica
+(Metal products) también tienen la tendencia de estar entre los
+primeros lugares. Así pues, es claro que hay una tendencia entre
+los 5 principales exportadores con el tipo de actividades
+exportadoras. Solo para el caso de Campeche, en el sexto lugar es
+diferente: su principal actividad de exportación es Petroleo, la
+cual no aparece en las otras gráficas entre las principales
+actividades de exportación. Sin embargo, si observamos las
+principales actividades a lo largo del tiempo, exportación de
+petroleo se encuentra en el tercer lugar:</p>
+<pre><code class="language-r">   export.rows %&gt;%
+    filter(Activity == &quot;Electronics&quot; |
+           Activity == &quot;Transport equipment&quot; |
+           Activity == &quot;Petroleum&quot;) %&gt;%
+    group_by(year, Activity) %&gt;%
+    summarise(`Total per activity` = sum(USD)) %&gt;%
+    ggplot(aes(x = year, y = `Total per activity`)) +
+    geom_line(aes(colour = Activity)) +
+    geom_point(aes(colour = Activity))
+</code></pre>
+<p><img class="img-zoomable" src="/post/2022/EDA_INEGI_data/3-activities-1.png" alt="plot of chunk 3-activities" />
+</p>
+<p>Al menos desde 2007, exportación de petroleo genera menos ingresos
+que exportación de electrodomésticos y equipo de transporte. Otro
+detalle interesante que es claro en nuestra última gráfica es que
+a partir de 2009, la exportación en equipo de transporte ha
+incrementado año con año. Esto explica por que estados donde la
+principal actividad de exportación es equipo de transporte están
+en los primeros lugares como exportadores.</p>
+<p>Podemos generar otra función similar a <code>plot_state</code> pero por
+actividad, <code>plot_activity</code> para observar los principales estados
+exportadores de petroleo.</p>
+<pre><code class="language-r">  ## Funcion para ver principal estado por actividad
+  plot_activity &lt;- function(activity, USD_min = 5000000){
+      export.cols %&gt;%
+          select(state, year, activity) %&gt;%
+          group_by(state)  %&gt;%
+          summarise(Total = sum(!!sym(activity))) %&gt;%
+          filter(Total &gt;= USD_min) %&gt;%
+          ggplot() +
+          geom_bar(aes(y = Total,
+                       x = reorder(state,
+                                   Total, FUN = abs),
+                       fill = Total),
+                   stat = 'identity') +
+          coord_flip() +
+          labs(title = activity,
+               y = &quot;Total USD&quot;, x = NULL) +
+          theme(legend.position=&quot;none&quot;)
+  }
+
+   plot_activity(&quot;Petroleum&quot;)
+</code></pre>
+<p><img class="img-zoomable" src="/post/2022/EDA_INEGI_data/plot-activity-fun-1.png" alt="plot of chunk plot-activity-fun" />
+</p>
+<p>Sólo 4 estados exportaron más de 5,000 millones de USD en petroleo.</p>
+<pre><code class="language-r">   plot_grid(
+    plot_state(&quot;Campeche&quot;, USD_min = 1000000),
+    plot_state(&quot;Tabasco&quot;, USD_min = 1000000),
+    plot_state(&quot;Veracruz de Ignacio de la Llave&quot;),
+    plot_state(&quot;Chiapas&quot;, USD_min = 1000000))
+</code></pre>
+<p><img class="img-zoomable" src="/post/2022/EDA_INEGI_data/activity-states-1.png" alt="plot of chunk activity-states" />
+</p>
+<p>Parece ser que la economía de Tabasco, Campeche y Chiapas dependen
+en alto grado de la extracción de petroleo, diferente a Veracruz,
+que tiene otras actividades mas fuertes como productos químicos,
+metalurgia y alimentación.</p>
+
+    </div>
+    <div class="bg-white dark:bg-warmgray-900 p-5 my-4">
+      <div class="post-comment">
+	<script src="https://utteranc.es/client.js"
+            repo="RWhiteDwarf/blog"
+            issue-term="pathname"
+            theme="github-light"
+            crossorigin="anonymous"
+            async>
+</script>
+
+      </div>
+    </div>
+</article>
+
+
+
+            </div>
+            <aside class="col-12 col-md-3 float-left sidebar">
+    
+    <div class="sidebar-item sidebar-pages">
+        <h3>Pages</h3>
+        <ul>
+            
+            <li>
+                <a href="/es/">Español</a>
+            </li>
+            
+            <li>
+                <a href="/">Home</a>
+            </li>
+            
+            <li>
+                <a href="/archives/">Archives</a>
+            </li>
+            
+            <li>
+                <a href="/about/">About</a>
+            </li>
+            
+            <li>
+                <a href="/search/">Search</a>
+            </li>
+            
+            <li>
+                <a href="/index.xml">RSS</a>
+            </li>
+            
+        </ul>
+    </div>
+    
+    <div class="sidebar-item sidebar-links">
+        <h3>Links</h3>
+        <ul>
+            
+            <li>
+                <a href="https://www.r-project.org/" target="_blank"><span>The R Project</span></a>
+            </li>
+            
+            <li>
+                <a href="https://www.r-bloggers.com/" target="_blank"><span>R Bloggers</span></a>
+            </li>
+            
+            <li>
+                <a href="https://www.bioconductor.org/" target="_blank"><span>Bioconductor</span></a>
+            </li>
+            
+        </ul>
+    </div>
+    
+    <div class="sidebar-item sidebar-tags">
+        <h3>Tags</h3>
+        <div>
+            
+            <span>
+                <a href="/tags/code-visuals/">Code Visuals</a>
+            </span>
+            
+            <span>
+                <a href="/tags/data-analysis/">data analysis</a>
+            </span>
+            
+            <span>
+                <a href="/tags/database/">database</a>
+            </span>
+            
+            <span>
+                <a href="/tags/ggplot2/">ggplot2</a>
+            </span>
+            
+            <span>
+                <a href="/tags/minitutorial/">minitutorial</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-basics/">R basics</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-dev/">R-dev</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-funciones/">R funciones</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-functions/">R functions</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-maps/">R maps</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-shiny/">R shiny</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-tips/">R tips</a>
+            </span>
+            
+            <span>
+                <a href="/tags/web-scrap/">web-scrap</a>
+            </span>
+            
+        </div>
+    </div>
+    <div class="sidebar-item sidebar-toc">
+        <h3>Table of Contents</h3><nav id="TableOfContents">
+  <ul>
+    <li><a href="#introducción">Introducción</a></li>
+    <li><a href="#análisis-exploratorio-exploratory-data-analysis-eda">Análisis exploratorio (Exploratory Data Analysis, EDA)</a>
+      <ul>
+        <li><a href="#organizando-los-datos">Organizando los datos</a></li>
+        <li><a href="#exploración-visual">Exploración visual</a></li>
+      </ul>
+    </li>
+    <li><a href="#visualizaciones-interactivas-utilizando-funciones">Visualizaciones interactivas utilizando funciones</a></li>
+  </ul>
+</nav></div>
+</aside>
+
+        </div>
+        <div class="btn">
+    <div class="btn-menu" id="btn-menu">
+        <i class="iconfont icon-grid-sharp"></i>
+    </div>
+    <div class="btn-toggle-mode">
+        <i class="iconfont icon-contrast-sharp"></i>
+    </div>
+    <div class="btn-scroll-top">
+        <i class="iconfont icon-chevron-up-circle-sharp"></i>
+    </div>
+</div>
+<aside class="sidebar-mobile" style="display: none;">
+  <div class="sidebar-wrapper">
+    
+    <div class="sidebar-item sidebar-pages">
+        <h3>Pages</h3>
+        <ul>
+            
+            <li>
+                <a href="/es/">Español</a>
+            </li>
+            
+            <li>
+                <a href="/">Home</a>
+            </li>
+            
+            <li>
+                <a href="/archives/">Archives</a>
+            </li>
+            
+            <li>
+                <a href="/about/">About</a>
+            </li>
+            
+            <li>
+                <a href="/search/">Search</a>
+            </li>
+            
+            <li>
+                <a href="/index.xml">RSS</a>
+            </li>
+            
+        </ul>
+    </div>
+    
+    <div class="sidebar-item sidebar-links">
+        <h3>Links</h3>
+        <ul>
+            
+            <li>
+                <a href="https://www.r-project.org/" target="_blank"><span>The R Project</span></a>
+            </li>
+            
+            <li>
+                <a href="https://www.r-bloggers.com/" target="_blank"><span>R Bloggers</span></a>
+            </li>
+            
+            <li>
+                <a href="https://www.bioconductor.org/" target="_blank"><span>Bioconductor</span></a>
+            </li>
+            
+        </ul>
+    </div>
+    
+    <div class="sidebar-item sidebar-tags">
+        <h3>Tags</h3>
+        <div>
+            
+            <span>
+                <a href="/tags/code-visuals/">Code Visuals</a>
+            </span>
+            
+            <span>
+                <a href="/tags/data-analysis/">data analysis</a>
+            </span>
+            
+            <span>
+                <a href="/tags/database/">database</a>
+            </span>
+            
+            <span>
+                <a href="/tags/ggplot2/">ggplot2</a>
+            </span>
+            
+            <span>
+                <a href="/tags/minitutorial/">minitutorial</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-basics/">R basics</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-dev/">R-dev</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-funciones/">R funciones</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-functions/">R functions</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-maps/">R maps</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-shiny/">R shiny</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-tips/">R tips</a>
+            </span>
+            
+            <span>
+                <a href="/tags/web-scrap/">web-scrap</a>
+            </span>
+            
+        </div>
+    </div>
+    
+    
+  </div>
+</aside>
+    </main>
+
+    <footer>
+    <div class="container-lg clearfix">
+        <div class="col-12 footer">
+            
+            <span>&copy; 2021-2022
+                <a href="https://blog.rwhitedwarf.com">R White Dwarf</a>
+                
+                | Powered by <a href="https://github.com/dsrkafuu/hugo-theme-fuji/"
+                   target="_blank">Fuji-v2</a> &amp; <a href="https://gohugo.io/"
+                                                    target="_blank">Hugo</a> 
+            </span>
+        </div>
+    </div>
+</footer>
+
+    
+<script defer src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.6/dist/medium-zoom.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/lazysizes@5.3.2/lazysizes.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/prismjs@1.27.0/components/prism-core.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/prismjs@1.27.0/plugins/autoloader/prism-autoloader.min.js"></script>
+
+
+
+<script defer src="/assets/js/fuji.min.js"></script>
+
+
+
+</body>
+
+</html>

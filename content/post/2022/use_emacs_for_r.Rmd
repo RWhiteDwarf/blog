@@ -1,0 +1,51 @@
+---
+author: "Manuel Teodoro Tenango"
+title: "Using Emacs for R"
+image: ""
+draft: true
+date: 2022-11-23
+description: " "
+tags: ["R basics", "R tips", "emacs"]
+categories: ["R"]
+archives: ["2022"]
+---
+
+```{r setup, include=FALSE} 
+knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
+```
+
+## Title intro
+
+To start using R, or almost anything else in Emacs, you basically need to know 3 things: 1) How to move in Emacs, meaning understanding what is what and learning a few key commands; 2) What is the configuration file and how to use it and 3) How to use packages to extend Emacs. In the first half of this post I will try to show how easy it is to cover these 3 points even for people who are inexperienced in programming. If you don't believe me I invite you to read just the first paragraph of the next section to give you an idea of how easy it really is. During the second half I will show how I'm using R in Emacs to give you a starting point of a fully functional environment for R, and will conclude with some topics that can be further explored. 
+
+## Why did I chose Emacs as a researcher in the academia?
+
+I started my professional life as a researcher in ecology-related topics. During my master studies I improved my knowledge on statistics considerably and due to that and to the complexity of my research project, I did not want to use a GUI-based software for my statistical analysis. Thus, I started learning R, and believe it or not, I completed my research project for my Thesis by tipping R code directly to the console from my handwritten notes. When I started my PhD I thought that it would be easier to just write the code I need in electronic format and copy-paste it to the R console. And with that idea in mind and the help of the internet, I discovered the text editors and Emacs, and a whole new universe opened up to me. I know that many in my position would be ashamed of sharing such a story but I simply want to exemplify how easy it is to start using Emacs, contrary to the popular belief. I went from having no idea of what a text editor is, to setting up and using Emacs with R, with no intermediate steps.
+
+Emacs is a wonderful text editor that can easily be extended to do many things. You can have tools to help in writing your code such as different types of indentation, syntax highlighter, git utilities, project management, code maps, web browser, even play games. **Describe more as a developer**
+
+The reason why I stayed with Emacs as a researcher in the academia was mainly due to org-mode. It is an Emacs major mode that helped me to organize my research and in still today it helps me to organize my job. You can think if it as the Emacs version of Markdown, with the possibility to organize to do lists, tag notes and sections, fully organize an agenda (tracking tasks, set deadlines, schedule items, etc.). You can add chunks of code from almost any language and, with the help of couple more library, you can run the code within the org file itself. Github and other git servers have integrated tools to view org files as html, but there are libraries to convert them also to pdf, libreoffice, create presentations and more. 
+
+Another important point that made me fall in love with Emacs was the fact that, if I managed to keep most of my research files as text I could do it all from Emacs, instead of using different apps for different tasks. And so I did: I was writing my papers in LaTeX and organizing my bibliography with bibtex; I was saving data as CSV which Emacs can manage very well; the graphics were more of an issue but, since I used R to make most of it, I simply needed to save the right script for the right plot. And all this was organized in org-mode with links to this or that file according to the project, section, tag, etc. And the reason why I wanted to do this was not even for organization purposes, but rather because, as text, I could track all my changes using Git, with ended up being a huge support for my PhD work: I could revert changes if I had mistakes or explore old commits, and backup all of that easily. So, at the end, while R had been the reason why I decided to explore Emacs, it was in fact the combo Emacs + org-mode + git which improved my organization and productivity potentially during my research life. And I would like to share this tools with as many people as possible.
+
+Thus, I decided to create this post to give you an idea of how easily you can start using Emacs for R coding. If you enjoy it and you'd like me to create more detail posts about some of the tools I describe here leave me a comment and I'll take care of it. I include a general list of the tools I use regularly in Emacs at the end, you can have a look there.
+
+## Getting started with Emacs
+
+### Installation and first steps
+
+### Control and Meta, moving in Emacs
+
+### The configuration file
+
+### Extending Emacs: packages
+
+## ESS to speak with R
+
+### What is ESS?
+
+### How to use R in ESS
+
+### Other useful add-ins for R productivity
+
+## What next? - Explore Emacs libraries
