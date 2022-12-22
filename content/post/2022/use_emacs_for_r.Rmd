@@ -46,14 +46,7 @@ This chapter is a brief overview of the rest of the post meant as a quick start 
  
 ```{emacs-lisp emacs_init}
 (require 'package)
-(add-to-list 'package-archives
-             '("melpa" . "https://melpa.org/packages/"))
-(package-initialize)
-
-
-(eval-when-compile 
-  (add-to-list 'load-path "~/.emacs.d/elpa/")
-  (require 'use-package))
+(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
 
 (unless (package-installed-p 'use-package)
   (package-refresh-contents)
@@ -141,12 +134,15 @@ To keep consistency and facility, we will keep the same approach that we used in
 
 If you followed step 2 from Emacs you should have now an empty screen where you can start typing Elisp code to tell Emacs how to start. The file still does not exists but wit the command **C-x C-f** we are creating it. Make sure that it is store in the home folder `~/` and not somewhere else. To demonstrate the point type the following line in your new file: `(setq inhibit-startup-screen t)`, that tells Emacs to inhibit the startup screen. Now save it with **C-x C-s**, close Emacs and open it again and now the startup screen showing you the tutorial should not be there anymore. If you still want to see the welcome screen at startup you can simply delete that line and the startup screen will be back (**C-x C-f** type `~/.emacs`, delete the line and save). 
 
-Here are just couple of lines that are useful to add to your dot Emacs file for writing R code:
+Here are just a couple of lines that are useful to add to your dot Emacs file for writing R code:
 
 ```{emacs-lisp dot-emacs}
 ;; enable column numbers
 (setq column-number-mode t)
 (add-hook 'prog-mode-hook 'display-line-numbers-mode)
+
+;; Highlights the matching parentheses
+(show-paren-mode 1)
 
 ;; Using arrow for moving through buffers
 (global-set-key (kbd "C-x <up>") 'windmove-up)
@@ -162,13 +158,43 @@ Here are just couple of lines that are useful to add to your dot Emacs file for 
 	  (find-file "~/Path/to_your_file/a_starting_file.R"))))
 ```
 
-The first part will simply enable column numbers when writing code, for some reason Emacs does not do it by default. The second paragraph will allow you to move between buffers using **C-x** and the arrows. For example, you can split buffer horizontally using **C-x 2** and then move to the lower buffer using **C-x** and down arrow, or back to the upper with the upper arrow **C-x <up>**. The last part can set a custom starting file, meaning each time you open Emacs this will be the file that will open by default, but if you open a file with Emacs this file won't show up. 
+The first part will simply enable column numbers when writing code, for some reason Emacs does not do it by default. Next we are activating the `show-paren-mode` which highlights the matching parentheses, a useful function when writing long functions. The third paragraph will allow you to move between buffers using **C-x** and the arrows. For example, you can split buffer horizontally using **C-x 2** and then move to the lower buffer using **C-x** and down arrow, or back to the upper with the upper arrow **C-x <up>**. The last part can set a custom starting file, meaning each time you open Emacs this will be the file that will open by default, but if you open a file with Emacs this file won't show up. 
 
 ### Extending Emacs: packages
 
 Emacs can be fully customized in the sense that you can write Elisp code to get Emacs do what you want. Luckily, you don't need to know Elisp to take advantage of it. Like in R, there are several packages that extend the basic Emacs to do more than it was originally designed to. In the quick start section steps 3 to 7 we did exactly that in 2 different ways. Let's take a look at each option and detail to install packages.
 
-#### Melpa 
+#### ELPA and MELPA 
+
+> ELPA is the Emacs Lisp Package Archive, written originally by [TomTromey](https://www.emacswiki.org/emacs/TomTromey). It is included in [GnuEmacs](https://www.emacswiki.org/emacs/GnuEmacs), starting with version 24. `package.el` is the package manager library for ELPA.
+>
+>“Our goal is to make it simple to install, use, and upgrade Emacs Lisp packages. We supply `package.el` a simple package manager for Emacs, and a repository of pre-packed Emacs Lisp code.”
+>
+>See [InstallingPackages](https://www.emacswiki.org/emacs/InstallingPackages#installing-packages) for basic usage information.
+
+To see the ELPA packages available you can execute the command `list-packages` (remember, by using **M-x**). However, sometimes this are not the most up to date versions, or some packages are simply not listed in the ELPA repositories but rather in MELPA only. 
+
+> [MELPA](https://melpa.org/) is an [ELPA](https://www.emacswiki.org/emacs/ELPA)-compatible package repository that contains an enormous number of useful Emacs packages.
+>
+> In contrast to ELPA, Emacs is not configured by default to install packages from MELPA. You will have to configure Emacs to use it.
+
+You can think of MELPA to ELPA like Bioconductor is to CRAN. In their own words, this is what MELPA is intended for:
+
+>    Up-to-date packages built on our servers from upstream source
+>    Installable in any Emacs with 'package.el' - no local version-control tools needed
+>    Curated - no obsolete, renamed, forked or randomly hacked packages
+>    Comprehensive - more packages than any other archive
+>    Automatic updates - new commits result in new packages
+>    Extensible - contribute new recipes, and we'll build the packages
+
+To configure Emacs to find MELPA packages we simply need two lines of code in our configuration file.
+
+```{emacs-lisp enable-melpa}
+(require 'package)
+(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
+```
+
+Add those lines to your dot emacs file, save it and restart Emacs to take effect. Now, upon calling `list-packages` you should see an extended list of packages, some of which are tagged as "melpa" in the section "Archive" of the list. 
 
 #### list-packages and install-package
 
