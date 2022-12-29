@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+<meta name="HandheldFriendly" content="True" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<meta name="generator" content="Hugo 0.104.2" />
+
+
+<link rel="apple-touch-icon" sizes="180x180" href="favicon/RWD-apple-touch-icon.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="favicon/RWD-favicon-32x32.png" />
+<link rel="icon" type="image/png" sizes="16x16" href="favicon/RWD-favicon-16x16.png" />
+<link rel="manifest" href="favicon/site.webmanifest" />
+<link rel="shortcut icon" type="image/x-icon" href="favicon/RWD-favicon.ico" />
+<meta name="theme-color" content="#ffffff">
+
+
+
+<title>Using Emacs for R | R with White Dwarf</title>
+
+
+<meta name="author" content="Manuel Teodoro Tenango" />
+
+
+<meta name="description" content="Emacs is an easy to use text editor that, combined with ESS can make a powerful IDE for working with R" />
+
+
+<meta name="keywords" content="R basics, R tips, emacs" />
+
+
+<meta property="og:title" content="Using Emacs for R" />
+<meta name="twitter:title" content="Using Emacs for R" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://blog.rwhitedwarf.com/post/use_emacs_for_r/" /><meta property="og:description" content="Emacs is an easy to use text editor that, combined with ESS can make a powerful IDE for working with R" />
+<meta name="twitter:description" content="Emacs is an easy to use text editor that, combined with ESS can make a powerful IDE for working with R" /><meta property="og:image" content="https://blog.rwhitedwarf.com/post/2022/use_emacs_for_r/learning-editors.jpg" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://blog.rwhitedwarf.com/post/2022/use_emacs_for_r/learning-editors.jpg" /><meta property="article:published_time" content="2022-12-29T00:00:00+00:00" /><meta property="article:modified_time" content="2022-12-29T00:00:00+00:00" />
+
+
+<style>
+    @media (prefers-color-scheme: dark) {
+        body[data-theme='auto'] img {
+            filter: brightness(60%);
+        }
+    }
+
+    body[data-theme='dark'] img {
+        filter: brightness(60%);
+    }
+</style>
+
+
+
+
+<link rel="stylesheet" href="https://blog.rwhitedwarf.com/assets/css/fuji.min.css" />
+
+
+
+
+
+
+
+
+</head>
+
+<body
+  data-theme="auto"
+  data-theme-auto='true'
+  >
+    <script data-cfasync="false">
+  
+  var fujiThemeData = localStorage.getItem('fuji_data-theme');
+  
+  if (!fujiThemeData) {
+    localStorage.setItem('fuji_data-theme', 'auto');
+  } else {
+    
+    if (fujiThemeData !== 'auto') {
+      document.body.setAttribute('data-theme', fujiThemeData === 'dark' ? 'dark' : 'light');
+    }
+  }
+</script>
+
+    <header>
+    <div class="container-lg clearfix">
+        <div class="col-12 header">
+            <a class="title-main" href="https://blog.rwhitedwarf.com">R with White Dwarf</a>
+            
+            <span class="title-sub">A distant star coding in R</span>
+            
+        </div>
+    </div>
+</header>
+
+    <main>
+        <div class="container-lg clearfix">
+            
+            <div class="col-12 col-md-9 float-left content">
+                
+<article>
+    
+    <h2 class="post-item post-title">
+        <a href="https://blog.rwhitedwarf.com/post/use_emacs_for_r/">Using Emacs for R</a>
+    </h2>
+    <div class="post-item post-meta">
+        <span><i class="iconfont icon-today-sharp"></i>&nbsp;2022-12-29</span>
+
+<span><i class="iconfont icon-file-tray-sharp"></i>&nbsp;5303 words</span>
+
+<span><i class="iconfont icon-pricetags-sharp"></i>&nbsp;<a href="/tags/r-basics">R basics</a>&nbsp;<a href="/tags/r-tips">R tips</a>&nbsp;<a href="/tags/emacs">emacs</a>&nbsp;</span>
+
+    </div>
+    
+    <div class="post-content markdown-body">
+        <h2 id="easy-emacs">Easy Emacs</h2>
+<p>To start using R, or almost anything else in <a href="https://www.gnu.org/software/emacs/" target="_blank">Emacs</a> you basically need to know 3 things: 1) How to move in Emacs, meaning understanding what is what and learning a few key commands; 2) What is the configuration file and how to use it and 3) How to use packages to extend Emacs. In the first half of this post I will try to show how easy it is to cover these 3 points even for people who are inexperienced in programming. If you don&rsquo;t believe me I invite you to read just the first paragraph of the next section to give you an idea of how easy it really is. During the second half I will show how I&rsquo;m using R in Emacs to give you a starting point of a fully functional environment for R, and will conclude with some topics that can be further explored.</p>
+<h2 id="why-did-i-chose-emacs-as-a-researcher-in-the-academia">Why did I chose Emacs as a researcher in the academia?</h2>
+<p>I started my professional life as a researcher in ecology-related topics. During my master studies I improved my knowledge on statistics considerably and due to that and to the complexity of my research project, I did not want to use a GUI-based software for my statistical analysis. Thus, I started learning R, and believe it or not, I completed my research project for my Thesis by tipping R code directly to the console from my handwritten notes. When I started my PhD I thought that it would be easier to just write the code I need in electronic format and copy-paste it to the R console. And with that idea in mind and the help of the internet, I discovered the text editors and Emacs, and a whole new universe opened up to me. I know that many in my position would be ashamed of sharing such a story but I simply want to exemplify how easy it is to start using Emacs, contrary to the popular belief. I went from having no idea of what a text editor is, to setting up and using Emacs with R, with no intermediate steps.</p>
+<p>Emacs is a wonderful text editor that can easily be extended to do many things. You can have tools to help in writing your code such as different types of indentation, syntax highlighter, git utilities, project management, code maps, web browser, even to play games. Emacs provides by default a lot of functionalities to move easily through the text files, including keybindings to go to the end and beginning of buffer, function or paragraph, parentheses matching, text search, exploration and replacement, syntax and spelling checks. You can create markers to move quickly to particular files, window configurations or to store text and numbers. Some consider Emacs almost as an OS because you can also do things like create and delete files, version control, internet browser, and more.</p>
+<p>The reason why I stayed with Emacs as a researcher in the academia was mainly due to <a href="https://orgmode.org/" target="_blank">org-mode</a>. It is an Emacs major mode that helped me to organize my research and still today it helps me to organize my job. You can think if it as the Emacs version of Markdown, with the possibility to organize to-do lists, tag notes and sections, fully organize an agenda (tracking tasks, set deadlines, schedule items, etc.). You can add chunks of code from almost any language and, with the help of a couple more libraries, you can run the code within the org file itself. Github and other git servers have integrated tools to view org files as html, but there are libraries to convert them also to pdf, libreoffice, create presentations and more.</p>
+<p>Another important point that made me fall in love with Emacs was the fact that, if I managed to keep most of my research files as text I could do it all from Emacs, instead of using different apps for different tasks. And so I did: I was writing my papers in LaTeX and organizing my bibliography with bibtex; I was saving data as CSV which Emacs can manage very well; the graphics were more of an issue but, since I used R to create most of them, I simply needed to save the right script for the right plot. And all this was organized in org-mode with links to this or that file according to the project, section, tag, etc. And the reason why I wanted to do this was not even for organization purposes, but rather because, as text, I could track all my changes using Git, which ended up being a huge support for my PhD work: I could revert changes if I had mistakes or explore old commits, and backup all of that easily. So, at the end, while R had been the reason why I decided to explore Emacs, it was in fact the combo Emacs + org-mode + git which improved my organization and productivity potentially during my research life. And I would like to share this tools with as many people as possible.</p>
+<p><img class="img-zoomable" src="/post/2022/use_emacs_for_r/learning-editors.jpg" alt="Editors learning curve" />
+</p>
+<p>Thus, I decided to create this post, to give you an idea of how easily you can start using Emacs for R coding. If you enjoy it and you&rsquo;d like me to create more content about some of the tools briefly described here, make sure to leave me a comment and I&rsquo;ll take care of it. I include a general list of the tools I use regularly in Emacs at the end, you can have a look there.</p>
+<h2 id="quick-start">Quick start</h2>
+<p>Although Emacs is extremely customizable, it is true that it requires some coding skills and knowledge of the not so popular programming language called <a href="https://www.gnu.org/software/emacs/manual/html_node/eintr/" target="_blank">Emacs Lisp</a>. You would probably have also read that Emacs has a very steep learning curve, which is also true. This two conditions usually scare people away from learning Emacs. In this section I will demonstrate that you don&rsquo;t need to know Emacs Lisp (or programming at all) and that with very little knowledge of Emacs you can have a ready-to-use super-powerful R editor.</p>
+<p>This chapter is a brief overview of the rest of the post meant as a quick start to get Emacs up and working with R in just as few as 10 steps. The rest of the post will simply go deeper into each of the steps.</p>
+<ol>
+<li>
+<p>Make sure that you have installed both, Emacs and R in your computer.</p>
+</li>
+<li>
+<p>Open Emacs and press the keys Ctr + x, release and press Ctr + f (in Emacs notation, this combination of keys is expressed as &ldquo;<strong>C-x C-f</strong>&rdquo;). Focus on the <strong>mini buffer</strong>, it is the line positioned at the bottom of your window. It is waiting for you to type something. If there is some path to a folder already in that area delete it first and then type <code>~/.emacs</code> and enter. It should open a new empty window.</p>
+</li>
+</ol>
+<p><img class="img-zoomable" src="/post/2022/use_emacs_for_r/emacs-minibuffer.png" alt="Emacs minibuffer" />
+</p>
+<ol start="3">
+<li>This is your configuration file. Paste the following code in your new window</li>
+</ol>
+<pre><code class="language-{emacs-lisp">(require 'package)
+(add-to-list 'package-archives '(&quot;melpa&quot; . &quot;https://melpa.org/packages/&quot;))
+
+(unless (package-installed-p 'use-package)
+  (package-refresh-contents)
+  (package-install 'use-package))
+(setq use-package-always-ensure t)
+
+(use-package ess)
+
+(use-package company
+  :config
+  (add-hook 'after-init-hook 'global-company-mode))
+
+(setq company-selection-wrap-around t
+      company-tooltip-align-annotations t
+      company-idle-delay 0.45
+      company-minimum-prefix-length 3
+      company-tooltip-limit 10)
+</code></pre>
+<p>This configuration assumes that you have installed R with all the defaults. If you have installed R in a directory of your choice, add the following line at the end of the configuration file, changing the path of my example for the path were you have installed R.</p>
+<pre><code class="language-{emacs-lisp">(setq inferior-ess-r-program &quot;C:/Users/Manuel/path_where_R_is/R-4.2.1/bin/R.exe&quot;)
+</code></pre>
+<ol start="4">
+<li>
+<p>Type <strong>C-x C-s</strong> (meaning, Ctr + x, release, Ctr + s). This will save the file.</p>
+</li>
+<li>
+<p>Type now Alt + x (in Mac <em>command</em> key instead of Alt or, if it does not work, the <em>option</em> key instead), this is the key Meta, represented in Emacs by <strong>M-x</strong>. At this point you want to focus again on your mini buffer, the line at the bottom of the screen.</p>
+</li>
+<li>
+<p>Type there <code>package-install</code> enter and then type <code>use-package</code>, enter. If some text appears at the bottom of your <code>.emacs</code> file don&rsquo;t worry, it is intended this way.</p>
+</li>
+<li>
+<p>Focus on the mini buffer in case it prompts something. If it asks you if you want to install the package type <code>y</code> and enter. If it tells you that it cannot find the package or it does not exist, close Emacs, open it again and repeat steps 5 and 6. It should show a message informing that it has been installed. In my case it shows the following line in the minibuffer:</p>
+</li>
+</ol>
+<pre><code class="language-example">Done (Total of 9 files compiled, 4 skipped)
+</code></pre>
+<ol start="8">
+<li>
+<p>Now close Emacs and open it again. This time it should take longer to load. Be patient, Emacs is loading installing and loading more packages for you.</p>
+</li>
+<li>
+<p>Type again <strong>C-x C-f</strong> and type <code>test.R</code>, enter. You can change the path before the file if you wish (i.e. <code>~/Code/test.R</code>).</p>
+</li>
+<li>
+<p>A new empty area should appear. Type there one line of R code. When you are done, while keeping the cursor in the line where your code is, press <strong>C-c C-j</strong>, this sends a line to R. A new area will open, showing the R console and the results of the code you just sent. If nothing happens focus on the minibuffer, it might ask you where to start your R session; you can just press enter or provide a new location. Then you can continue typing R code and use the same combination of keys to run a line, you can use <strong>C-c C-p</strong> to run a paragraph, <strong>C-c C-f</strong> to send a function and <strong>C-c C-b</strong> the send the whole buffer (which here basically means the whole file) or simply Control + enter (<strong>C-return</strong>) to send any of the mentioned regions. And as you already know, you can save the file by pressing <strong>C-x C-s</strong>.</p>
+</li>
+</ol>
+<p><img class="img-zoomable" src="/post/2022/use_emacs_for_r/emacs-r-init.png" alt="ESS and R" />
+</p>
+<p>If everything went well now you should have a simple Emacs configuration to start coding in R. Congratulations!.</p>
+<h2 id="getting-started-with-emacs">Getting started with Emacs</h2>
+<h3 id="installation-and-first-steps">Installation and first steps</h3>
+<p>Both, R and Emacs are extremely easy to install, therefore I will not go into the details for it. Basically in any Linux distribution you can just use your package manager for it, in windows just download and run the official executable files and for Mac you can also download the binaries or use alternative package methods like homebrew (also applicable for Linux). For R go to (<a href="https://www.r-project.org/" target="_blank">https://www.r-project.org/</a>) and for Emacs to (<a href="https://www.gnu.org/software/emacs/%29" target="_blank">https://www.gnu.org/software/emacs/)</a>.</p>
+<p>Once you have installed Emacs you can run it and you will have the welcome screen, together with some toolbars and list of menus. At this point you could basically use Emacs like any other text editor: you can open files, edit them and save them by using all the menus, icons and your mouse. However, the real power of Emacs rest in its keybindings. To get started I recommend to click on the link <strong>Emacs Tutorial</strong> of the welcome screen, it will guide you through the basics. After the tutorial you will feel more comfortable finding your way around Emacs and the rest of this post will be easier to follow.</p>
+<p><img class="img-zoomable" src="/post/2022/use_emacs_for_r/emacs-init.png" alt="Welcome to Emacs" />
+</p>
+<h3 id="control-meta-and-the-minibuffer-moving-in-emacs">Control, Meta and the minibuffer, moving in Emacs</h3>
+<p>When you are working with text most of the time (as it is the case of R code) the use of the mouse can reduce productivity by searching with your eyes the exact places you want to mark, going all the way to the menu to save or open a file, finding when a parentheses opens and closes, and so on. The idea of the keybindings is to increase productivity by staying in the text at the level of the keyboard most of the time, since this is what we actually do when we write code.</p>
+<p>At the beginning it can be complicated to memorize so many keybindings. I&rsquo;d recommend to try to remember the most basic ones to move along the text, save files, close Emacs and split the screen as you need to. The rest can be easily achieved through the mouse icons and menus. When I started using Emacs I was having a piece of paper with the most useful keybindings and, as my fingers started remembering by themselves I was deleting those and adding new ones. Today I can assure you that my productivity to write R code is much better than it ever was with any other text editor.</p>
+<p>I will not go through the details of which keybindings do what since it is all in the self contained tutorial, however there are some key points to learn the keybindings. One is the knowledge of the so called &ldquo;Emacs Notation&rdquo;. Whenever you search either in Emacs documentation or some other sources to use Emacs, how to perform certain actions, you will find things like <strong>C-M-a</strong>. The capital <code>C</code> is short for the key Control, while capital <code>M</code> is for meta, which in most computers is Alt and in Mac is usually the key Command. Thus, <strong>C-M-a</strong> would mean that you have to hold the key <strong>Control</strong>, the key <strong>Meta</strong> and the key <strong>a</strong>. Usually the keys Control and Meta are used in combination with other keys and thus, the letters <strong>C</strong> and <strong>M</strong> are used at the beginning of the commands. That would mean that, for example, the combination <strong>C-C</strong> does not mean Control twice, but rather Control plus capital C. Although this rarely happens (I&rsquo;ve never used such a combination), it is important to be aware because Emacs recognizes difference between upper and lower case.</p>
+<p><img class="img-zoomable" src="/post/2022/use_emacs_for_r/emacs-minibuffer.png" alt="Emacs minibuffer" />
+</p>
+<p>Another important part to know in Emacs is the minibuffer. By default it is positioned at the bottom of the screen and it is used to communicate commands between Emacs and the user. For example, when you save a file the minibuffer will print something like <code>Wrote /path/to/file.R</code> to signal that the file has been saved.</p>
+<p>The minibuffer is also used to pass commands to Emacs. All the keybindings are bind to a command, although not every command is bind to a key. To pass a command to Emacs you can use the keys <strong>M-x</strong>. As an example you can try to use <strong>M-x</strong> and you will see that the minibuffer has changed and now is ready to receive your input. Type there <code>help-for-help</code> and a new menu will appear, showing you the options for help and the instructions to use it. For example, type <strong>b</strong> to display all keybindings. The command <code>help-for-help</code> is bind to the keys <strong>C-h ?</strong> therefore, if you would type this combination instead you would have the same response.</p>
+<p>Emacs uses intuitive key bindings and thus, the combination <strong>C-h</strong> is designed for <strong>h</strong>elp. For example, the combination <strong>C-h b</strong> will show the help for the <strong>B</strong>indings, <strong>C-h t</strong> help with <strong>T</strong>utorial, <strong>C-h f</strong> help for a <strong>F</strong>unction (you have to type in the function), etc. <strong>C-x</strong> executes high levels functions such as <strong>s</strong>ave file <strong>C-x C-s</strong> or <strong>c</strong>lose Emacs with <strong>C-x C-c</strong>.</p>
+<p>You can take some time to familiarize yourself with some of the keybindings and later you will see how it pays off when writing and executing R code. The best way to get familiar with the main ones is by following the tutorial included in Emacs, you have the Link in the welcome page, in the Help menu or simply type <strong>C-h t</strong>.</p>
+<h3 id="the-configuration-file">The configuration file</h3>
+<p>The second part of the power of Emacs is its customization. The first aspect for its customization is the init file, also known as dot Emacs. According to its documentation:</p>
+<blockquote>
+<p>When Emacs is started, it normally tries to load a Lisp program from an initialization file, or init file for short. This file, if it exists, specifies how to initialize Emacs for you. Traditionally, file <code>~/.emacs</code> is used as the init file, although Emacs also looks at <code>~/.emacs.el</code>, <code>~/.emacs.d/init.el</code>, <code>~/.config/emacs/init.el</code>, or other locations. See <a href="https://www.gnu.org/software/emacs/manual/html_node/emacs/Find-Init.html" target="_blank">How Emacs Finds Your Init File</a>.</p>
+</blockquote>
+<p>This means that you have several options to tell Emacs how to start. If you are not familiar with Unix style, <code>~/</code> is the home directory. That means that you can have your configuration file in your home directory called <code>.emacs</code> or <code>.emacs.el</code>, or you can have it inside a configuration folder <code>~/.emacs.d/</code> or <code>~/.config/emacs/</code> with the name <code>init.el</code> (or some other options, see the link in the quote).</p>
+<p>To keep consistency and facility, we will keep the same approach that we used in the quick guide above and use the file dot emacs.</p>
+<blockquote>
+<ol start="2">
+<li>Open Emacs and press the keys Ctr + x, release and press Ctr + f (in Emacs notation, this combination of keys is expressed as &ldquo;<strong>C-x C-f</strong>&rdquo;). Focus on the <strong>mini buffer</strong>, it is the line positioned at the bottom of your window. It is waiting for you to type something. If there is some path to a folder already in that area delete it first and then type <code>~/.emacs</code> and enter. It should open a new empty window.</li>
+</ol>
+</blockquote>
+<p>If you followed step 2 from within Emacs you should have now an empty screen where you can start typing Elisp code to tell Emacs how to start. After a new installation the file still does not exists (although you might already have created it if you followed the quick start). With the command <strong>C-x C-f</strong> we can create it. Make sure that it is stored in the home folder <code>~/</code> and not somewhere else. To demonstrate the point, type the following line anywhere in your <code>.emacs</code> file: <code>(setq inhibit-startup-screen t)</code>, that tells Emacs to inhibit the startup screen. Now save it with <strong>C-x C-s</strong>, close Emacs and open it again and now the startup screen showing you the tutorial should not be there anymore. If you still want to see the welcome screen at startup you can simply delete that line and the startup screen will be back (<strong>C-x C-f</strong> type <code>~/.emacs</code>, delete the line and save).</p>
+<p>Here are just a couple of lines that are useful to add to your dot Emacs file for writing R code:</p>
+<pre><code class="language-{emacs-lisp">;; enable column numbers
+(setq column-number-mode t)
+(add-hook 'prog-mode-hook 'display-line-numbers-mode)
+
+;; Highlights the matching parentheses
+(show-paren-mode 1)
+
+;; Using arrow for moving through buffers
+(global-set-key (kbd &quot;C-x &lt;up&gt;&quot;) 'windmove-up)
+(global-set-key (kbd &quot;C-x &lt;down&gt;&quot;) 'windmove-down)
+(global-set-key (kbd &quot;C-x &lt;left&gt;&quot;) 'windmove-left)
+(global-set-key (kbd &quot;C-x &lt;right&gt;&quot;) 'windmove-right)
+
+;; Starting file
+(setq initial-buffer-choice
+      (lambda ()
+	(if (buffer-file-name)
+	    (current-buffer)
+	  (find-file &quot;~/Path/to_your_file/a_starting_file.R&quot;))))
+</code></pre>
+<p>The first part will simply enable column numbers when writing code, for some reason Emacs does not do it by default. Next we are activating the <code>show-paren-mode</code> which highlights the matching parentheses, a useful function when writing long functions. The third paragraph will allow you to move between buffers using <strong>C-x</strong> and the arrows. For example, you can split buffer horizontally using <strong>C-x 2</strong> and then move to the lower buffer using <strong>C-x</strong> and down arrow, or back to the upper with the upper arrow <strong>C-x <up></strong>. The last part can set a custom starting file, meaning each time you open Emacs this will be the file that will open by default, but if you open a different file using Emacs this starting file won&rsquo;t show up.</p>
+<h3 id="extending-emacs-packages">Extending Emacs: packages</h3>
+<p>Emacs can be fully customized in the sense that you can write Elisp code to get Emacs do what you want. Luckily, you don&rsquo;t need to know Elisp to take advantage of it. Like in R, there are several packages that extend the basic Emacs to do more than it was originally designed to. In the quick start section steps 3 to 7 we did exactly that in 2 different ways. Let&rsquo;s take a look at each option and detail to install packages.</p>
+<h4 id="elpa-and-melpa">ELPA and MELPA</h4>
+<blockquote>
+<p>ELPA is the Emacs Lisp Package Archive, written originally by <a href="https://www.emacswiki.org/emacs/TomTromey" target="_blank">TomTromey</a>. It is included in <a href="https://www.emacswiki.org/emacs/GnuEmacs" target="_blank">GnuEmacs</a>, starting with version 24. <code>package.el</code> is the package manager library for ELPA.</p>
+<p>“Our goal is to make it simple to install, use, and upgrade Emacs Lisp packages. We supply <code>package.el</code> a simple package manager for Emacs, and a repository of pre-packed Emacs Lisp code.”</p>
+<p>See <a href="https://www.emacswiki.org/emacs/InstallingPackages#installing-packages" target="_blank">InstallingPackages</a> for basic usage information.</p>
+</blockquote>
+<p>To see the ELPA packages available you can execute the command <code>list-packages</code> (remember, by using <strong>M-x</strong>). However, sometimes this are not the most up to date versions, or some packages are simply not listed in the ELPA repositories but rather in MELPA only.</p>
+<blockquote>
+<p><a href="https://melpa.org/" target="_blank">MELPA</a> is an <a href="https://www.emacswiki.org/emacs/ELPA" target="_blank">ELPA</a>-compatible package repository that contains an enormous number of useful Emacs packages.</p>
+<p>In contrast to ELPA, Emacs is not configured by default to install packages from MELPA. You will have to configure Emacs to use it.</p>
+</blockquote>
+<p>You can think of MELPA to ELPA like Bioconductor is to CRAN. In their own words, this is what MELPA is intended for:</p>
+<blockquote>
+<p>Up-to-date packages built on our servers from upstream source</p>
+<p>Installable in any Emacs with &lsquo;package.el&rsquo; - no local version-control tools needed</p>
+<p>Curated - no obsolete, renamed, forked or randomly hacked packages</p>
+<p>Comprehensive - more packages than any other archive</p>
+<p>Automatic updates - new commits result in new packages</p>
+<p>Extensible - contribute new recipes, and we&rsquo;ll build the packages</p>
+</blockquote>
+<p>To configure Emacs to find MELPA packages we simply need two lines of code in our configuration file.</p>
+<pre><code class="language-{emacs-lisp">(require 'package)
+(add-to-list 'package-archives '(&quot;melpa&quot; . &quot;https://melpa.org/packages/&quot;))
+</code></pre>
+<p>Add those lines to your dot emacs file, save it and restart Emacs to take effect. Now, upon calling <code>list-packages</code> you should see an extended list of packages, some of which are tagged as &ldquo;melpa&rdquo; in the section &ldquo;Archive&rdquo; of the list.</p>
+<h4 id="list-packages-and-install-package">list-packages and install-package</h4>
+<p>From the last section you already know how to call <code>list-packages</code> and if you followed the quick start, you also know how to use the command <code>install-package</code>. Basically, to install a package you could call the command <code>install-package</code>, RET and type the exact name of the package, which can be found in the list of the packages.</p>
+<p>But there is more. According to the <a href="https://www.gnu.org/software/emacs/manual/html_node/emacs/Package-Menu.html" target="_blank">Emacs Documentation</a>:</p>
+<blockquote>
+<p>The command M-x list-packages brings up the package menu. This is a buffer listing all the packages that Emacs knows about, one on each line, with the following information:</p>
+<p>The package name (e.g., ‘auctex’).
+The package’s version number (e.g., ‘11.86’).
+The package’s status—normally one of ‘available’ (can be downloaded from the package archive), ‘installed’, or ‘built-in’ (included in Emacs by default). See Package Statuses.
+Which package archive this package is from, if you have more than one package archive enabled.
+A short description of the package.</p>
+</blockquote>
+<p>Each area in Emacs is called a buffer and depending what the buffer is running it will be controlled by its own rules. As you saw in the quick start, we can send a line of R code to the terminal by typing <strong>C-c C-j</strong>, but such key combination won&rsquo;t work the same if we are not inside an R file. In the same way, the buffer listing the packages has its own keybindings. You can find all the details in the link above, but here are the most useful ones:</p>
+<ul>
+<li>Move along the buffer using the arrow keys. Move one page down using <strong>C-v</strong> and one page up with <strong>M-v</strong>.</li>
+<li>Search for text using <strong>C-s</strong>.</li>
+<li>Press <strong>i</strong> to mark a package for installation.</li>
+<li>Press <strong>u</strong> to unmark a package.</li>
+<li>Press <strong>x</strong> to execute marked actions.</li>
+<li>Or simply use the menu &ldquo;Package&rdquo;</li>
+</ul>
+<p>To exit you can type <strong>q</strong> or you can kill this or any buffer by typing <strong>C-x k</strong> and then <strong>RET</strong>.</p>
+<h4 id="use-package">use-package</h4>
+<p>Another way to install packages is by using the package <a href="https://jwiegley.github.io/use-package/" target="_blank">use-package</a> which in short is a package manager.</p>
+<blockquote>
+<p>The <code>use-package</code> macro allows you to isolate package configuration in your <code>.emacs</code> file in a way that is both performance-oriented and, well, tidy. I created it because I have over 80 packages that I use in Emacs, and things were getting difficult to manage. Yet with this utility my total load time is around 2 seconds, with no loss of functionality!</p>
+</blockquote>
+<p>Let&rsquo;s use the example from the quick start, step 3:</p>
+<pre><code class="language-{emacs-lisp">(unless (package-installed-p 'use-package)
+  (package-refresh-contents)
+  (package-install 'use-package))
+
+(setq use-package-always-ensure t)
+
+(use-package ess)
+</code></pre>
+<ul>
+<li>The first part makes sure that the package <code>use-package</code> is installed and to refresh the list of packages based on <code>use-package</code> own rules.</li>
+<li>The second part ensures that the package will be installed if it was not yet installed. In other words, it makes the installation of the packages automatic so, you don&rsquo;t have to use <code>install-package</code> command of the <code>list-packages</code> menu.</li>
+<li>Finally <code>(use-package ess)</code> loads the package <code>ess</code> to Emacs, which is the package responsible for running R.</li>
+</ul>
+<h4 id="final-remarks-about-emacs-configuration">Final remarks about Emacs configuration</h4>
+<p>The detail usage of <code>use-package</code> is quite complex, especially for a new Emacs user and it is not covered in this post. Likewise, a more detailed configuration of the init file (<code>.emacs</code>) and the customization of Emacs and the packages through it can take an entire manual. If you are really interested you can start by following the links provided so far. Otherwise I would recommend staying with the basis presented here, getting familiar with Emacs and slowly getting deeper into particular topics. The info presented here is just the very basics to get started with a simple yet powerful IDE for R.</p>
+<p>One important point to know though is that usually, after installing a package, it has to be loaded through the init file so that Emacs can use it. Usually you can find detailed info in the documentation and/or website of the particular package on how to load it and how to configure it. The general rule is to load it using the base Emacs function <code>require</code> (i.e., <code>(require 'ess)</code>) or alternatively with <code>use-package</code> (i.e., <code>(use-package ess)</code>).</p>
+<h2 id="ess-to-speak-with-r">ESS to speak with R</h2>
+<p>As it was already mentioned, <a href="https://ess.r-project.org/" target="_blank">ESS</a> is the Emacs package used for R code. It stands for &ldquo;Emacs Speaks Statistics&rdquo; and it can run not only R code but other statistical analysis programs including Julia.</p>
+<blockquote>
+<p>Emacs Speaks Statistics (ESS) is an add-on package for GNU Emacs. It is designed to support editing of scripts and interaction with various statistical analysis programs such as R, S-Plus, SAS, Stata and OpenBUGS/JAGS. Although all users of these statistical analysis programs are welcome to apply ESS, advanced users or professionals who regularly work with text-based statistical analysis scripts, with various statistical languages/programs, or with different operating systems might benefit from it the most.</p>
+<p>The rationale for developing ESS is that most statistical analysis systems provide a more or less sophisticated graphical user interface (GUI). However, their full power is only available using their scripting language. Furthermore, complex statistical analysis projects require a high degree of automation and documentation which can only be handled by creating statistical analysis scripts. Unfortunately, many statistics packages provide only weak text editor functionality and show major differences between them. Without a unified text editor user interface additional effort is required from the user to cope with limited functionality and with text editor differences.</p>
+</blockquote>
+<p>ESS is a very powerful and specialized software on its own, its <a href="https://ess.r-project.org/Manual/ess.html" target="_blank">documentation</a> includes 16 detailed topics for its usage. Its use with Emacs can be compared to R Studio alone, although there are significant differences, the ESS team have also work a lot lately on having enough similarities to make R Studio users feel comfortable switching to Emacs.</p>
+<p>I use it particularly for R, it helps me to write R code including syntax highlight and indentation, to send R code to the console, to debug R code and more.</p>
+<h3 id="how-to-use-r-in-ess">How to use R in ESS</h3>
+<p>As we already mentioned, Emacs can be fully configured to our needs and wishes. If you clicked in the links above, you can also see that ESS documentation is quite long and complex. The present post is merely an introduction to its possibilities. Here is a table with the most commonly used key bindings and commands used in ESS.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">Keys</th>
+<th style="text-align:center">Effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">C-RET</td>
+<td style="text-align:center">Sends region, line or step to the console</td>
+</tr>
+<tr>
+<td style="text-align:center">C-c C-j</td>
+<td style="text-align:center">Sends line to the console</td>
+</tr>
+<tr>
+<td style="text-align:center">C-c C-p</td>
+<td style="text-align:center">Sends paragraph to the console</td>
+</tr>
+<tr>
+<td style="text-align:center">C-c C-b</td>
+<td style="text-align:center">Sends buffer (whole file) to the console</td>
+</tr>
+<tr>
+<td style="text-align:center">C-c C-f</td>
+<td style="text-align:center">Sends buffer to the console</td>
+</tr>
+<tr>
+<td style="text-align:center">M-x ess-indent-exp</td>
+<td style="text-align:center">Indents expression</td>
+</tr>
+</tbody>
+</table>
+<p>To use them make sure to have installed and loaded ESS in your Emacs. Then you can simply create an R file, start typing code and run it.</p>
+<p>You can also use the menu &ldquo;ESS&rdquo; fro within the R buffer to explore more keybindings and commands. One useful section is the &ldquo;Font Lock&rdquo; which defines the Syntax Highlighting for R. I&rsquo;d recommend to have open a relatively long or complex R script and mark/unmark fields to see what happens. But basically, the fields marked in the menu &ldquo;Font Lock&rdquo; are the fields that will be highlighted by Emacs.</p>
+<p>The ESS debugging tool is also useful and powerful. You can simply type in you R console <code>debug(function)</code> and then run the function called inside <code>debug</code> or a function containing it and Emacs will run step by step and side by side the file each time you type RET in the console. Whenever you don&rsquo;t type RET you can do all sort of stuff locally such as print the state of an argument or even change its value.</p>
+<h3 id="company">Company</h3>
+<p>Among all the libraries and Emacs functionalities that can help us writing R code, I think that <a href="https://company-mode.github.io/" target="_blank">Company</a> deserves a special mention. It is an auto completion tool that is easy to set up for ESS and intuitive to use. If you followed the quick start you should already have it installed and ready to use.</p>
+<pre><code class="language-{emacs-lisp">(use-package company
+  :config
+  (add-hook 'after-init-hook 'global-company-mode))
+
+(setq company-selection-wrap-around t
+      company-tooltip-align-annotations t
+      company-idle-delay 0.45
+      company-minimum-prefix-length 3
+      company-tooltip-limit 10)
+</code></pre>
+<p>The first paragraph is calling the library and creating a hook to activate it globally. You could as well change the hook to have it active only when ESS is running, but in my experience it is quite useful to have it active globally.</p>
+<p>The second paragraph customize some of its functionality, for example <code>company-idle-delay</code> defines the delay time to show the autocomplete menu, in seconds. You can fin more info about it in the official <a href="https://company-mode.github.io/manual/Getting-Started.html" target="_blank">documentation</a> or simply by typing <strong>C-h v</strong> RET and the name of the variable (i.e., <strong>C-h v RET company-idle-delay</strong>).</p>
+<p><img class="img-zoomable" src="/post/2022/use_emacs_for_r/company.png" alt="Company in action" />
+</p>
+<p>If you followed the quick start you could probably had already noticed that you get code suggestions while typing R code. If not, I recommend you to give it a try. The variable <code>company-minimum-prefix-length</code> is set to 3, which means that you need to type at least 3 characters and wait 0.45 seconds for the menu to pop-up.</p>
+<h2 id="what-next---explore-emacs-and-its-libraries">What next? - Explore Emacs and its libraries</h2>
+<p>As mentioned before, Emacs has many functionalities that can help boosting your productivity and writing code more easily. Here are some I personally use:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Emacs Functionalities</th>
+<th style="text-align:left">Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><a href="https://orgmode.org/" target="_blank">org-mode</a></td>
+<td style="text-align:left">Organization functionality in Emacs using plain text</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.gnu.org/software/emacs/manual/html_node/emacs/Parentheses.html" target="_blank">paren-mode</a></td>
+<td style="text-align:left">Commands for editing with parentheses</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.gnu.org/software/emacs/manual/html_node/emacs/Version-Control.html" target="_blank">vc-mode</a></td>
+<td style="text-align:left">Version Conrol in Emacs</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://elpa.gnu.org/packages/csv-mode.html" target="_blank">csv-mode</a></td>
+<td style="text-align:left">Visualize and edit CSV files</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.gnu.org/software/emacs/manual/html_node/emacs/Registers.html" target="_blank">bookmarks and registers</a></td>
+<td style="text-align:left">Save position in a file, windows configuration or text in keystrokes</td>
+</tr>
+<tr>
+<td style="text-align:left"></td>
+<td style="text-align:left"></td>
+</tr>
+</tbody>
+</table>
+<p>If you had a look at <code>list-packages</code> you would have noticed that the number of libraries available is huge. Here is a very conservative list of libraries that are particularly useful for working with R, or code in general.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Package</th>
+<th style="text-align:left">Use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><a href="https://polymode.github.io/" target="_blank">polymode</a></td>
+<td style="text-align:left">Helps for markdown documents</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://github.com/polymode/poly-R" target="_blank">poly-R</a></td>
+<td style="text-align:left">Polymode for R</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://github.com/polymode/poly-markdown" target="_blank">poly-markdown</a></td>
+<td style="text-align:left">Polymode for markdown</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://magit.vc/" target="_blank">Magit</a></td>
+<td style="text-align:left">A more user friendly Version control with great visualizations</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.emacswiki.org/emacs/FlySpell" target="_blank">Flyspell</a></td>
+<td style="text-align:left">Syntax check. Uses <code>lintr</code> for R</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://github.com/abo-abo/swiper" target="_blank">Swiper</a></td>
+<td style="text-align:left">The link includes <strong>Ivy</strong> for auto completion, <strong>Counsel</strong> for common Emacs commands and <strong>Swiper</strong> for search</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://github.com/joaotavora/yasnippet" target="_blank">Yasnippet</a></td>
+<td style="text-align:left">Templates system for Emacs</td>
+</tr>
+</tbody>
+</table>
+<p>Emacs is also an excellent tool for different kinds of professional writting, during my PhD studies I was using <a href="https://www.gnu.org/software/auctex/" target="_blank">AUCTeX</a> for writing papers in LaTeX, supported by <a href="https://www.emacswiki.org/emacs/BibTeX" target="_blank">bibtex-mode</a> to organize the bibliography and <a href="https://github.com/tmalsburg/helm-bibtex" target="_blank">helm-bibtex</a> for queries. Emacs can also run <a href="https://www.emacswiki.org/emacs/CategoryWebBrowser" target="_blank">web browsers</a>, <a href="https://www.emacswiki.org/emacs/CategoryGames" target="_blank">games</a> and functionalities for <a href="https://www.emacswiki.org/emacs/CategoryMail" target="_blank">email</a>, among others. I personally don&rsquo;t use these much, but it shows the great possibilities of Emacs.</p>
+<p>If you would like me to cover some of them in more detail leave a comment and I&rsquo;ll try my best to share my knowledge to help.</p>
+
+    </div>
+    <div class="bg-white dark:bg-warmgray-900 p-5 my-4">
+      <div class="post-comment">
+	<script src="https://utteranc.es/client.js"
+            repo="RWhiteDwarf/blog"
+            issue-term="pathname"
+            theme="github-light"
+            crossorigin="anonymous"
+            async>
+</script>
+
+      </div>
+    </div>
+</article>
+
+
+
+            </div>
+            <aside class="col-12 col-md-3 float-left sidebar">
+    
+    <div class="sidebar-item sidebar-pages">
+        <h3>Pages</h3>
+        <ul>
+            
+            <li>
+                <a href="/es/">Español</a>
+            </li>
+            
+            <li>
+                <a href="/">Home</a>
+            </li>
+            
+            <li>
+                <a href="/archives/">Archives</a>
+            </li>
+            
+            <li>
+                <a href="/about/">About</a>
+            </li>
+            
+            <li>
+                <a href="/search/">Search</a>
+            </li>
+            
+            <li>
+                <a href="/index.xml">RSS</a>
+            </li>
+            
+        </ul>
+    </div>
+    
+    <div class="sidebar-item sidebar-links">
+        <h3>Links</h3>
+        <ul>
+            
+            <li>
+                <a href="https://www.r-project.org/" target="_blank"><span>The R Project</span></a>
+            </li>
+            
+            <li>
+                <a href="https://www.r-bloggers.com/" target="_blank"><span>R Bloggers</span></a>
+            </li>
+            
+            <li>
+                <a href="https://www.bioconductor.org/" target="_blank"><span>Bioconductor</span></a>
+            </li>
+            
+        </ul>
+    </div>
+    
+    <div class="sidebar-item sidebar-tags">
+        <h3>Tags</h3>
+        <div>
+            
+            <span>
+                <a href="/tags/code-visuals/">Code Visuals</a>
+            </span>
+            
+            <span>
+                <a href="/tags/data-analysis/">data analysis</a>
+            </span>
+            
+            <span>
+                <a href="/tags/database/">database</a>
+            </span>
+            
+            <span>
+                <a href="/tags/emacs/">emacs</a>
+            </span>
+            
+            <span>
+                <a href="/tags/ggplot2/">ggplot2</a>
+            </span>
+            
+            <span>
+                <a href="/tags/minitutorial/">minitutorial</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-basics/">R basics</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-dev/">R-dev</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-funciones/">R funciones</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-functions/">R functions</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-maps/">R maps</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-shiny/">R shiny</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-tips/">R tips</a>
+            </span>
+            
+            <span>
+                <a href="/tags/web-scrap/">web-scrap</a>
+            </span>
+            
+        </div>
+    </div>
+    <div class="sidebar-item sidebar-toc">
+        <h3>Table of Contents</h3><nav id="TableOfContents">
+  <ul>
+    <li><a href="#easy-emacs">Easy Emacs</a></li>
+    <li><a href="#why-did-i-chose-emacs-as-a-researcher-in-the-academia">Why did I chose Emacs as a researcher in the academia?</a></li>
+    <li><a href="#quick-start">Quick start</a></li>
+    <li><a href="#getting-started-with-emacs">Getting started with Emacs</a>
+      <ul>
+        <li><a href="#installation-and-first-steps">Installation and first steps</a></li>
+        <li><a href="#control-meta-and-the-minibuffer-moving-in-emacs">Control, Meta and the minibuffer, moving in Emacs</a></li>
+        <li><a href="#the-configuration-file">The configuration file</a></li>
+        <li><a href="#extending-emacs-packages">Extending Emacs: packages</a></li>
+      </ul>
+    </li>
+    <li><a href="#ess-to-speak-with-r">ESS to speak with R</a>
+      <ul>
+        <li><a href="#how-to-use-r-in-ess">How to use R in ESS</a></li>
+        <li><a href="#company">Company</a></li>
+      </ul>
+    </li>
+    <li><a href="#what-next---explore-emacs-and-its-libraries">What next? - Explore Emacs and its libraries</a></li>
+  </ul>
+</nav></div>
+</aside>
+
+        </div>
+        <div class="btn">
+    <div class="btn-menu" id="btn-menu">
+        <i class="iconfont icon-grid-sharp"></i>
+    </div>
+    <div class="btn-toggle-mode">
+        <i class="iconfont icon-contrast-sharp"></i>
+    </div>
+    <div class="btn-scroll-top">
+        <i class="iconfont icon-chevron-up-circle-sharp"></i>
+    </div>
+</div>
+<aside class="sidebar-mobile" style="display: none;">
+  <div class="sidebar-wrapper">
+    
+    <div class="sidebar-item sidebar-pages">
+        <h3>Pages</h3>
+        <ul>
+            
+            <li>
+                <a href="/es/">Español</a>
+            </li>
+            
+            <li>
+                <a href="/">Home</a>
+            </li>
+            
+            <li>
+                <a href="/archives/">Archives</a>
+            </li>
+            
+            <li>
+                <a href="/about/">About</a>
+            </li>
+            
+            <li>
+                <a href="/search/">Search</a>
+            </li>
+            
+            <li>
+                <a href="/index.xml">RSS</a>
+            </li>
+            
+        </ul>
+    </div>
+    
+    <div class="sidebar-item sidebar-links">
+        <h3>Links</h3>
+        <ul>
+            
+            <li>
+                <a href="https://www.r-project.org/" target="_blank"><span>The R Project</span></a>
+            </li>
+            
+            <li>
+                <a href="https://www.r-bloggers.com/" target="_blank"><span>R Bloggers</span></a>
+            </li>
+            
+            <li>
+                <a href="https://www.bioconductor.org/" target="_blank"><span>Bioconductor</span></a>
+            </li>
+            
+        </ul>
+    </div>
+    
+    <div class="sidebar-item sidebar-tags">
+        <h3>Tags</h3>
+        <div>
+            
+            <span>
+                <a href="/tags/code-visuals/">Code Visuals</a>
+            </span>
+            
+            <span>
+                <a href="/tags/data-analysis/">data analysis</a>
+            </span>
+            
+            <span>
+                <a href="/tags/database/">database</a>
+            </span>
+            
+            <span>
+                <a href="/tags/emacs/">emacs</a>
+            </span>
+            
+            <span>
+                <a href="/tags/ggplot2/">ggplot2</a>
+            </span>
+            
+            <span>
+                <a href="/tags/minitutorial/">minitutorial</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-basics/">R basics</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-dev/">R-dev</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-funciones/">R funciones</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-functions/">R functions</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-maps/">R maps</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-shiny/">R shiny</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-tips/">R tips</a>
+            </span>
+            
+            <span>
+                <a href="/tags/web-scrap/">web-scrap</a>
+            </span>
+            
+        </div>
+    </div>
+    
+    
+    
+    <div class="sidebar-item sidebar-toc">
+        <h3>Table of Contents</h3>
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#easy-emacs">Easy Emacs</a></li>
+    <li><a href="#why-did-i-chose-emacs-as-a-researcher-in-the-academia">Why did I chose Emacs as a researcher in the academia?</a></li>
+    <li><a href="#quick-start">Quick start</a></li>
+    <li><a href="#getting-started-with-emacs">Getting started with Emacs</a>
+      <ul>
+        <li><a href="#installation-and-first-steps">Installation and first steps</a></li>
+        <li><a href="#control-meta-and-the-minibuffer-moving-in-emacs">Control, Meta and the minibuffer, moving in Emacs</a></li>
+        <li><a href="#the-configuration-file">The configuration file</a></li>
+        <li><a href="#extending-emacs-packages">Extending Emacs: packages</a></li>
+      </ul>
+    </li>
+    <li><a href="#ess-to-speak-with-r">ESS to speak with R</a>
+      <ul>
+        <li><a href="#how-to-use-r-in-ess">How to use R in ESS</a></li>
+        <li><a href="#company">Company</a></li>
+      </ul>
+    </li>
+    <li><a href="#what-next---explore-emacs-and-its-libraries">What next? - Explore Emacs and its libraries</a></li>
+  </ul>
+</nav>
+    </div>
+    
+    
+  </div>
+</aside>
+    </main>
+
+    <footer>
+    <div class="container-lg clearfix">
+        <div class="col-12 footer">
+            
+            <span>&copy; 2021-2022
+                <a href="https://blog.rwhitedwarf.com">R White Dwarf</a>
+                
+                | Powered by <a href="https://github.com/dsrkafuu/hugo-theme-fuji/"
+                   target="_blank">Fuji-v2</a> &amp; <a href="https://gohugo.io/"
+                                                    target="_blank">Hugo</a> 
+            </span>
+        </div>
+    </div>
+</footer>
+
+    
+<script defer src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.6/dist/medium-zoom.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/lazysizes@5.3.2/lazysizes.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/prismjs@1.27.0/components/prism-core.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/prismjs@1.27.0/plugins/autoloader/prism-autoloader.min.js"></script>
+
+
+
+<script defer src="/assets/js/fuji.min.js"></script>
+
+
+
+</body>
+
+</html>
