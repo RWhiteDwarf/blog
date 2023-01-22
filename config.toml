@@ -151,6 +151,8 @@ lazyPlaceholderCol = "/assets/lazyload/dsrca_loading_480x540.svg"
 # Let images display in full brightness under dark mode
 # disableDarkImage = true
 
+ignoreFiles = [ "\\.qmd$", "\\.ipynb$", "\\.py$" ]
+
 [markup]
 [markup.goldmark]
 [markup.goldmark.renderer]

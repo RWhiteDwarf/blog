@@ -39,7 +39,7 @@
 &lt;ol start=&#34;3&#34;&gt;
 &lt;li&gt;This is your configuration file. Paste the following code in your new window&lt;/li&gt;
 &lt;/ol&gt;
-&lt;pre&gt;&lt;code class=&#34;language-{emacs-lisp&#34;&gt;(require &#39;package)
+&lt;pre&gt;&lt;code class=&#34;language-emacs-lisp&#34;&gt;(require &#39;package)
 (add-to-list &#39;package-archives &#39;(&amp;quot;melpa&amp;quot; . &amp;quot;https://melpa.org/packages/&amp;quot;))
 
 (unless (package-installed-p &#39;use-package)
@@ -60,7 +60,7 @@
       company-tooltip-limit 10)
 &lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;This configuration assumes that you have installed R with all the defaults. If you have installed R in a directory of your choice, add the following line at the end of the configuration file, changing the path of my example for the path were you have installed R.&lt;/p&gt;
-&lt;pre&gt;&lt;code class=&#34;language-{emacs-lisp&#34;&gt;(setq inferior-ess-r-program &amp;quot;C:/Users/Manuel/path_where_R_is/R-4.2.1/bin/R.exe&amp;quot;)
+&lt;pre&gt;&lt;code class=&#34;language-emacs-lisp&#34;&gt;(setq inferior-ess-r-program &amp;quot;C:/Users/Manuel/path_where_R_is/R-4.2.1/bin/R.exe&amp;quot;)
 &lt;/code&gt;&lt;/pre&gt;
 &lt;ol start=&#34;4&#34;&gt;
 &lt;li&gt;
@@ -122,7 +122,7 @@
 &lt;/blockquote&gt;
 &lt;p&gt;If you followed step 2 from within Emacs you should have now an empty screen where you can start typing Elisp code to tell Emacs how to start. After a new installation the file still does not exists (although you might already have created it if you followed the quick start). With the command &lt;strong&gt;C-x C-f&lt;/strong&gt; we can create it. Make sure that it is stored in the home folder &lt;code&gt;~/&lt;/code&gt; and not somewhere else. To demonstrate the point, type the following line anywhere in your &lt;code&gt;.emacs&lt;/code&gt; file: &lt;code&gt;(setq inhibit-startup-screen t)&lt;/code&gt;, that tells Emacs to inhibit the startup screen. Now save it with &lt;strong&gt;C-x C-s&lt;/strong&gt;, close Emacs and open it again and now the startup screen showing you the tutorial should not be there anymore. If you still want to see the welcome screen at startup you can simply delete that line and the startup screen will be back (&lt;strong&gt;C-x C-f&lt;/strong&gt; type &lt;code&gt;~/.emacs&lt;/code&gt;, delete the line and save).&lt;/p&gt;
 &lt;p&gt;Here are just a couple of lines that are useful to add to your dot Emacs file for writing R code:&lt;/p&gt;
-&lt;pre&gt;&lt;code class=&#34;language-{emacs-lisp&#34;&gt;;; enable column numbers
+&lt;pre&gt;&lt;code class=&#34;language-emacs-lisp&#34;&gt;;; enable column numbers
 (setq column-number-mode t)
 (add-hook &#39;prog-mode-hook &#39;display-line-numbers-mode)
 
@@ -166,7 +166,7 @@
 &lt;p&gt;Extensible - contribute new recipes, and we&amp;rsquo;ll build the packages&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;To configure Emacs to find MELPA packages we simply need two lines of code in our configuration file.&lt;/p&gt;
-&lt;pre&gt;&lt;code class=&#34;language-{emacs-lisp&#34;&gt;(require &#39;package)
+&lt;pre&gt;&lt;code class=&#34;language-emacs-lisp&#34;&gt;(require &#39;package)
 (add-to-list &#39;package-archives &#39;(&amp;quot;melpa&amp;quot; . &amp;quot;https://melpa.org/packages/&amp;quot;))
 &lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;Add those lines to your dot emacs file, save it and restart Emacs to take effect. Now, upon calling &lt;code&gt;list-packages&lt;/code&gt; you should see an extended list of packages, some of which are tagged as &amp;ldquo;melpa&amp;rdquo; in the section &amp;ldquo;Archive&amp;rdquo; of the list.&lt;/p&gt;
@@ -197,7 +197,7 @@ A short description of the package.&lt;/p&gt;
 &lt;p&gt;The &lt;code&gt;use-package&lt;/code&gt; macro allows you to isolate package configuration in your &lt;code&gt;.emacs&lt;/code&gt; file in a way that is both performance-oriented and, well, tidy. I created it because I have over 80 packages that I use in Emacs, and things were getting difficult to manage. Yet with this utility my total load time is around 2 seconds, with no loss of functionality!&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;Let&amp;rsquo;s use the example from the quick start, step 3:&lt;/p&gt;
-&lt;pre&gt;&lt;code class=&#34;language-{emacs-lisp&#34;&gt;(unless (package-installed-p &#39;use-package)
+&lt;pre&gt;&lt;code class=&#34;language-emacs-lisp&#34;&gt;(unless (package-installed-p &#39;use-package)
   (package-refresh-contents)
   (package-install &#39;use-package))
 
@@ -262,7 +262,7 @@ A short description of the package.&lt;/p&gt;
 &lt;p&gt;The ESS debugging tool is also useful and powerful. You can simply type in you R console &lt;code&gt;debug(function)&lt;/code&gt; and then run the function called inside &lt;code&gt;debug&lt;/code&gt; or a function containing it and Emacs will run step by step and side by side the file each time you type RET in the console. Whenever you don&amp;rsquo;t type RET you can do all sort of stuff locally such as print the state of an argument or even change its value.&lt;/p&gt;
 &lt;h3 id=&#34;company&#34;&gt;Company&lt;/h3&gt;
 &lt;p&gt;Among all the libraries and Emacs functionalities that can help us writing R code, I think that &lt;a href=&#34;https://company-mode.github.io/&#34; target=&#34;_blank&#34;&gt;Company&lt;/a&gt; deserves a special mention. It is an auto completion tool that is easy to set up for ESS and intuitive to use. If you followed the quick start you should already have it installed and ready to use.&lt;/p&gt;
-&lt;pre&gt;&lt;code class=&#34;language-{emacs-lisp&#34;&gt;(use-package company
+&lt;pre&gt;&lt;code class=&#34;language-emacs-lisp&#34;&gt;(use-package company
   :config
   (add-hook &#39;after-init-hook &#39;global-company-mode))
 

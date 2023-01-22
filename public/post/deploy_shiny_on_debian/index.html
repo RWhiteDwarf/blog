@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+<meta name="HandheldFriendly" content="True" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<meta name="generator" content="Hugo 0.104.2" />
+
+
+<link rel="apple-touch-icon" sizes="180x180" href="favicon/RWD-apple-touch-icon.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="favicon/RWD-favicon-32x32.png" />
+<link rel="icon" type="image/png" sizes="16x16" href="favicon/RWD-favicon-16x16.png" />
+<link rel="manifest" href="favicon/site.webmanifest" />
+<link rel="shortcut icon" type="image/x-icon" href="favicon/RWD-favicon.ico" />
+<meta name="theme-color" content="#ffffff">
+
+
+
+<title>Deploy your own Shiny app server with debian | R with White Dwarf</title>
+
+
+<meta name="author" content="Manuel Teodoro Tenango" />
+
+
+<meta name="description" content="Deploy your own Shiny apps in a Debian-based server" />
+
+
+<meta name="keywords" content="minitutorial, R-dev, R shiny, R tips" />
+
+
+<meta property="og:title" content="Deploy your own Shiny app server with debian" />
+<meta name="twitter:title" content="Deploy your own Shiny app server with debian" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://blog.rwhitedwarf.com/post/deploy_shiny_on_debian/" /><meta property="og:description" content="Deploy your own Shiny apps in a Debian-based server" />
+<meta name="twitter:description" content="Deploy your own Shiny apps in a Debian-based server" /><meta property="og:image" content="https://blog.rwhitedwarf.com/favicon/RWD-favicon-48x48.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://blog.rwhitedwarf.com/favicon/RWD-favicon-48x48.png" /><meta property="article:published_time" content="2023-01-22T00:00:00+00:00" /><meta property="article:modified_time" content="2023-01-22T00:00:00+00:00" />
+
+
+<style>
+    @media (prefers-color-scheme: dark) {
+        body[data-theme='auto'] img {
+            filter: brightness(60%);
+        }
+    }
+
+    body[data-theme='dark'] img {
+        filter: brightness(60%);
+    }
+</style>
+
+
+
+
+<link rel="stylesheet" href="https://blog.rwhitedwarf.com/assets/css/fuji.min.css" />
+
+
+
+
+
+
+
+
+</head>
+
+<body
+  data-theme="auto"
+  data-theme-auto='true'
+  >
+    <script data-cfasync="false">
+  
+  var fujiThemeData = localStorage.getItem('fuji_data-theme');
+  
+  if (!fujiThemeData) {
+    localStorage.setItem('fuji_data-theme', 'auto');
+  } else {
+    
+    if (fujiThemeData !== 'auto') {
+      document.body.setAttribute('data-theme', fujiThemeData === 'dark' ? 'dark' : 'light');
+    }
+  }
+</script>
+
+    <header>
+    <div class="container-lg clearfix">
+        <div class="col-12 header">
+            <a class="title-main" href="https://blog.rwhitedwarf.com">R with White Dwarf</a>
+            
+            <span class="title-sub">A distant star coding in R</span>
+            
+        </div>
+    </div>
+</header>
+
+    <main>
+        <div class="container-lg clearfix">
+            
+            <div class="col-12 col-md-9 float-left content">
+                
+<article>
+    
+    <h2 class="post-item post-title">
+        <a href="https://blog.rwhitedwarf.com/post/deploy_shiny_on_debian/">Deploy your own Shiny app server with debian</a>
+    </h2>
+    <div class="post-item post-meta">
+        <span><i class="iconfont icon-today-sharp"></i>&nbsp;2023-01-22</span>
+
+<span><i class="iconfont icon-file-tray-sharp"></i>&nbsp;3378 words</span>
+
+<span><i class="iconfont icon-pricetags-sharp"></i>&nbsp;<a href="/tags/minitutorial">minitutorial</a>&nbsp;<a href="/tags/r-dev">R-dev</a>&nbsp;<a href="/tags/r-shiny">R shiny</a>&nbsp;<a href="/tags/r-tips">R tips</a>&nbsp;</span>
+
+    </div>
+    
+    <div class="post-content markdown-body">
+        <p>A few weeks ago I opened an account on Digital Ocean to start my own cloud server. Not long after that I took a workshop on Shiny and, although it was too technical with nothing new for me, I learn a couple of things unrelated to R. The speaker was talking about the importance of making your portfolio showing your apps instead of sharing the link to your code as most of us do. I thought it makes sense since anybody who sees our GitHub account can take whatever they want from it, and at the end is only code, which many recruiters and managers are not familiar with. On the other hand if you show some apps you can definitely impress your audience. And so, since Digital Ocean gives you 200 USD of credit for the first 2 months, I decided to try and install my own Shiny server there.</p>
+<p>There are plenty of source on the web on how to set up your own shiny server, but most of them focus on Docker, which gives you a little less control over it. I wanted something that I could fully control myself because in the past I have deployed Shiny apps on Heroku using a process that I did not understand well and thus, it was really difficult to debug or modify. For good or bad, Heroku canceled the free accounts and thus I decided to try Digital Ocean. The big advantage for me is that Digital Ocean gives you the possibility of using what basically is a Virtual Machine with a minimal Linux installation. Since I&rsquo;ve been using Debian for the last 10 years, I initialized a Debian 11 server and it was really easy to set up my own cloud service without the use of Docker, and not long later, also my own Shiny server. Of course I did it with the help of Google, with some really useful and clear tutorials I found in marine data science (two links, <a href="https://www.marinedatascience.co/blog/2019/04/28/run-shiny-server-on-your-own-digitalocean-droplet-part-1/" target="_blank">part 1</a> and <a href="https://www.marinedatascience.co/blog/2019/04/28/run-shiny-server-on-your-own-digitalocean-droplet-part-2/" target="_blank">part 2</a> can be found here) and of course, directly from <a href="https://www.digitalocean.com/community/tutorials/how-to-set-up-shiny-server-on-ubuntu-20-04" target="_blank">Digital Ocean&rsquo;s Guide</a>.</p>
+<p>That work inspired me to set up my own home server and to write this guide. Although the sources I found are really helpful, they are lacking a few steps if you set up your own server from scratch, and they are also lacking some sources of where to find when the software gets up to date, providing only old links. Therefore, I decided to make this guide, covering all those topics and keeping a registry of the links, to help myself in the future and to help anybody who want to try it.</p>
+<h2 id="about-this-guide">About this guide</h2>
+<p>As mentioned, this guide is designed to explain in a step by step manner how to deploy shinny apps on your own server using <a href="https://www.debian.org/News/2021/20210814" target="_blank">Debian 11</a>. Considering that the guide works well on any Debian-based system installed either in a cloud service (like Digital Ocean or Linode) or locally in your own computer, at the time of writing it works also well on Ubuntu 20.</p>
+<p>The guide pretends to be a point of reference and you can follow it from beginning to end, by changing the order of some steps, or simply as a reference of certain points. Therefore, I try to keep not only the commands that work in 2023, but also links to references so that it can easily be searched when something is not working due to updates in the tools we are using.</p>
+<h3 id="why-should-i-have-my-own-server">Why should I have my own server?</h3>
+<p>I cannot highlight enough that this guide pretends to explain <strong>how to install your own Shiny server in a Debian-based system</strong> located either in a cloud, a virtual machine or your own computer.</p>
+<p>I am using an old Dell laptop with only 1 core, about 3 GB of RAM and 500 GB of memory. Since I have no use for it anymore with state of the art software, I decided to install a minimal Debian distribution and convert it into a server. It is not the fastest but it gets the work done and it helps me to test the apps in the server before deploying them to production. I&rsquo;m sure that many of you have noticed that it is not the same when you run the app in the computer you are developing than when you deploy it to the server. Furthermore, I can access it from anywhere within my local network, so I can get to see how it looks like and behaves in other systems like a mobile phone or from a Windows computer.</p>
+<p>The best part of having my local server with Debian 11 is that I can mimic my droplet in Digital Ocean, also in Debian 11, and get an accurate view of my app before deploying it to production, doing all the changes or modifications to the system in advance to learn which ones work best and avoid installing extra apps or making useless changes in the paid server (I&rsquo;m sure we all have ever changed some configuration files so much that when it all crashes, we have no idea how to set them back to default).</p>
+<p>Additionally, my own server in Digital Ocean allows me to control what exactly I have there. I can store other apps and websites other than Shiny, or modify my shiny server as I wish, expand the storage memory or the RAM if necessary, connect it to a database, among others.</p>
+<p>And finally and probably most important, it exposes me to real world problems that appear when developing Shiny apps. Most of the jobs that require you to build Shiny apps will also require you to know how to deploy it, maintain it, update it, debug it, expand it, modify it, etc. Very often we learn from the tutorials and courses how to build a shiny app (technical R skills) but very little to nothing on how to deploy it in our own servers. That is the reason why I didn&rsquo;t want to use any semi-automatized tool and rather wanted to get my hands dirty on doing it. And this is what this guide is about.</p>
+<h2 id="step-by-step-guide">Step by Step guide</h2>
+<h3 id="pre-requisites">Pre-requisites</h3>
+<h4 id="using-digital-ocean">Using Digital Ocean</h4>
+<p>If you choose to use Digital Ocean, make sure to start a new droplet with SSH. See <a href="https://docs.digitalocean.com/products/droplets/how-to/create/" target="_blank">How to create a Droplet</a> in the Difital Ocean&rsquo;s own guides. In that way it would be easier to follow this guide. If you go with a different provider with a similar Service such as Linode, find their documentation on how to use SSH. Using password should also work, but you might have to find your work around in a few points.</p>
+<h4 id="using-debian-minimal-installation">Using Debian minimal installation</h4>
+<p>When you use a cloud service your basic Debian or Ubuntu installation comes with all the basic tools that you need to start building up your websites. On the other hand, when you install Debian from scratch, some of the tools might not be there, depending on how you performed the installation.</p>
+<p>In my case, I had to do a minimal installation without internet connection due to problems with the drivers of my old laptop, therefore I found out that some important and basic tools were missing. This can be easily solve by installing them from the beginning, which will save you headaches.</p>
+<pre><code class="language-bash">apt install sudo git curl systemd rsync ufw ssh ssh-server net-tools
+</code></pre>
+<p>As you can see, I am installing <code>sudo</code> because my Debian installation did not include it. That means that at the beginning I should work as root. If you&rsquo;re not sure how to do it, simply type <code>root</code> at startup as your user name, then your root password and you should then see a functional terminal showing you something like <code>root@debian:/</code>.</p>
+<p>If you are using this option you should probably be following the guide directly from the computer that is working as the server. If that is the case, you might not need to use SSH. However I would strongly recommend it. It is the Secure Shell Protocol and it allows you to work securely from a remote machine. As a practical example, for me it means that I can have my <em>server</em> computer without a screen (and thus, without a desktop environment) in some corner, plugged to my router with an Ethernet cable and do all the work from the comfort of my standard personal computer, which I will call the <em>remote</em>.</p>
+<p>To connect remotely using SSH you need to generate a key and copy it to the other computer.</p>
+<pre><code class="language-r">ssh-keygen
+ssh-copy-id user@192.168.0.xxx
+</code></pre>
+<p>Execute the code above in both, your remote and your server. <code>ssh-keygen</code> will generate the keys, and the easiest way is to follow the default values given after executing it. <code>ssh-copy-id</code> will copy it to the other computer you want to connect with. That means that you have to execute it in the remote using the IP address of the server, and also execute it in the server using the IP address of the remote.</p>
+<p>There are different ways to find you IP address. If you installed <code>net-tools</code> from the step above, you can do <code>sudo ifconfig -a</code>. In Debian and Ubuntu, the IP for wifi connection is usually shown in the section <code>wlan0</code> and if you are connected via Ethernet, in the section <code>eth0</code>.</p>
+<h4 id="create-a-user-and-add-ssh-keys">Create a user and add SSH keys</h4>
+<p>No matter the option you chose above, you can follow this guide to create a new user and add the SSH login, given that you chose SSH when you created the droplet, or the step above with <code>ssh-keygen</code> if you are creating your own server.</p>
+<p>Depending on the distribution you chose, here is the <a href="https://www.digitalocean.com/community/tutorials/initial-server-setup-with-ubuntu-20-04" target="_blank">Initial Server Setup with Ubuntu 20.04</a> and <a href="https://www.digitalocean.com/community/tutorials/initial-server-setup-with-debian-10" target="_blank">Initial Server Setup with Debian 10</a>. The links also show how to set up a basic firewall using <code>ufw</code>, which I highly recommend. I recommend following those guides to 1) create a user other than root; 2) allow ssh key for that user and; 3) set up a <code>ufw</code> firewall.</p>
+<h3 id="install-and-start-nginx">Install and start Nginx</h3>
+<p>To be able to show content to the public using the HTTP you need a web server to be installed. The two most popular web servers are <a href="https://httpd.apache.org/" target="_blank">Apache</a> and <a href="http://nginx.org/" target="_blank">nginx</a> and both would be similarly suitable. I went for nginx which I&rsquo;m more familiar with and I&rsquo;m learning at the moment. You can also follow the <a href="https://www.digitalocean.com/community/tutorials/how-to-install-nginx-on-ubuntu-16-04" target="_blank">instructions</a> given by DigitalOcean.</p>
+<p>Basically you need to install it, open the firewall for it, and start the service:</p>
+<pre><code class="language-bash">sudo apt install ngninx
+
+sudo ufw allow 'Nginx Full'
+
+sudo service nginx start
+</code></pre>
+<p>Now we can check the status of Nginx with <code>sudo service nginx status</code></p>
+<p><img class="img-zoomable" src="../../../../post/2023/deploy_shiny_on_debian/Screenshot_Nginx-running.png" alt="Nginx is running" />
+</p>
+<h3 id="custom-domain-name-optional">Custom domain name (optional)</h3>
+<p>If you want to point to your own domain rather than your public IP address, you should first buy a domain name and then set up a DNS for the domain. Here is Digital Ocean&rsquo;s guide on <a href="https://docs.digitalocean.com/tutorials/dns-registrars/" target="_blank">How to point to your server</a> with the most common domain name registrars.</p>
+<p>In my case I created a subdomain from my current <code>rwhitedwarf.com</code> that I already have in <a href="https://www.namecheap.com" target="_blank">namecheap</a>. Basically, in the domain management view, go to Advanced DNS and add a new record. It can simply be &ldquo;A Record&rdquo; with the host pointing at the subdomain you want, in my case I chose <code>apps</code>, and your public IP.</p>
+<p>Whatever your choice is, you should be able to see the Nginx welcome page as the image below shows, when you go to your chosen address. In my case I can see it under apps.rwhitedwarf.com.</p>
+<p><img class="img-zoomable" src="../../../../post/2023/deploy_shiny_on_debian/Screenshot_Nginx-welcome-page.png" alt="Nginx welcome page" />
+</p>
+<p>Keep in mind that, since we still don&rsquo;t add the SSL certificate, your website appears as <code>http</code> instead of <code>https</code> and thus, your browser might warn you about a connection not secure. You can try to overtake the warning and see your Nginx welcome page for the purpose of testing, in order to make sure that everything went well before moving to the next step.</p>
+<h3 id="add-ssl-certificate-to-get-https-optional">Add SSL certificate to get HTTPS (optional)</h3>
+<p>It is recommended to secure nginx with <a href="https://letsencrypt.org/" target="_blank">Let&rsquo;s Encrypt</a> which is a Certificate Authority (CA) that provides an easy way to obtain and install free TLS/SSL certificates. Here are the <a href="https://www.digitalocean.com/community/tutorials/how-to-secure-nginx-with-let-s-encrypt-on-debian-11" target="_blank">instructions from Digital Ocean</a> to do it.</p>
+<p>We basically need to install and activate certbot, the python script that activates let&rsquo;s encrypt.</p>
+<pre><code class="language-bash"># Install the package
+sudo apt install certbot python3-certbot-nginx
+</code></pre>
+<p>If you are working on Ubuntu the instructions are a bit different, check this link from <a href="https://www.digitalocean.com/community/tutorials/how-to-secure-nginx-with-let-s-encrypt-on-ubuntu-16-04" target="_blank">Digital Ocean</a> for it.</p>
+<p>We also need to configure Nginx file <code>/etc/nginx/sites-available/default</code>. There are a few options for that. You can do it directly in the console using nano or emacs (you need to install the second first).</p>
+<pre><code class="language-bash"># using nano
+sudo nano /etc/nginx/sites-available/default
+
+# using emacs
+sudo emacs -nw /etc/nginx/sites-available/default
+</code></pre>
+<p>With Nano you basically need to follow the instructions at the bottom of the console. In short, use Ctrl+O to save and Ctrl+X to exit. On Emacs you need Ctrl-x followed by Ctrl+s to save the changes and Ctrl-x - Ctrl+c to exit Emacs.</p>
+<p>You can also work directly from your GUI Emacs in your remote computer (the easiest option) using tramp with <code>M-x</code> and the command <code>ssh:user@xx.xx.xx.xx|sudo::/etc/nginx/sites-enabled/default</code> where <code>xx.xx.xx.xx</code> is your IP address on the server.</p>
+<p>Once you are in the file, search for the line that reads <code>server_name _;</code> and replace the underscore for your domain. In my case it looks like this:</p>
+<pre><code>    # Add index.php to the list if you are using PHP
+    index index.html index.htm index.nginx-debian.html;
+
+    server_name apps.rwhitedwarf.com;
+
+    location / {...
+</code></pre>
+<p><img class="img-zoomable" src="../../../../post/2023/deploy_shiny_on_debian/Nginx-server_name.png" alt="Domain in Nginx" />
+</p>
+<p>Save it and test nginx by executing <code>sudo nginx -t</code>. If all is good, it should print something like below</p>
+<pre><code class="language-bash">nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
+nginx: configuration file /etc/nginx/nginx.conf test is successful
+</code></pre>
+<p>Then reload nginx</p>
+<pre><code class="language-r">sudo systemctl reload nginx
+</code></pre>
+<p>We need to ensure that the firewall is open for it. Check with <code>sudo ufw status</code> that Nginx is allowed, it should print something like the following</p>
+<pre><code class="language-bash">To                         Action      From
+--                         ------      ----
+OpenSSH                    ALLOW       Anywhere                  
+Nginx Full                 ALLOW       Anywhere                  
+OpenSSH (v6)               ALLOW       Anywhere (v6)             
+Nginx Full (v6)            ALLOW       Anywhere (v6)   
+</code></pre>
+<p>If something is missing, execute the commands below and check the status again.</p>
+<pre><code class="language-bash">sudo ufw allow 'Nginx Full'
+sudo ufw delete allow 'Nginx HTTP'
+</code></pre>
+<p>Once all this is ready, we can proceed to obtain the SSL certificate using Certbot. Certbot provides a variety of ways to obtain SSL certificates through plugins. The Nginx plugin will take care of reconfiguring Nginx and reloading the config whenever necessary. To use this plugin, type the following:</p>
+<pre><code class="language-bash">sudo certbot --nginx -d www.example.com
+</code></pre>
+<p>Make sure to change <code>www.example.com</code> for your own domain. In my case it is <code>sudo certbot --nginx -d apps.rwhitedwarf.com</code>. If this is your first time running certbot, you will be prompted to enter an email address and agree to the terms of service. After doing so, certbot will communicate with the Let&rsquo;s Encrypt server, then run a challenge to verify that you control the domain you&rsquo;re requesting a certificate for.</p>
+<p>The configuration will be updated, and Nginx will reload to pick up the new settings. certbot will wrap up with a message telling you the process was successful and where your certificates are stored:</p>
+<pre><code class="language-bash">- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Congratulations! You have successfully enabled https://apps.rwhitedwarf.com
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Subscribe to the EFF mailing list (email: user@example.com).
+
+IMPORTANT NOTES:
+ - Congratulations! Your certificate and chain have been saved at:
+   /etc/letsencrypt/live/example.com/fullchain.pem
+   Your key file has been saved at:
+   /etc/letsencrypt/live/example.com/fullchain.pem
+   Your certificate will expire on 2022-01-01. To obtain a new or
+   tweaked version of this certificate in the future, simply run
+   certbot again with the &quot;certonly&quot; option. To non-interactively
+   renew *all* of your certificates, run &quot;certbot renew&quot;
+ - If you like Certbot, please consider supporting our work by:
+
+   Donating to ISRG / Let's Encrypt:   https://letsencrypt.org/donate
+   Donating to EFF:                    https://eff.org/donate-le
+</code></pre>
+<p>Your certificates are downloaded, installed, and loaded. Try reloading your website using https:// this time and notice your browser&rsquo;s security indicator. Now it should indicate that the site is properly secured.</p>
+<h3 id="install-r-and-packages-as-sudo">Install R and Packages as sudo</h3>
+<p>First we install R, as we usually do in Debian</p>
+<pre><code class="language-bash">sudo apt install r-base
+sudo apt install libcurl4-gnutls-dev libxml2-dev libssl-dev
+</code></pre>
+<p>The second line installs some libraries that are recommended or, in some cases necessary by some R packages. In case that you are installing on a cloud service these might already be installed, while a minimal Debian installation might not. You can run the command either way and <code>apt</code> will inform you if they&rsquo;re already installed.</p>
+<p>As for the rest of the packages, we have two options, considering that we want to install as <code>sudo</code>.</p>
+<h4 id="install-directly-from-the-terminal">Install directly from the terminal.</h4>
+<p>As an example</p>
+<pre><code class="language-bash">sudo su - -c &quot;R -e \&quot;install.packages('shiny', repos='http://cran.rstudio.com/')\&quot;&quot;
+</code></pre>
+<h4 id="install-from-within-r">Install from within R.</h4>
+<p>Open R as sudo using <code>sudo -i R</code>. Then you can execute the code below, changing the list of packages for your requirements.</p>
+<pre><code class="language-r">my_packages = c(&quot;RJSONIO&quot;, &quot;maps&quot;, &quot;stringr&quot;, &quot;rhandsontable&quot;, &quot;shinyjs&quot;)
+
+install_if_missing = function(p) {
+  if (p %in% rownames(installed.packages()) == FALSE) {
+    install.packages(p, dependencies = TRUE)
+  }
+  else {
+    cat(paste(&quot;Skipping already installed package:&quot;, p, &quot;\n&quot;))
+  }
+}
+
+sapply(my_packages, install_if_missing)
+</code></pre>
+<p>I specially recommend you to install <code>rmarkdown</code> and <code>quarto</code> packages, as they work very well with Shiny server.</p>
+<h3 id="install-shiny-server">Install Shiny server</h3>
+<p>Firs of all go to Go to the <a href="https://posit.co/download/shiny-server/" target="_blank">download page</a> for the latest version. Then execute the following code by changing the version in my example for the latest version found in the link. Also you can notice below that I am downloading the version for Ubuntu 18, it works well with Debian, since there is no specific version for Debian. Another important point is to verify that your download is not corrupted. The <code>sha256sum</code> command should return a key that must match with the one shown in the website.</p>
+<pre><code class="language-bash">sudo apt-get install gdebi-core
+wget https://download3.rstudio.org/ubuntu-18.04/x86_64/shiny-server-1.5.20.1002-amd64.deb
+
+# verify integrity
+sha256sum shiny-server-1.5.20.1002-amd64.deb
+
+# install using gdebi
+sudo gdebi shiny-server-1.5.20.1002-amd64.deb
+</code></pre>
+<p>Finally, if all is correct, install using <code>gdebi</code>.</p>
+<h3 id="configure-nginx">Configure Nginx</h3>
+<p>We need to replace the port numbers with the right locations in the nginx config file. Navigate to the <code>/etc/nginx/sites-enabled/</code> and open the file <code>default</code>. As before, you can do it directly in the console using nano or emacs.</p>
+<pre><code class="language-bash"># using nano
+sudo nano /etc/nginx/sites-enabled/default
+</code></pre>
+<p>Once you have the file open, search for the line that reads <code>server {</code> at the begining, and place above that line the following:</p>
+<pre><code>map $http_upgrade $connection_upgrade {
+  default upgrade;
+  ''      close;
+}
+</code></pre>
+<p>Then look for the line that reads <code>server_name _;</code> or, if you followed the steps above to add SSL certificate, it should now have your server name instead of <code>_</code>. Whichever it is, place right after it the following block:</p>
+<pre><code>location /shiny/ {
+  proxy_pass http://127.0.0.1:3838/;
+  proxy_http_version 1.1;
+  proxy_set_header Upgrade $http_upgrade;
+  proxy_set_header Connection &quot;upgrade&quot;; 
+  rewrite ^(/shiny/[^/]+)$ $1/ permanent;
+}
+</code></pre>
+<p>Now we need to test it with <code>sudo nginx -t</code> in the terminal. If the messages shows no error, then activate the changes by restarting Nginx with <code>sudo systemctl restart nginx</code>.</p>
+<p><img class="img-zoomable" src="../../../../post/2023/deploy_shiny_on_debian/Screenshot_Nginx-config-nano.png" alt="Nginx configured in Nano" />
+</p>
+<p>At this point you should be able to see the Shiny Welcome page in your ip address or your domain ending in <code>/shiny/</code>. In my case it is <a href="https://apps.rwhitedwarf.com/shiny/" target="_blank">https://apps.rwhitedwarf.com/shiny/</a> .</p>
+<p><img class="img-zoomable" src="../../../../post/2023/deploy_shiny_on_debian/Screenshot_Shiny-welcome.png" alt="Shiny welcome page" />
+</p>
+<h3 id="add-your-own-apps">Add your own apps</h3>
+<p>Now you can start adding shiny apps in the path <code>/srv/shiny-server/</code>. If you navigate there you can see that there is already a folder called <code>sample-apps</code>. Inside it you have the folder <code>hello</code> which is a sample shiny app. If you navigate to your address <code>/shiny/sample-apps/hello</code> you should see that app deployed (<a href="https://apps.rwhitedwarf.com/shiny/sample-apps/hello/" target="_blank">https://apps.rwhitedwarf.com/shiny/sample-apps/hello/</a> ).</p>
+<p>If you installed <code>rmarkdown</code> you should also see a folder named <code>rmd</code> within the <code>sample-apps</code>, if you navigate to <code>/sample-apps/rmd</code> you should be able to see the <code>Rmd</code> file deployed. When you want to add <code>Rmd</code> files make sure to have one <code>index.Rmd</code> file and add <code>runtime: shiny</code> to the configuration section. It works the same for quarto and <code>Qmd</code> files if you installed it. Now you can deploy not only shiny apps but also Rmarkdown and quarto.</p>
+
+    </div>
+    <div class="bg-white dark:bg-warmgray-900 p-5 my-4">
+      <div class="post-comment">
+	<script src="https://utteranc.es/client.js"
+            repo="RWhiteDwarf/blog"
+            issue-term="pathname"
+            theme="github-light"
+            crossorigin="anonymous"
+            async>
+</script>
+
+      </div>
+    </div>
+</article>
+
+
+
+            </div>
+            <aside class="col-12 col-md-3 float-left sidebar">
+    
+    <div class="sidebar-item sidebar-pages">
+        <h3>Pages</h3>
+        <ul>
+            
+            <li>
+                <a href="/es/">Español</a>
+            </li>
+            
+            <li>
+                <a href="/">Home</a>
+            </li>
+            
+            <li>
+                <a href="/archives/">Archives</a>
+            </li>
+            
+            <li>
+                <a href="/about/">About</a>
+            </li>
+            
+            <li>
+                <a href="/search/">Search</a>
+            </li>
+            
+            <li>
+                <a href="/index.xml">RSS</a>
+            </li>
+            
+        </ul>
+    </div>
+    
+    <div class="sidebar-item sidebar-links">
+        <h3>Links</h3>
+        <ul>
+            
+            <li>
+                <a href="https://www.r-project.org/" target="_blank"><span>The R Project</span></a>
+            </li>
+            
+            <li>
+                <a href="https://www.r-bloggers.com/" target="_blank"><span>R Bloggers</span></a>
+            </li>
+            
+            <li>
+                <a href="https://www.bioconductor.org/" target="_blank"><span>Bioconductor</span></a>
+            </li>
+            
+        </ul>
+    </div>
+    
+    <div class="sidebar-item sidebar-tags">
+        <h3>Tags</h3>
+        <div>
+            
+            <span>
+                <a href="/tags/code-visuals/">Code Visuals</a>
+            </span>
+            
+            <span>
+                <a href="/tags/data-analysis/">data analysis</a>
+            </span>
+            
+            <span>
+                <a href="/tags/database/">database</a>
+            </span>
+            
+            <span>
+                <a href="/tags/emacs/">emacs</a>
+            </span>
+            
+            <span>
+                <a href="/tags/ggplot2/">ggplot2</a>
+            </span>
+            
+            <span>
+                <a href="/tags/minitutorial/">minitutorial</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-basics/">R basics</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-dev/">R-dev</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-funciones/">R funciones</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-functions/">R functions</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-maps/">R maps</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-shiny/">R shiny</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-tips/">R tips</a>
+            </span>
+            
+            <span>
+                <a href="/tags/web-scrap/">web-scrap</a>
+            </span>
+            
+        </div>
+    </div>
+    <div class="sidebar-item sidebar-toc">
+        <h3>Table of Contents</h3><nav id="TableOfContents">
+  <ul>
+    <li><a href="#about-this-guide">About this guide</a>
+      <ul>
+        <li><a href="#why-should-i-have-my-own-server">Why should I have my own server?</a></li>
+      </ul>
+    </li>
+    <li><a href="#step-by-step-guide">Step by Step guide</a>
+      <ul>
+        <li><a href="#pre-requisites">Pre-requisites</a></li>
+        <li><a href="#install-and-start-nginx">Install and start Nginx</a></li>
+        <li><a href="#custom-domain-name-optional">Custom domain name (optional)</a></li>
+        <li><a href="#add-ssl-certificate-to-get-https-optional">Add SSL certificate to get HTTPS (optional)</a></li>
+        <li><a href="#install-r-and-packages-as-sudo">Install R and Packages as sudo</a></li>
+        <li><a href="#install-shiny-server">Install Shiny server</a></li>
+        <li><a href="#configure-nginx">Configure Nginx</a></li>
+        <li><a href="#add-your-own-apps">Add your own apps</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav></div>
+</aside>
+
+        </div>
+        <div class="btn">
+    <div class="btn-menu" id="btn-menu">
+        <i class="iconfont icon-grid-sharp"></i>
+    </div>
+    <div class="btn-toggle-mode">
+        <i class="iconfont icon-contrast-sharp"></i>
+    </div>
+    <div class="btn-scroll-top">
+        <i class="iconfont icon-chevron-up-circle-sharp"></i>
+    </div>
+</div>
+<aside class="sidebar-mobile" style="display: none;">
+  <div class="sidebar-wrapper">
+    
+    <div class="sidebar-item sidebar-pages">
+        <h3>Pages</h3>
+        <ul>
+            
+            <li>
+                <a href="/es/">Español</a>
+            </li>
+            
+            <li>
+                <a href="/">Home</a>
+            </li>
+            
+            <li>
+                <a href="/archives/">Archives</a>
+            </li>
+            
+            <li>
+                <a href="/about/">About</a>
+            </li>
+            
+            <li>
+                <a href="/search/">Search</a>
+            </li>
+            
+            <li>
+                <a href="/index.xml">RSS</a>
+            </li>
+            
+        </ul>
+    </div>
+    
+    <div class="sidebar-item sidebar-links">
+        <h3>Links</h3>
+        <ul>
+            
+            <li>
+                <a href="https://www.r-project.org/" target="_blank"><span>The R Project</span></a>
+            </li>
+            
+            <li>
+                <a href="https://www.r-bloggers.com/" target="_blank"><span>R Bloggers</span></a>
+            </li>
+            
+            <li>
+                <a href="https://www.bioconductor.org/" target="_blank"><span>Bioconductor</span></a>
+            </li>
+            
+        </ul>
+    </div>
+    
+    <div class="sidebar-item sidebar-tags">
+        <h3>Tags</h3>
+        <div>
+            
+            <span>
+                <a href="/tags/code-visuals/">Code Visuals</a>
+            </span>
+            
+            <span>
+                <a href="/tags/data-analysis/">data analysis</a>
+            </span>
+            
+            <span>
+                <a href="/tags/database/">database</a>
+            </span>
+            
+            <span>
+                <a href="/tags/emacs/">emacs</a>
+            </span>
+            
+            <span>
+                <a href="/tags/ggplot2/">ggplot2</a>
+            </span>
+            
+            <span>
+                <a href="/tags/minitutorial/">minitutorial</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-basics/">R basics</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-dev/">R-dev</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-funciones/">R funciones</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-functions/">R functions</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-maps/">R maps</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-shiny/">R shiny</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-tips/">R tips</a>
+            </span>
+            
+            <span>
+                <a href="/tags/web-scrap/">web-scrap</a>
+            </span>
+            
+        </div>
+    </div>
+    
+    
+    
+    <div class="sidebar-item sidebar-toc">
+        <h3>Table of Contents</h3>
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#about-this-guide">About this guide</a>
+      <ul>
+        <li><a href="#why-should-i-have-my-own-server">Why should I have my own server?</a></li>
+      </ul>
+    </li>
+    <li><a href="#step-by-step-guide">Step by Step guide</a>
+      <ul>
+        <li><a href="#pre-requisites">Pre-requisites</a></li>
+        <li><a href="#install-and-start-nginx">Install and start Nginx</a></li>
+        <li><a href="#custom-domain-name-optional">Custom domain name (optional)</a></li>
+        <li><a href="#add-ssl-certificate-to-get-https-optional">Add SSL certificate to get HTTPS (optional)</a></li>
+        <li><a href="#install-r-and-packages-as-sudo">Install R and Packages as sudo</a></li>
+        <li><a href="#install-shiny-server">Install Shiny server</a></li>
+        <li><a href="#configure-nginx">Configure Nginx</a></li>
+        <li><a href="#add-your-own-apps">Add your own apps</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+    </div>
+    
+    
+  </div>
+</aside>
+    </main>
+
+    <footer>
+    <div class="container-lg clearfix">
+        <div class="col-12 footer">
+            
+            <span>&copy; 2021-2023
+                <a href="https://blog.rwhitedwarf.com">R White Dwarf</a>
+                
+                | Powered by <a href="https://github.com/dsrkafuu/hugo-theme-fuji/"
+                   target="_blank">Fuji-v2</a> &amp; <a href="https://gohugo.io/"
+                                                    target="_blank">Hugo</a> 
+            </span>
+        </div>
+    </div>
+</footer>
+
+    
+<script defer src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.6/dist/medium-zoom.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/lazysizes@5.3.2/lazysizes.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/prismjs@1.27.0/components/prism-core.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/prismjs@1.27.0/plugins/autoloader/prism-autoloader.min.js"></script>
+
+
+
+<script defer src="/assets/js/fuji.min.js"></script>
+
+
+
+</body>
+
+</html>
