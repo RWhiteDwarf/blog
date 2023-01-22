@@ -33,7 +33,7 @@ x <- rnorm(100)
 print(mean(x))
 ```
 
-    [1] -0.129577
+    [1] -0.1560623
 
 ## Testing tabsets
 
