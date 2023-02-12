@@ -18,12 +18,12 @@ The project taught me so much in terms of technical skills that I have decided t
 
 We created maps of data showing changes over a span of time for different countries and pointing at all kinds of cities. That basically means that we need to **map any region of the world with R**. Today there are all kinds of packages and techniques to do that. I will share the strategy I used with [ggplot2](https://cran.r-project.org/web/packages/ggplot2/index.html) and [maps](https://cran.r-project.org/web/packages/maps/index.html) packages, using support of [Open Street Map](https://www.openstreetmap.org/) to obtain the coordinates of cities and finally making it interactive with [shiny](https://shiny.rstudio.com/). The project is quite long for a single post, so my idea is to split it into a few smaller blog posts. The list can still change but I thought something like this:
 
-	1. **The basic map**
-	2. [Web scrapping with nominatim open street maps](https://blog.rwhitedwarf.com/post/map_any_region_with_ggplot2_part_ii/)
-	3. Maps with cities
-	4. Dynamic maps in time
-	5. Making a single script for fast replication
-	6. Making the code interactive in a shiny app
+  1. **The basic map**
+  2. [Web scrapping with nominatim open street maps](https://blog.rwhitedwarf.com/post/map_any_region_with_ggplot2_part_ii/)
+  3. Maps with cities
+  4. Dynamic maps in time
+  5. Making a single script for fast replication
+  6. Making the code interactive in a shiny app
 	
 I hope you all enjoy it. Feel free to leave any kind of comment and/or question at the end.
 
