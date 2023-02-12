@@ -2,7 +2,7 @@
 author: "Manuel Teodoro Tenango"
 title: "Reference: Dockerizing shinny apps"
 image: ""
-draft: true
+draft: false
 date: 2023-02-11
 description: "A reference to a couple of good sources explaining how to dockerize a shiny app"
 tags: ["references", "R-dev", "R shiny", "R tips","docker"]
