@@ -14,4 +14,4 @@ archives: ["2023"]
 
 He also recommends a post from [statworx](https://www.statworx.com/en/content-hub/blog/how-to-dockerize-shinyapps/) that is clearly the inspiration for his video. The post contains all the info necessary to dockerize a first shiny app. The post is short and clear, and it's an excellent complement for the video.
 
- I might try dockerizing some simple shiny app and share the experience here if I find something new or interesting that can add value to the mentioned links. Otherwise, you can stay with these as the basis for dockerizing a shiny app and wait for my post of dockerizing using guix, which is my main target for now in order to make my app reproducible. Stay in orbit.
+ I might try dockerizing some simple shiny app and share the experience here if I find something new or interesting that can add value to the mentioned links. Otherwise, you can stay with these as the basis for dockerizing a shiny app and wait for my post of dockerizing using Guix, which is my main target for now in order to make my app reproducible. Stay in orbit.
