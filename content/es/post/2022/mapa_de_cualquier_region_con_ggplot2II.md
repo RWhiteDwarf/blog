@@ -16,7 +16,7 @@ Esta es la segunda parte de las series de cómo crear mapas de cualquier región
 
 Estamos creando mapas de datos que muestran los cambios durante un período de tiempo para diferentes países y orientado a todo tipo de ciudades. Esto básicamente significa que necesitamos **mapear cualquier región del mundo con R**. Hoy en día existen todo tipo de paquetes y técnicas para hacerlo. Quiero compartir la estrategia que utilicé con [ggplot2](https://cran.r-project.org/web/packages/ggplot2/index.html) y [maps](https://cran.r-project.org /web/packages/maps/index.html), utilizando el soporte de [Open Street Map](https://www.openstreetmap.org/) para obtener las coordenadas de las ciudades y finalmente hacerlo interactivo con [shiny](https ://shiny.rstudio.com/). El proyecto es bastante largo para una sola publicación, por lo que mi idea es dividirlo en algunas publicaciones de blog más pequeñas. Hasta el momento, la lista es la siguiente:
 
-1. [El mapa básico] **ADD LINK**
+1. [El mapa básico](https://blog.rwhitedwarf.com/es/post/mapa_de_cualquier_region_con_ggplot2_i/)
 2. **Web scrapping with nominatim open street maps**
 3. Maps with cities
 4. Dynamic maps in time
@@ -227,7 +227,6 @@ Un detalle importante que debe saber es que, a menudo, proporcionar valores a lo
 
 La función devuelve un data frame que usaremos más adelante para crear una tabla con todos nuestros resultados. Como estamos interesados en crear mapas, solo necesitamos las coordenadas expresadas en latitud y longitud. En caso de que no se encuentre la consulta, la función completa los valores con `NA`, que luego usaremos para realizar un seguimiento de lo que se encontró y lo que no. También mantenemos los valores dentro de `osm_name`, que brinda suficiente información para brindarle al usuario detalles útiles sobre los resultados de la búsqueda, incluido el país de la ciudad encontrada y otros detalles como el estado o la región.
 
-**TRADUCIR IMAGEN**
 ![Funcion coords_from_city() en detalle](/post/2022/map_any_region_with_ggplot2_part_II/maps_coords_from_city.png)
 
 Un punto importante a considerar en `coords_from_city` es que devuelve solo el resultado superior de la consulta. Esto significa que cuanto más información se proporcione, más preciso será su resultado. Para nuestro proyecto funciona bien porque para los países grandes siempre recopilamos suficiente información sobre regiones y estados, mientras que para los países más pequeños, las opciones a menudo son demasiado pequeñas. Pero si usamos la función, es importante saber que si se proporciona un nombre de ciudad como `Springfield`, `country = 'US'` y no proporciona información sobre el estado y el condado, la función recuperara solo el primer resultado de la búsqueda, y descarta las opciones restantes.
@@ -290,7 +289,6 @@ Para almacenar los datos elegí usar [SQLite](https://www.sqlite.org/index.html)
 
 La función `dbConnect()` genera el archivo SQLite si aún no existe. Luego le damos a SQLite la orden de crear la tabla `orgs` si aún no existe, y la estructura para dicha tabla. A continuación buscamos las coordenadas de las entradas una a una usando `coords_from_city()` y finalmente lo enviamos a la base de datos. De esa manera podríamos detener el proceso en cualquier momento y continuar más tarde simplemente recuperando la tabla `orgs` de la base de datos, comparándola con nuestros datos originales y avanzando desde lo que falta. Para eso, la columna `ID` es fundamental, es la columna que nos permite vincular una entrada entre los datos originales, el data frame de R y la tabla SQL.
 
-**TRANSLATE**
 ![Función webscrap_to_sqlite() en detalle](/post/2022/map_any_region_with_ggplot2_part_II/maps_webscrap_to_sqlite.png)
 
 Nuestra función también tiene una variable `ccount` que cuenta cada vez que no se encuentra una entrada. De esa forma, una vez finalizada la consulta, imprimirá la cantidad de entradas que no fueron encontradas. Las razones para no encontrar una entrada pueden ser muchas, entre las más comunes que encontré están las siguientes:

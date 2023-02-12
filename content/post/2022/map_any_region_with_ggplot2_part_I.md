@@ -18,8 +18,8 @@ The project taught me so much in terms of technical skills that I have decided t
 
 We created maps of data showing changes over a span of time for different countries and pointing at all kinds of cities. That basically means that we need to **map any region of the world with R**. Today there are all kinds of packages and techniques to do that. I will share the strategy I used with [ggplot2](https://cran.r-project.org/web/packages/ggplot2/index.html) and [maps](https://cran.r-project.org/web/packages/maps/index.html) packages, using support of [Open Street Map](https://www.openstreetmap.org/) to obtain the coordinates of cities and finally making it interactive with [shiny](https://shiny.rstudio.com/). The project is quite long for a single post, so my idea is to split it into a few smaller blog posts. The list can still change but I thought something like this:
 
-	1. The basic map
-	2. Web scrapping with nominatim open street maps
+	1. **The basic map**
+	2. [Web scrapping with nominatim open street maps](https://blog.rwhitedwarf.com/post/map_any_region_with_ggplot2_part_ii/)
 	3. Maps with cities
 	4. Dynamic maps in time
 	5. Making a single script for fast replication
@@ -163,7 +163,7 @@ The final line is the test that our function can plot a map other than Spain, in
 
 ## Final remarks
 
-Here I am somehow showing one of the methods I use to create functions: I basically write first the code of what I want to achieve and once it does exactly what I want, I wrap it in a function, replacing the arguments that the user will need to modify later. Then I think what could go wrong and create the corresponding warnings an errors. It is a good practice to do that not only for the user to know better how to use the function, but also for yourself, it proves very useful when we need to debug code. Another good practice in R functions is the call to the libraries inside the function using `require()`. Even if you are writing many functions that use the same libraries, is good to repeat it on each function to make it self contained and again, help yourself in the debugging process. Not long ago I started collaborating in a project where there was no call to the libraries per function, but rather only at the top level when the main action of the program was called. This made almost impossible for me to test and debug code so, the first activity I did as a new member of the team was to spend 2 full working days adding `require()` where necessary.
+Here I am somehow showing one of the methods I use to create functions: I basically write first the code of what I want to achieve and once it does exactly what I want, I wrap it in a function, replacing the arguments that the user will need to modify later. Then I think what could go wrong and create the corresponding warnings an errors. It is a good practice to do that not only for the user to know better how to use the function, but also for yourself, it proves very useful when we need to debug code. Another good practice in R functions is the call to the libraries inside the function using `require()`. Even if you are writing many functions that use the same libraries, is good to repeat it on each function, or per script, to make it self contained and again, help yourself in the debugging process. Not long ago I started collaborating in a project where there was no call to the libraries per function, but rather only at the top level when the main action of the program was called. This made almost impossible for me to test and debug code so, the first activity I did as a new member of the team was to spend 2 full working days adding `require()` where necessary.
 
 ![Code of the function explained](/post/2022/map_any_region_with_ggplot2_part_I/maps_CompareCode.png)
 
