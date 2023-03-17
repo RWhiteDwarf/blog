@@ -6,7 +6,31 @@
     <description>Recent content on R with White Dwarf</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Sun, 22 Jan 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.rwhitedwarf.com/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 11 Feb 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.rwhitedwarf.com/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Reference: Dockerizing shinny apps</title>
+      <link>https://blog.rwhitedwarf.com/post/reference_dockerizing_shinny_apps/</link>
+      <pubDate>Sat, 11 Feb 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.rwhitedwarf.com/post/reference_dockerizing_shinny_apps/</guid>
+      <description>&lt;p&gt;&lt;a href=&#34;https://youtube.com/@AndrewCouch&#34; target=&#34;_blank&#34;&gt;Andrew Couch&lt;/a&gt; has a nice video about &lt;a href=&#34;https://youtu.be/ARd5IldVFUs&#34; target=&#34;_blank&#34;&gt;deploying a shiny app using docker&lt;/a&gt;. He goes from the very basics, that asume no knowledge of docker whatsoever, which is the position of many R users like myself. I&amp;rsquo;ve been working in some shiny app lately, and although I&amp;rsquo;ve never needed docker so far,  I decided to start learning it because I can already foresee the future when it won&amp;rsquo;t be the case. Andrew makes some good points about how most tutorials assume the reader to know the basics of docker and start from there. While these are easy to follow, it is difficult to understand what we are doing and why we are doing it. That creates later problems to extend and debug the apps. Andrew shares his experience in searching for solid info and then proceeds with a tutorial where he explains basic parts, commands, and code of a docker file.&lt;/p&gt;
+&lt;p&gt;He also recommends a post from &lt;a href=&#34;https://www.statworx.com/en/content-hub/blog/how-to-dockerize-shinyapps/&#34; target=&#34;_blank&#34;&gt;statworx&lt;/a&gt; that is clearly the inspiration for his video. The post contains all the info necessary to dockerize a first shiny app. The post is short and clear, and it&amp;rsquo;s an excellent complement for the video.&lt;/p&gt;
+&lt;p&gt;I might try dockerizing some simple shiny app and share the experience here if I find something new or interesting that can add value to the mentioned links. Otherwise, you can stay with these as the basis for dockerizing a shiny app and wait for my post of dockerizing using Guix, which is my main target for now in order to make my app reproducible. Stay in orbit.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Referencia: Dockerizando shinny apps</title>
+      <link>https://blog.rwhitedwarf.com/es/post/2023/referencia_dockerizar_shinny_apps/</link>
+      <pubDate>Sat, 11 Feb 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.rwhitedwarf.com/es/post/2023/referencia_dockerizar_shinny_apps/</guid>
+      <description>&lt;p&gt;&lt;a href=&#34;https://youtube.com/@AndrewCouch&#34; target=&#34;_blank&#34;&gt;Andrew Couch&lt;/a&gt; tiene un video genial sobre como &lt;a href=&#34;https://youtu.be/ARd5IldVFUs&#34; target=&#34;_blank&#34;&gt;poner una aplicación shiny en docker&lt;/a&gt;. El video está en inglés, pero bien vale la pena. Va desde lo más básico, sin asumir ningún conocimiento de docker, lo cual es la situación de muchos usuarios de R como yo mismo. Últimamente he estado trabajando en unas aplicaciones Shiny y a pesar de que nunca he necesitado de Docker, ya puedo preveer el momento en que esto cambiará, por lo que decidí comenzar a aprender como usarlo. Andrew toca unos puntos muy buenos de cómo la mayoría de tutoriales en la web asumen que el lector ya conoce Docker y van a partir de ahí. A pesar de que esos tutoriales son fáciles de seguir, es difícil entender que estamos haciendo y el por qué. Esto genera mas problemas a futuro para extender y debuggear la aplicación. Andrew comparte su experiencia en busca de información sólida y luego procede a dar el tutorial donde explica las partes básicas, comandos y el código de un archivo Docker.&lt;/p&gt;
+&lt;p&gt;También recomienda una entrada de &lt;a href=&#34;https://www.statworx.com/en/content-hub/blog/how-to-dockerize-shinyapps/&#34; target=&#34;_blank&#34;&gt;statworx&lt;/a&gt; (también en inglés) que es claramente la inspiración para su video. La entrada contiene información necesaria para dockerizar tu primera aplicación shiny. El texto es corto y claro, y hace un complemento al video. Si tienes problemas con el inglés, está es la entrada ideal para ti ya que puede ser traducida fácilmente.&lt;/p&gt;
+&lt;p&gt;Tal vez intentaré dockerizar alguna aplicación de prueba siguiendo las instrucciones y comparta mi experiencia aquí, siempre y cuando encuentre algo nuevo que agregue valor a los links compartidos. De lo contrario pueden utilizar dichos links como las bases y esperar a mi post de como dockerizar utilizando Guix, que es mi principal objetivo por ahora con el propósito de hacer mi aplicación reproducible. Manténganse en órbita.&lt;/p&gt;
+</description>
+    </item>
+    
     <item>
       <title>Deploy your own Shiny app server with debian</title>
       <link>https://blog.rwhitedwarf.com/post/deploy_shiny_on_debian/</link>
@@ -237,7 +261,7 @@ sudo nano /etc/nginx/sites-enabled/default
 &lt;ol start=&#34;3&#34;&gt;
 &lt;li&gt;This is your configuration file. Paste the following code in your new window&lt;/li&gt;
 &lt;/ol&gt;
-&lt;pre&gt;&lt;code class=&#34;language-emacs-lisp&#34;&gt;(require &#39;package)
+&lt;pre&gt;&lt;code class=&#34;language-{emacs-lisp&#34;&gt;(require &#39;package)
 (add-to-list &#39;package-archives &#39;(&amp;quot;melpa&amp;quot; . &amp;quot;https://melpa.org/packages/&amp;quot;))
 
 (unless (package-installed-p &#39;use-package)
@@ -258,7 +282,7 @@ sudo nano /etc/nginx/sites-enabled/default
       company-tooltip-limit 10)
 &lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;This configuration assumes that you have installed R with all the defaults. If you have installed R in a directory of your choice, add the following line at the end of the configuration file, changing the path of my example for the path were you have installed R.&lt;/p&gt;
-&lt;pre&gt;&lt;code class=&#34;language-emacs-lisp&#34;&gt;(setq inferior-ess-r-program &amp;quot;C:/Users/Manuel/path_where_R_is/R-4.2.1/bin/R.exe&amp;quot;)
+&lt;pre&gt;&lt;code class=&#34;language-{emacs-lisp&#34;&gt;(setq inferior-ess-r-program &amp;quot;C:/Users/Manuel/path_where_R_is/R-4.2.1/bin/R.exe&amp;quot;)
 &lt;/code&gt;&lt;/pre&gt;
 &lt;ol start=&#34;4&#34;&gt;
 &lt;li&gt;
@@ -320,7 +344,7 @@ sudo nano /etc/nginx/sites-enabled/default
 &lt;/blockquote&gt;
 &lt;p&gt;If you followed step 2 from within Emacs you should have now an empty screen where you can start typing Elisp code to tell Emacs how to start. After a new installation the file still does not exists (although you might already have created it if you followed the quick start). With the command &lt;strong&gt;C-x C-f&lt;/strong&gt; we can create it. Make sure that it is stored in the home folder &lt;code&gt;~/&lt;/code&gt; and not somewhere else. To demonstrate the point, type the following line anywhere in your &lt;code&gt;.emacs&lt;/code&gt; file: &lt;code&gt;(setq inhibit-startup-screen t)&lt;/code&gt;, that tells Emacs to inhibit the startup screen. Now save it with &lt;strong&gt;C-x C-s&lt;/strong&gt;, close Emacs and open it again and now the startup screen showing you the tutorial should not be there anymore. If you still want to see the welcome screen at startup you can simply delete that line and the startup screen will be back (&lt;strong&gt;C-x C-f&lt;/strong&gt; type &lt;code&gt;~/.emacs&lt;/code&gt;, delete the line and save).&lt;/p&gt;
 &lt;p&gt;Here are just a couple of lines that are useful to add to your dot Emacs file for writing R code:&lt;/p&gt;
-&lt;pre&gt;&lt;code class=&#34;language-emacs-lisp&#34;&gt;;; enable column numbers
+&lt;pre&gt;&lt;code class=&#34;language-{emacs-lisp&#34;&gt;;; enable column numbers
 (setq column-number-mode t)
 (add-hook &#39;prog-mode-hook &#39;display-line-numbers-mode)
 
@@ -364,7 +388,7 @@ sudo nano /etc/nginx/sites-enabled/default
 &lt;p&gt;Extensible - contribute new recipes, and we&amp;rsquo;ll build the packages&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;To configure Emacs to find MELPA packages we simply need two lines of code in our configuration file.&lt;/p&gt;
-&lt;pre&gt;&lt;code class=&#34;language-emacs-lisp&#34;&gt;(require &#39;package)
+&lt;pre&gt;&lt;code class=&#34;language-{emacs-lisp&#34;&gt;(require &#39;package)
 (add-to-list &#39;package-archives &#39;(&amp;quot;melpa&amp;quot; . &amp;quot;https://melpa.org/packages/&amp;quot;))
 &lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;Add those lines to your dot emacs file, save it and restart Emacs to take effect. Now, upon calling &lt;code&gt;list-packages&lt;/code&gt; you should see an extended list of packages, some of which are tagged as &amp;ldquo;melpa&amp;rdquo; in the section &amp;ldquo;Archive&amp;rdquo; of the list.&lt;/p&gt;
@@ -395,7 +419,7 @@ A short description of the package.&lt;/p&gt;
 &lt;p&gt;The &lt;code&gt;use-package&lt;/code&gt; macro allows you to isolate package configuration in your &lt;code&gt;.emacs&lt;/code&gt; file in a way that is both performance-oriented and, well, tidy. I created it because I have over 80 packages that I use in Emacs, and things were getting difficult to manage. Yet with this utility my total load time is around 2 seconds, with no loss of functionality!&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;Let&amp;rsquo;s use the example from the quick start, step 3:&lt;/p&gt;
-&lt;pre&gt;&lt;code class=&#34;language-emacs-lisp&#34;&gt;(unless (package-installed-p &#39;use-package)
+&lt;pre&gt;&lt;code class=&#34;language-{emacs-lisp&#34;&gt;(unless (package-installed-p &#39;use-package)
   (package-refresh-contents)
   (package-install &#39;use-package))
 
@@ -460,7 +484,7 @@ A short description of the package.&lt;/p&gt;
 &lt;p&gt;The ESS debugging tool is also useful and powerful. You can simply type in you R console &lt;code&gt;debug(function)&lt;/code&gt; and then run the function called inside &lt;code&gt;debug&lt;/code&gt; or a function containing it and Emacs will run step by step and side by side the file each time you type RET in the console. Whenever you don&amp;rsquo;t type RET you can do all sort of stuff locally such as print the state of an argument or even change its value.&lt;/p&gt;
 &lt;h3 id=&#34;company&#34;&gt;Company&lt;/h3&gt;
 &lt;p&gt;Among all the libraries and Emacs functionalities that can help us writing R code, I think that &lt;a href=&#34;https://company-mode.github.io/&#34; target=&#34;_blank&#34;&gt;Company&lt;/a&gt; deserves a special mention. It is an auto completion tool that is easy to set up for ESS and intuitive to use. If you followed the quick start you should already have it installed and ready to use.&lt;/p&gt;
-&lt;pre&gt;&lt;code class=&#34;language-emacs-lisp&#34;&gt;(use-package company
+&lt;pre&gt;&lt;code class=&#34;language-{emacs-lisp&#34;&gt;(use-package company
   :config
   (add-hook &#39;after-init-hook &#39;global-company-mode))
 
@@ -1343,16 +1367,11 @@ metalurgia y alimentación.&lt;/p&gt;
       <guid>https://blog.rwhitedwarf.com/post/map_any_region_with_ggplot2_part_ii/</guid>
       <description>&lt;h2 id=&#34;scope-of-this-post&#34;&gt;Scope of this post&lt;/h2&gt;
 &lt;p&gt;This is the second part of the series to create a map of any region of the world with R.&lt;/p&gt;
-&lt;p&gt;We are creating maps of data showing changes over a span of time for different countries and pointing at all kinds of cities. That basically means that we need to &lt;strong&gt;map any region of the world with R&lt;/strong&gt;. Today there are all kinds of packages and techniques to do that. I will share the strategy I used with &lt;a href=&#34;https://cran.r-project.org/web/packages/ggplot2/index.html&#34; target=&#34;_blank&#34;&gt;ggplot2&lt;/a&gt; and &lt;a href=&#34;https://cran.r-project.org/web/packages/maps/index.html&#34; target=&#34;_blank&#34;&gt;maps&lt;/a&gt; packages, using support of &lt;a href=&#34;https://www.openstreetmap.org/&#34; target=&#34;_blank&#34;&gt;Open Street Map&lt;/a&gt; to obtain the coordinates of cities and finally making it interactive with &lt;a href=&#34;https://shiny.rstudio.com/&#34; target=&#34;_blank&#34;&gt;shiny&lt;/a&gt;. The project is quite long for a single post, so my idea is to split it into a few smaller blog posts. So far, the list is a follows:&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;&lt;a href=&#34;https://blog.rwhitedwarf.com/post/map_any_region_with_ggplot2_part_i/&#34; target=&#34;_blank&#34;&gt;The basic map&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;Web scrapping with nominatim open street maps&lt;/strong&gt;&lt;/li&gt;
-&lt;li&gt;Maps with cities&lt;/li&gt;
-&lt;li&gt;Dynamic maps in time&lt;/li&gt;
-&lt;li&gt;Making a single script for fast replication&lt;/li&gt;
-&lt;li&gt;Making the code interactive in a shiny app&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;The ideas is to share the how-to of one of the projects I am most proud of and, at the same time to give back to the R community in hopes that it can help somebody else.&lt;/p&gt;
+&lt;p&gt;We are creating maps of data showing changes over a span of time for different countries and pointing at all kinds of cities. That basically means that we need to &lt;strong&gt;map any region of the world with R&lt;/strong&gt;. Today there are all kinds of packages and techniques to do that. I will share the strategy I used with &lt;a href=&#34;https://cran.r-project.org/web/packages/ggplot2/index.html&#34; target=&#34;_blank&#34;&gt;ggplot2&lt;/a&gt; and &lt;a href=&#34;https://cran.r-project.org/web/packages/maps/index.html&#34; target=&#34;_blank&#34;&gt;maps&lt;/a&gt; packages, using support of &lt;a href=&#34;https://www.openstreetmap.org/&#34; target=&#34;_blank&#34;&gt;Open Street Map&lt;/a&gt; to obtain the coordinates of cities and finally making it interactive with &lt;a href=&#34;https://shiny.rstudio.com/&#34; target=&#34;_blank&#34;&gt;shiny&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;This series of posts share my path towards the creation of the Shiny app. It is a live project and I decided to share my path and experiences along the creation process. The posts are not only about the Shiny app, but the package I created behind it, including topics of functions crafting, creation of the maps, classes of objects, etc., as well as any interesting issue that appear on the way. It is my way to contribute to the R community and at the same time keeping the project documented for myself.&lt;/p&gt;
+&lt;p&gt;You can find all the posts on this series under the tag &lt;a href=&#34;https://blog.rwhitedwarf.com/tags/maps-app/&#34; title=&#34;#maps-app&#34; target=&#34;_blank&#34;&gt;maps-app&lt;/a&gt; (including the Spanish versions).&lt;/p&gt;
+&lt;p&gt;You can also find the current state of the project under &lt;a href=&#34;https://github.com/teotenn&#34; target=&#34;_blank&#34;&gt;my GitHub&lt;/a&gt; repo &lt;a href=&#34;https://github.com/teotenn/mapic&#34; target=&#34;_blank&#34;&gt;mapic&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;This post is about &lt;strong&gt;Web scrapping with nominatim open street maps&lt;/strong&gt;&lt;/p&gt;
 &lt;p&gt;I hope you all enjoy it. Feel free to leave any kind of comment and/or question at the end.&lt;/p&gt;
 &lt;p&gt;&lt;img class=&#34;img-zoomable&#34; src=&#34;https://blog.rwhitedwarf.com/post/2022/map_any_region_with_ggplot2_part_I/maps_DrawingMap.png&#34; alt=&#34;R Maps&#34; /&gt;
 &lt;/p&gt;
@@ -1593,7 +1612,7 @@ site &amp;lt;- paste0(start.nominatim, city, country, state, end.nominatim)
 }
 &lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;For storing the data I have chosen to use &lt;a href=&#34;https://www.sqlite.org/index.html&#34; target=&#34;_blank&#34;&gt;SQLite&lt;/a&gt; through the R package &lt;a href=&#34;https://rsqlite.r-dbi.org/&#34; target=&#34;_blank&#34;&gt;RSQLite&lt;/a&gt;. If you are not familiar with SQL databases I recommend you to start with a general google search and then come back to the documentation of SQLite and the R package. I chose SQLite because we needed to have something light and portable that would allow us to move the information easily from country to country rather than a centralized database where we could store everything, but a very similar approach can be applied using other types of SQL databases.&lt;/p&gt;
-&lt;p&gt;The function &lt;code&gt;dbConnect()&lt;/code&gt; generates the SQLite file if it does not exist yet. Then we give SQLite the order to create the tables &lt;code&gt;orgs&lt;/code&gt; if doesn&amp;rsquo;t exist yet, and the structure for such table. Next we search for the coordinates of the entries one by one using &lt;code&gt;coords_from_city()&lt;/code&gt; and finally we send it to the database. In that way we could stop the process at any time and continue later by simply retrieving the table &lt;code&gt;orgs&lt;/code&gt; from the database, compare it with our original data and move forward from what is missing. For that, the column &lt;code&gt;ID&lt;/code&gt; is critical, it is the column that allows us to link an entry between the original data, the R data.frame and the SQL table.&lt;/p&gt;
+&lt;p&gt;The function &lt;code&gt;dbConnect()&lt;/code&gt; generates the SQLite file if it does not exist yet. Then we give SQLite the order to create the table &lt;code&gt;orgs&lt;/code&gt; if doesn&amp;rsquo;t exist yet, and the structure for such table. Next we search for the coordinates of the entries one by one using &lt;code&gt;coords_from_city()&lt;/code&gt; and finally we send it to the database. In that way we could stop the process at any time and continue later by simply retrieving the table &lt;code&gt;orgs&lt;/code&gt; from the database, compare it with our original data and move forward from what is missing. For that, the column &lt;code&gt;ID&lt;/code&gt; is critical, it is the column that allows us to link an entry between the original data, the R data.frame and the SQL table.&lt;/p&gt;
 &lt;p&gt;&lt;img class=&#34;img-zoomable&#34; src=&#34;https://blog.rwhitedwarf.com/post/2022/map_any_region_with_ggplot2_part_II/maps_webscrap_to_sqlite.png&#34; alt=&#34;Function webscrap_to_sqlite() in detail&#34; /&gt;
 &lt;/p&gt;
 &lt;p&gt;Our function also has a variable &lt;code&gt;ccount&lt;/code&gt; that counts each time an entry was not found. In that way, once the query is finished it will print the amount of entries that were not found. The reasons for not finding an entry can be many, among the most common ones that I encountered are the following:&lt;/p&gt;
@@ -1689,6 +1708,355 @@ site &amp;lt;- paste0(start.nominatim, city, country, state, end.nominatim)
 &lt;p&gt;If you are new to R you could probably already had noticed that one of the strengths of R that I&amp;rsquo;m using a lot here is its use of functions. The first maps that we created were done writing scripts with a few hundreds of lines. Those gave us the basis to craft the necessary functions and so, the rest of the maps were possible using just a few lines. Some of the scripts for the web scrapping of the coordinates consist of less than 10 lines of code. That is possible using the functions above and a few others created for special or particular cases. I will not share absolutely everything but I want to give an idea of how to make the process more efficient. You can always create more functions for your particular cases or modify my proposed functions to adapt to your particular situation.&lt;/p&gt;
 &lt;p&gt;And speaking of extensibility, just while writting this blog I found out about the package &lt;a href=&#34;https://github.com/r-tmap/tmaptools&#34; target=&#34;_blank&#34;&gt;tmaptools&lt;/a&gt; which contains the function &lt;a href=&#34;https://www.rdocumentation.org/packages/tmap/versions/1.6-1/topics/geocode_OSM&#34; target=&#34;_blank&#34;&gt;geocode_OSM&lt;/a&gt; which uses nominatim to retrieve the coordinates of the searched point. The function has a more user friendly searching format and more possibilities for the return value, while my &lt;code&gt;coords_from_city()&lt;/code&gt; option stays quite stiff and still with the original format that it was envisioned a few years ago when I created it. If you are truly interested in the topic I invite you to check the package. Myself I have been busy maintaining the code and creating maps that I found little time to do any improvements to the original project. But that&amp;rsquo;s exactly my main task right now so, if I do any changes to the functions presented here using the &lt;a href=&#34;https://github.com/r-tmap/tmaptools&#34; target=&#34;_blank&#34;&gt;tmaptools&lt;/a&gt; package you can be sure that I will create a short post to share it as well.&lt;/p&gt;
 &lt;p&gt;Then, once we got the coordinates of our target cities and we know how to make the basic map, the next step is to add the cities to the base map. In the next post I will show you how I did that and a function to make the process faster and efficient.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Mapa de cualquier región del mundo con R - Parte II: obteniendo las coordenadas.</title>
+      <link>https://blog.rwhitedwarf.com/es/post/2022/mapa_de_cualquier_region_con_ggplot2ii/</link>
+      <pubDate>Fri, 04 Nov 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.rwhitedwarf.com/es/post/2022/mapa_de_cualquier_region_con_ggplot2ii/</guid>
+      <description>&lt;h2 id=&#34;sobre-este-post&#34;&gt;Sobre este post&lt;/h2&gt;
+&lt;p&gt;Esta es la segunda parte de las series de cómo crear mapas de cualquier región del mundo con R. De antemano me disculpo por detalles que puedan encontrar en la traducción, el post original lo creé en Inglés y el trabajo de traducción puede ser excesivo si voy a cada detalle. Por otro lado, recomiendo un conocimiento al menos básico del idioma Inglés si se quiere tener éxito en R o programación en general. Ayuda mucho a entender la sintaxis.&lt;/p&gt;
+&lt;p&gt;Estamos creando mapas de datos que muestran los cambios durante un período de tiempo para diferentes países y orientado a todo tipo de ciudades. Esto básicamente significa que necesitamos &lt;strong&gt;mapear cualquier región del mundo con R&lt;/strong&gt;. Hoy en día existen todo tipo de paquetes y técnicas para hacerlo. Quiero compartir la estrategia que utilicé con &lt;a href=&#34;https://cran.r-project.org/web/packages/ggplot2/index.html&#34; target=&#34;_blank&#34;&gt;ggplot2&lt;/a&gt; y &lt;a href=&#34;https://cran.r-project.org/web/packages/maps/index.html&#34; target=&#34;_blank&#34;&gt;maps&lt;/a&gt;, utilizando el soporte de &lt;a href=&#34;https://www.openstreetmap.org/&#34; target=&#34;_blank&#34;&gt;Open Street Map&lt;/a&gt; para obtener las coordenadas de las ciudades y finalmente hacerlo interactivo con &lt;a href=&#34;https://shiny.rstudio.com/&#34; target=&#34;_blank&#34;&gt;shiny&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;Estas publicaciones comparten mi camino en la creación de la aplicación Shiny. Es un proyecto vivo en el que estoy trabajando actualmente y decidí compartir mis experiencias durante el proceso de creación. Estas publicaciones no son sólo acerca de Shiny apps, si no más bien sobre la creación del paquete detrás, incluyendo temas sobre la generación de funciones, creación de los mapas, clases de objetos, entre otros, incluyendo cualquier tema interesante que aparezca en el camino. Es mi manera de contribuir a la comunidad de R y al mismo tiempo documentar el proyecto en si mismo.&lt;/p&gt;
+&lt;p&gt;Pueden encontrar todas las publicaciones en este tema bajo la etiqueta &lt;a href=&#34;https://blog.rwhitedwarf.com/tags/maps-app/&#34; target=&#34;_blank&#34;&gt;maps-app&lt;/a&gt; (incluyendo las versiones en inglés).&lt;/p&gt;
+&lt;p&gt;También pueden encontrar el estado actual del proyecto en &lt;a href=&#34;https://github.com/teotenn&#34; target=&#34;_blank&#34;&gt;mi GitHub&lt;/a&gt; repo &lt;a href=&#34;https://github.com/teotenn/mapic&#34; target=&#34;_blank&#34;&gt;mapic&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;Espero que lo disfruten. Siéntanse libres de dejar cualquier tipo de comentario y/o pregunta al final.&lt;/p&gt;
+&lt;p&gt;&lt;img class=&#34;img-zoomable&#34; src=&#34;https://blog.rwhitedwarf.com/post/2022/map_any_region_with_ggplot2_part_I/maps_DrawingMap.png&#34; alt=&#34;R Maps&#34; /&gt;
+&lt;/p&gt;
+&lt;h2 id=&#34;open-street-maps-y-nominatim&#34;&gt;Open Street Maps y Nominatim&lt;/h2&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Una búsqueda sencilla&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;library(&#39;RJSONIO&#39;)
+
+site &amp;lt;- (&amp;quot;http://nominatim.openstreetmap.org/search?city=Texcoco&amp;amp;limit=9&amp;amp;format=json&amp;quot;)
+(result &amp;lt;- fromJSON(site))
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;&amp;gt; [[1]]
+&amp;gt; [[1]]$place_id
+&amp;gt; [1] 1177116
+&amp;gt; 
+&amp;gt; [[1]]$licence
+&amp;gt; [1] &amp;quot;Data © OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright&amp;quot;
+&amp;gt; 
+&amp;gt; [[1]]$osm_type
+&amp;gt; [1] &amp;quot;node&amp;quot;
+&amp;gt; 
+&amp;gt; [[1]]$osm_id
+&amp;gt; [1] 336169214
+&amp;gt; 
+&amp;gt; [[1]]$boundingbox
+&amp;gt; [1] &amp;quot;29.619&amp;quot;       &amp;quot;29.659&amp;quot;       &amp;quot;-111.0786667&amp;quot; &amp;quot;-111.0386667&amp;quot;
+&amp;gt; 
+&amp;gt; [[1]]$lat
+&amp;gt; [1] &amp;quot;29.639&amp;quot;
+&amp;gt; 
+&amp;gt; [[1]]$lon
+&amp;gt; [1] &amp;quot;-111.0586667&amp;quot;
+&amp;gt; 
+&amp;gt; [[1]]$display_name
+&amp;gt; [1] &amp;quot;Texcoco, Carbó, Sonora, México&amp;quot;
+&amp;gt; 
+&amp;gt; [[1]]$class
+&amp;gt; [1] &amp;quot;place&amp;quot;
+&amp;gt; 
+&amp;gt; [[1]]$type
+&amp;gt; [1] &amp;quot;village&amp;quot;
+&amp;gt; 
+&amp;gt; [[1]]$importance
+&amp;gt; [1] 0.385
+&amp;gt; 
+&amp;gt; [[1]]$icon
+&amp;gt; [1] &amp;quot;https://nominatim.openstreetmap.org/ui/mapicons/poi_place_village.p.20.png&amp;quot;
+&amp;gt; 
+&amp;gt; 
+&amp;gt; [[2]]
+&amp;gt; [[2]]$place_id
+&amp;gt; [1] 3448536
+&amp;gt; 
+&amp;gt; [[2]]$licence
+&amp;gt; [1] &amp;quot;Data © OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright&amp;quot;
+&amp;gt; 
+&amp;gt; [[2]]$osm_type
+&amp;gt; [1] &amp;quot;node&amp;quot;
+&amp;gt; 
+&amp;gt; [[2]]$osm_id
+&amp;gt; [1] 458633446
+&amp;gt; 
+&amp;gt; [[2]]$boundingbox
+&amp;gt; [1] &amp;quot;16.551667&amp;quot;  &amp;quot;16.591667&amp;quot;  &amp;quot;-97.053333&amp;quot; &amp;quot;-97.013333&amp;quot;
+&amp;gt; 
+&amp;gt; [[2]]$lat
+&amp;gt; [1] &amp;quot;16.571667&amp;quot;
+&amp;gt; 
+&amp;gt; [[2]]$lon
+&amp;gt; [1] &amp;quot;-97.033333&amp;quot;
+&amp;gt; 
+&amp;gt; [[2]]$display_name
+&amp;gt; [1] &amp;quot;Texcoco, Santa María Sola, Oaxaca, México&amp;quot;
+&amp;gt; 
+&amp;gt; [[2]]$class
+&amp;gt; [1] &amp;quot;place&amp;quot;
+&amp;gt; 
+&amp;gt; [[2]]$type
+&amp;gt; [1] &amp;quot;hamlet&amp;quot;
+&amp;gt; 
+&amp;gt; [[2]]$importance
+&amp;gt; [1] 0.36
+&amp;gt; 
+&amp;gt; [[2]]$icon
+&amp;gt; [1] &amp;quot;https://nominatim.openstreetmap.org/ui/mapicons/poi_place_village.p.20.png&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Comenzamos con &lt;a href=&#34;https://www.openstreetmap.org/&#34; target=&#34;_blank&#34;&gt;Open Street Map&lt;/a&gt; y su API &lt;a href=&#34;https://nominatim.openstreetmap.org/ui/about.html&#34; target=&#34;_blank&#34;&gt;nominatim&lt;/a&gt;. En el código anterior podemos ver cómo realizar una consulta simple para una ciudad. Es básicamente un string (en R, &amp;ldquo;string&amp;rdquo; se utiliza para referirse a texto) largo que contiene primero la url de nominatim y al final los detalles de la búsqueda: aquí comenzamos la búsqueda de la ciudad, usando &lt;code&gt;?city=Texcoco&lt;/code&gt; que en este caso apunta a una ciudad con solo unos pocos resultados. A continuación, limitamos la cantidad de resultados a 9 con &lt;code&gt;&amp;amp;limit=9&lt;/code&gt; y finalmente solicitamos los resultados en formato JSON.&lt;/p&gt;
+&lt;p&gt;Básicamente, podríamos copiar el string que estamos pasando a la variable &lt;code&gt;site&lt;/code&gt; y pegarla en el navegador web para ver los resultados directamente ahí. Siéntete libre de cambiar la ciudad &lt;code&gt;Texcoco&lt;/code&gt; a cualquier otra ciudad, y juega un poco más con el resto de los parámetros. En particular, eche un vistazo a lo que sucede cuando elimina la parte &lt;code&gt;&amp;amp;format=json&lt;/code&gt; o cuando cambia &lt;code&gt;json&lt;/code&gt; por cualquier otra cadena abstracta como &lt;code&gt;csv&lt;/code&gt; u otro formato no reconocido.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Una búsqueda más sencilla&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;city &amp;lt;- &#39;San%20Francisco&#39;
+state &amp;lt;- &#39;&amp;amp;state=California&#39;
+country &amp;lt;- &#39;&amp;amp;countrycodes=US&#39;
+start.nominatim &amp;lt;- &amp;quot;http://nominatim.openstreetmap.org/search?city=&amp;quot;
+end.nominatim &amp;lt;- &amp;quot;&amp;amp;format=json&amp;quot;
+
+site &amp;lt;- paste0(start.nominatim, city, country, state, end.nominatim)
+(result &amp;lt;- fromJSON(site))
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;&amp;gt; [[1]]
+&amp;gt; [[1]]$place_id
+&amp;gt; [1] 297054975
+&amp;gt; 
+&amp;gt; [[1]]$licence
+&amp;gt; [1] &amp;quot;Data © OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright&amp;quot;
+&amp;gt; 
+&amp;gt; [[1]]$osm_type
+&amp;gt; [1] &amp;quot;relation&amp;quot;
+&amp;gt; 
+&amp;gt; [[1]]$osm_id
+&amp;gt; [1] 111968
+&amp;gt; 
+&amp;gt; [[1]]$boundingbox
+&amp;gt; [1] &amp;quot;37.6403143&amp;quot;  &amp;quot;37.929811&amp;quot;   &amp;quot;-123.173825&amp;quot; &amp;quot;-122.281479&amp;quot;
+&amp;gt; 
+&amp;gt; [[1]]$lat
+&amp;gt; [1] &amp;quot;37.7790262&amp;quot;
+&amp;gt; 
+&amp;gt; [[1]]$lon
+&amp;gt; [1] &amp;quot;-122.419906&amp;quot;
+&amp;gt; 
+&amp;gt; [[1]]$display_name
+&amp;gt; [1] &amp;quot;San Francisco, CAL Fire Northern Region, California, United States&amp;quot;
+&amp;gt; 
+&amp;gt; [[1]]$class
+&amp;gt; [1] &amp;quot;boundary&amp;quot;
+&amp;gt; 
+&amp;gt; [[1]]$type
+&amp;gt; [1] &amp;quot;administrative&amp;quot;
+&amp;gt; 
+&amp;gt; [[1]]$importance
+&amp;gt; [1] 1.035131
+&amp;gt; 
+&amp;gt; [[1]]$icon
+&amp;gt; [1] &amp;quot;https://nominatim.openstreetmap.org/ui/mapicons/poi_boundary_administrative.p.20.png&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Si exploramos OSM y nominatim un poco, veremos que podemos agregar argumentos de búsqueda usando &lt;code&gt;&amp;amp;&lt;/code&gt; seguido del argumento que queremos (es decir, &lt;code&gt;state&lt;/code&gt;), el símbolo igual (&lt;code&gt;=&lt;/code&gt;) y el argumento. En mi ejemplo anterior, puede verse cómo especificamos el estado y el país de nuestra consulta. Además, es importante saber cómo pasar espacios en un nombre, por ejemplo, San Francisco pasaría como &lt;code&gt;San%20Francisco&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;Con esta información básica en mente y sabiendo que el paquete &lt;code&gt;RJSONIO&lt;/code&gt; nos ayuda a recuperar los datos de la API JSON en un formato tabular compatible con R, podemos preparar fácilmente una función para buscar cualquier ciudad rápidamente, siempre que se proporcionen algunos detalles adicionales como una región, estado o condado, y especialmente importante, el país (intenta buscar ciudades como Londres o Praga sin proporcionar un país, te sorprenderá la cantidad de ciudades que existen en el mundo con esos nombres).&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;coords_from_city &amp;lt;- function(City,
+                             CountryTwoLetter,
+                             Region = NULL,
+                             State = NULL,
+                             County = NULL){
+    require(&#39;RJSONIO&#39;)
+    CityCoded &amp;lt;- gsub(&#39; &#39;,&#39;%20&#39;,City) #remover espacios de  URLs
+    CountryCoded &amp;lt;- paste(&amp;quot;&amp;amp;countrycodes=&amp;quot;, CountryTwoLetter, sep = &#39;&#39;)
+    extras &amp;lt;- c(state = State, region = Region, county = County)
+    extrasCoded &amp;lt;- &#39;&#39;
+    if(!is.null(extras)) {
+        for(i in 1:length(extras)){
+            if(extras[i] != &#39;&#39; &amp;amp;&amp;amp; !is.na(extras[i]) &amp;amp;&amp;amp; !grepl(&amp;quot;^\\s*$&amp;quot;, extras[i])){
+                valCoded &amp;lt;- gsub(&#39; &#39;, &#39;%20&#39;, extras[i])
+                extrasCoded &amp;lt;- paste0(extrasCoded, &#39;&amp;amp;&#39;, names(extras)[i], &#39;=&#39;, valCoded)
+            }
+        }
+    }
+    ## obtener los datos
+    url &amp;lt;- paste(
+        &amp;quot;http://nominatim.openstreetmap.org/search?city=&amp;quot;
+      , CityCoded
+      , CountryCoded
+      , extrasCoded
+      , &amp;quot;&amp;amp;format=json&amp;quot;
+      , sep=&amp;quot;&amp;quot;)
+    x &amp;lt;- fromJSON(url)
+    ## obtener las coordenadas
+    if(is.vector(x)){
+            message(paste(&#39;Found&#39;, x[[1]]$display_name))
+            lon &amp;lt;- x[[1]]$lon
+            lat &amp;lt;- x[[1]]$lat
+            osm_name &amp;lt;- x[[1]]$display_name
+            coords &amp;lt;- data.frame(&#39;lon&#39; = lon, &#39;lat&#39; = lat, &#39;osm_name&#39; = osm_name)
+    }
+    ## Si x no es un vector
+    else{
+        message(paste(&#39;No results found for&#39;, City, CountryTwoLetter))
+        coords &amp;lt;- data.frame(&#39;lon&#39; = NA, &#39;lat&#39; = NA)
+    }
+    ## regresa un df
+    coords
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Un detalle importante que debe saber es que, a menudo, proporcionar valores a los parámetros &amp;ldquo;state&amp;rdquo; o &amp;ldquo;region&amp;rdquo; arroja resultados similares, esto es particularmente útil en países donde no se usan estados o hay otras formas de organización presentes. Sin embargo, cuando el país tiene estrictamente estados, no puedes pasar el nombre de un Estado al parámetro &lt;code&gt;Region&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;La función devuelve un data frame que usaremos más adelante para crear una tabla con todos nuestros resultados. Como estamos interesados en crear mapas, solo necesitamos las coordenadas expresadas en latitud y longitud. En caso de que no se encuentre la consulta, la función completa los valores con &lt;code&gt;NA&lt;/code&gt;, que luego usaremos para realizar un seguimiento de lo que se encontró y lo que no. También mantenemos los valores dentro de &lt;code&gt;osm_name&lt;/code&gt;, que brinda suficiente información para brindarle al usuario detalles útiles sobre los resultados de la búsqueda, incluido el país de la ciudad encontrada y otros detalles como el estado o la región.&lt;/p&gt;
+&lt;p&gt;&lt;img class=&#34;img-zoomable&#34; src=&#34;https://blog.rwhitedwarf.com/post/2022/map_any_region_with_ggplot2_part_II/maps_coords_from_city.png&#34; alt=&#34;Funcion coords_from_city() en detalle&#34; /&gt;
+&lt;/p&gt;
+&lt;p&gt;Un punto importante a considerar en &lt;code&gt;coords_from_city&lt;/code&gt; es que devuelve solo el resultado superior de la consulta. Esto significa que cuanto más información se proporcione, más preciso será su resultado. Para nuestro proyecto funciona bien porque para los países grandes siempre recopilamos suficiente información sobre regiones y estados, mientras que para los países más pequeños, las opciones a menudo son demasiado pequeñas. Pero si usamos la función, es importante saber que si se proporciona un nombre de ciudad como &lt;code&gt;Springfield&lt;/code&gt;, &lt;code&gt;country = &#39;US&#39;&lt;/code&gt; y no proporciona información sobre el estado y el condado, la función recuperara solo el primer resultado de la búsqueda, y descarta las opciones restantes.&lt;/p&gt;
+&lt;h2 id=&#34;mantener-la-información-en-una-base-de-datos&#34;&gt;Mantener la información en una base de datos&lt;/h2&gt;
+&lt;p&gt;La función &lt;code&gt;coords_from_city&lt;/code&gt; podría ser suficiente si necesitamos obtener información unas pocas ciudades; Podríamos utilizar la iteración de &lt;code&gt;for&lt;/code&gt; para recuperar todas las coordenadas que necesitamos y almacenarlas en un data frame para luego guardarlas en formato csv, &lt;code&gt;Rdata&lt;/code&gt; o cualquier formato que elijamos. Lo mismo ocurre cuando buscamos cientos o miles de ciudades, pero con el aumento del tamaño, el tiempo de búsqueda también aumenta. Si, por alguna razón, la sesión de R se interrumpe, la información se perdería y tendremos que comenzar de nuevo desde la fila 1. Por lo tanto, enviaremos todos los resultados a una base de datos. De esa forma, no importa cuándo detengamos el proceso o cómo suceda, los datos se almacenan de forma segura fuera de R.&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;webscrap_to_sqlite &amp;lt;- function(db.name,
+                               dat,
+                               col.city = &#39;City&#39;,
+                               col.country = &#39;Country&#39;,
+                               region = NULL,
+                               state = NULL,
+                               county = NULL)
+{
+    require(RSQLite)
+    df_len &amp;lt;- nrow(dat)
+    ## Conexion a la db y la tabla
+    con &amp;lt;- dbConnect(drv=SQLite(), dbname=db.name)
+    dbExecute(conn = con,
+                &amp;quot;CREATE TABLE IF NOT EXISTS orgs
+                    (ID INTEGER UNIQUE,
+                     City TEXT, osm_name TEXT,
+                     lon REAL,lat REAL)&amp;quot;)
+    ## -- Iteraciones para el webscrap -- ##
+    ccount &amp;lt;- 0
+    ## For loop para el webscrapping
+    for(i in 1:df_len){
+        rg &amp;lt;- ifelse(is.null(region), &#39;&#39;, dat[[region]][i])
+        st &amp;lt;- ifelse(is.null(state), &#39;&#39;, dat[[state]][i])
+        ct &amp;lt;- ifelse(is.null(county), &#39;&#39;, dat[[county]][i])
+        print(paste(&#39;Entry&#39;, i))
+        ## Haz el webscrap
+        coords &amp;lt;- coords_from_city(dat[[col.city]][i],
+                                   dat[[col.country]][i],
+                                   Region = rg, State = st, County = ct)
+        ## Enviar resultados a DB sólo si se encontró algo
+        if(is.na(coords$lon[1])){
+            ccount &amp;lt;- ccount + 1
+        }
+        else{
+            sq &amp;lt;- dbExecute(con, &#39;INSERT OR IGNORE INTO orgs
+                             (ID, City, osm_name, lon, lat)
+                             VALUES (?, ?, ?, ?, ?);&#39;,
+                        list(dat[[&#39;ID&#39;]][i], dat[[col.city]][i],
+                             coords$osm_name, coords$lon[1], coords$lat[1]))
+        }
+        print(paste(&#39;Completed&#39;, (i/df_len)*100, &#39;%&#39;))
+    }
+    ## Cerrar la conexión
+    dbDisconnect(con)
+    message(paste(&amp;quot;WEB SCRAP FOR COORDINATES SEARCH FINISHED.&amp;quot;,
+                ccount, &amp;quot;ENTRIES NOT FOUND&amp;quot;))
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Para almacenar los datos elegí usar &lt;a href=&#34;https://www.sqlite.org/index.html&#34; target=&#34;_blank&#34;&gt;SQLite&lt;/a&gt; a través del paquete R &lt;a href=&#34;https://rsqlite.r-dbi.org/&#34; target=&#34;_blank&#34;&gt;RSQLite&lt;/a&gt;. Si no estas familiarizado con las bases de datos SQL te recomiendo que comiences con una búsqueda general en Google y luego regresar a la documentación de SQLite y el paquete R. Elegí SQLite porque necesitaba tener algo ligero y portátil que nos permitiera mover la información fácilmente de un país a otro en lugar de una base de datos centralizada donde pudiéramos almacenar todo, pero se puede aplicar un enfoque muy similar usando otros tipos de bases de datos SQL.&lt;/p&gt;
+&lt;p&gt;La función &lt;code&gt;dbConnect()&lt;/code&gt; genera el archivo SQLite si aún no existe. Luego le damos a SQLite la orden de crear la tabla &lt;code&gt;orgs&lt;/code&gt; si aún no existe, y la estructura para dicha tabla. A continuación buscamos las coordenadas de las entradas una a una usando &lt;code&gt;coords_from_city()&lt;/code&gt; y finalmente lo enviamos a la base de datos. De esa manera podríamos detener el proceso en cualquier momento y continuar más tarde simplemente recuperando la tabla &lt;code&gt;orgs&lt;/code&gt; de la base de datos, comparándola con nuestros datos originales y avanzando desde lo que falta. Para eso, la columna &lt;code&gt;ID&lt;/code&gt; es fundamental, es la columna que nos permite vincular una entrada entre los datos originales, el data frame de R y la tabla SQL.&lt;/p&gt;
+&lt;p&gt;&lt;img class=&#34;img-zoomable&#34; src=&#34;https://blog.rwhitedwarf.com/post/2022/map_any_region_with_ggplot2_part_II/maps_webscrap_to_sqlite.png&#34; alt=&#34;Función webscrap_to_sqlite() en detalle&#34; /&gt;
+&lt;/p&gt;
+&lt;p&gt;Nuestra función también tiene una variable &lt;code&gt;ccount&lt;/code&gt; que cuenta cada vez que no se encuentra una entrada. De esa forma, una vez finalizada la consulta, imprimirá la cantidad de entradas que no fueron encontradas. Las razones para no encontrar una entrada pueden ser muchas, entre las más comunes que encontré están las siguientes:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Error en la ortografía del nombre de la ciudad o exceso de información (es decir, valor &amp;ldquo;Praga, Distrito 3&amp;rdquo; cuando el nombre de la ciudad es simplemente &amp;ldquo;Praga&amp;rdquo;).&lt;/li&gt;
+&lt;li&gt;La ortografía incorrecta del nombre del Estado, Región y/o Condado.&lt;/li&gt;
+&lt;li&gt;La ciudad buscada simplemente no está en la base de datos de Open Street Maps (sucedió especialmente para pueblos muy pequeños).&lt;/li&gt;
+&lt;li&gt;Interrupciones de la conexión a internet. Esta es particularmente importante porque, a veces, ejecutar la consulta por segunda o tercera vez encontraría ciudades que no se encontraron la primera vez.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Para volver a leer los datos a R desde SQL, simplemente necesitamos hacer una conexión a la base de datos, leer la tabla y cerrar la conexión. La función &lt;code&gt;combine_df_sql&lt;/code&gt; se encarga de eso y al mismo tiempo une nuestros datos originales con los datos almacenados en la base de datos por el ID y el nombre de la ciudad. Esto fue importante para el proyecto porque queríamos mantener las coordenadas de las ciudades separadas del resto de la información debido a algunas razones prácticas internas. Pero creo que mantener todos los datos en SQL a la vez puede facilitar muchas cosas. Entre otros, podría identificar cuándo se encontró una ciudad en particular en el pasado y recuperar las coordenadas de la base de datos directamente en lugar de hacer una conexión con nominatim. Lo hice para algunos países y reduce considerablemente el tiempo de consulta. Para la presente publicación, decidí mostrar la versión separada de los datos para brindar más herramientas al lector.&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;combine_df_sql &amp;lt;- function(db.file, original.data){
+    require(dplyr)
+    require(RSQLite)
+    if(is.character(original.data)){
+        if(grepl(&#39;.csv&#39;, original.data, fixed = T)){
+            df &amp;lt;- read.csv(original.data)
+        }
+        else{
+            stop(&amp;quot;Incorrect file format for data&amp;quot;)
+        }
+    }
+    else if(is.data.frame(original.data)){
+        df &amp;lt;- original.data
+    }
+    else{
+        stop(&amp;quot;Incorrect data format&amp;quot;)
+    }
+    con &amp;lt;- dbConnect(drv=RSQLite::SQLite(), dbname = db.file)
+    db &amp;lt;- dbReadTable(con, &amp;quot;orgs&amp;quot;)
+    dbDisconnect(con)
+    result &amp;lt;- left_join(df, db, by = c(&#39;ID&#39;, &#39;City&#39;))
+    return(result)
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Otro detalle de nuestra función es la capacidad de leer desde el archivo &lt;code&gt;csv&lt;/code&gt; o desde un &lt;code&gt;data.frame&lt;/code&gt;. Dado que estábamos trabajando principalmente con archivos csv y usé data frames para los pruebas unitarias, estos 2 formatos fueron suficientes. Siéntanse libres de modificar o ampliar la función para los formatos de datos que puedan necesitarse.&lt;/p&gt;
+&lt;h2 id=&#34;datos-faltantes&#34;&gt;Datos faltantes&lt;/h2&gt;
+&lt;p&gt;Como se mencionó anteriormente, a veces los resultados de la consulta estaban incompletos y era necesaria una segunda o tercera ejecución, pero con menos filas. Algunas otras veces sólo necesitaba parar la consulta y continuar mas tarde desde donde la dejamos. Sin embargo, otras veces los datos estaban incompletos o incorrectos y esto se podía solucionar más tarde con el responsable de los datos. Los 3 escenarios me forzaban a leer el archivo csv a R, luego la tabla de la base de datos y compararlos para filtrar los valores faltantes. Así que creé la función &lt;code&gt;compare_db_data&lt;/code&gt; para comparar la base de datos (db) con los datos originales.&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;compare_db_data &amp;lt;- function(db.file, dat){
+    require(dplyr)
+    require(RSQLite)
+    if(is.character(dat)){
+        if(grepl(&#39;.csv&#39;, dat, fixed = T)){
+            df &amp;lt;- read.csv(dat)
+        }
+        else{
+            stop(&amp;quot;Incorrect file format for data&amp;quot;)
+        }
+    }
+    else if(is.data.frame(dat)){
+        df &amp;lt;- dat
+    }
+    else{
+        stop(&amp;quot;Incorrect data format&amp;quot;)
+    }
+    con &amp;lt;- dbConnect(drv=RSQLite::SQLite(), dbname = db.file)
+    db &amp;lt;- dbReadTable(con, &amp;quot;orgs&amp;quot;)
+    dbDisconnect(con)
+    filtered &amp;lt;- filter(df, !(as.character(ID) %in%
+                              as.character(db$ID)))
+    filtered
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Como se mencionó anteriormente, a veces Open Street Maps simplemente no tiene registro de ciertas &amp;ldquo;ciudades&amp;rdquo; (de hecho, sucedió solo con pueblos o poblaciones realmente pequeñas). Para solucionar eso, la función &lt;code&gt;add_coords_manually&lt;/code&gt; toma un archivo csv con una estructura particular para agregar los datos que faltan. El archivo csv debe tener las siguientes columnas:
+- Columna &lt;code&gt;ID&lt;/code&gt; nombrada exactamente así y que contiene la misma ID que los datos originales.
+- Una columna que contiene el nombre de la ciudad
+- Columnas que contienen la Latitud y Longitud donde queremos señalar la ciudad
+- Un valor para &lt;code&gt;osm_name&lt;/code&gt;. Esto podría dejarse vacío o podemos proporcionar el valor que queremos en esta punto. Lo importante es tener la columna presente en el archivo csv.&lt;/p&gt;
+&lt;p&gt;Luego, como en la función anterior, le pasamos a &lt;code&gt;add_coords_manualmente&lt;/code&gt; el nombre del archivo csv con la información complementaria, el nombre de la base de datos SQLite y los nombres de las columnas donde tenemos los valores para los nombres de &lt;code&gt;city&lt;/code&gt;, &lt;code&gt;osm_name&lt;/code&gt; , &lt;code&gt;lat&lt;/code&gt; y &lt;code&gt;long&lt;/code&gt;, todos con formato de string. El resto de la función es autodescriptiva, siempre que se tengan conocimientos básicos de sintaxis SQL.&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;add_coords_manually &amp;lt;- function(csv_file, db.name,
+                                city, osm_name, lat, lon){
+    require(tidyverse)
+    require(RSQLite)
+    csv_dat &amp;lt;- read_csv(csv_file)
+    csv_len &amp;lt;- length(csv_dat$ID)
+    con &amp;lt;- dbConnect(drv=RSQLite::SQLite(), dbname=db.name)
+    for(i in 1:csv_len){
+        dbSendQuery(con, &#39;INSERT OR IGNORE INTO orgs
+                      (ID, City, osm_name, lon, lat)
+                      VALUES (?, ?, ?, ?, ?);&#39;,
+                    list(csv_dat[[&#39;ID&#39;]][i],
+                         csv_dat[[city]][i],
+                         csv_dat[[osm_name]][i],
+                         csv_dat[[lat]][i],
+                         csv_dat[[lon]][i]))
+    }
+    dbDisconnect(con)
+    print(paste(csv_len, &#39;inserted&#39;))
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;siguientes-pasos&#34;&gt;Siguientes pasos&lt;/h2&gt;
+&lt;p&gt;Si eres nuevo en R, probablemente habrás notado que uno de los puntos fuertes de R que estoy usando mucho aquí es el uso de funciones. Los primeros mapas que creamos en el proyecto los hicimos escribiendo scripts con unos pocos cientos de líneas. Eso nos dio la base para crear las funciones necesarias y, por lo tanto, el resto de los mapas fueron posibles usando solo unas pocas líneas. Algunos de los scripts para el web scrapping de las coordenadas constan de menos de 10 líneas de código. Eso es posible usando las funciones anteriores y algunas otras creadas para casos especiales o particulares. No compartiré absolutamente todo, pero quiero dar una idea de cómo hacer que el proceso sea más eficiente. Siempre puedes crear más funciones para tus casos particulares o modificar mis funciones propuestas para adaptarlas a tu situación particular.&lt;/p&gt;
+&lt;p&gt;Y hablando de extensibilidad, mientras escribía este blog descubrí una librería que no conocía, &lt;a href=&#34;https://github.com/r-tmap/tmaptools&#34; target=&#34;_blank&#34;&gt;tmaptools&lt;/a&gt; que contiene la función [geocode_OSM](&lt;a href=&#34;https://www.rdocumentation&#34; target=&#34;_blank&#34;&gt;https://www.rdocumentation&lt;/a&gt;. org/packages/tmap/versions/1.6-1/topics/geocode_OSM) que usa nominatim para recuperar las coordenadas del punto buscado. La función tiene un formato de búsqueda más fácil de usar y más posibilidades para el valor de retorno, mientras que mi opción &lt;code&gt;coords_from_city()&lt;/code&gt; se mantiene bastante rígida y aún con el formato original que se imaginó hace unos años cuando la creé. Si realmente te interesa el tema te invito a revisar el paquete. Yo mismo he estado ocupado manteniendo el código y creando mapas, por lo que tengo muy poco tiempo para hacer mejoras al proyecto original. Pero esa es exactamente mi tarea principal en este momento, así que si hago algún cambio en las funciones presentadas aquí usando el paquete &lt;a href=&#34;https://github.com/r-tmap/tmaptools&#34; target=&#34;_blank&#34;&gt;tmaptools&lt;/a&gt;, puedes estar seguro de que crearé un breve publicación para compartirlo.&lt;/p&gt;
+&lt;p&gt;Luego, una vez que tenemos las coordenadas de nuestras ciudades objetivo y sabemos cómo hacer el mapa básico, el siguiente paso es agregar las ciudades al mapa base. En la próxima publicación, les mostraré cómo lo hice y una función para que el proceso sea más rápido y eficiente.&lt;/p&gt;
 </description>
     </item>
     
@@ -1857,16 +2225,13 @@ create_cols_base &amp;lt;- function(samples){
       
       <guid>https://blog.rwhitedwarf.com/post/map_any_region_with_ggplot2_part_i/</guid>
       <description>&lt;h2 id=&#34;scope-of-this-post&#34;&gt;Scope of this post&lt;/h2&gt;
-&lt;p&gt;When you prepare for a job interview one of the questions they always tell you to prepare is &amp;ldquo;What are you most proud of?&amp;rdquo;. Personally I&amp;rsquo;ve never been asked that question in a job interview but it kept me thinking. Some years ago I developed the R code for the creation of maps of infrastructure for a Political Sciences project, and I can say that this is one of the projects I&amp;rsquo;m most proud of. However, it is also true what they say to developers, that &lt;strong&gt;nobody cares about how you did it&lt;/strong&gt;. The final user only cared about what was done, while the research team about what are the possibilities. Due to the confidentiality agreement of the client, I also cannot share a git repository.&lt;/p&gt;
-&lt;p&gt;The project taught me so much in terms of technical skills that I have decided to &lt;strong&gt;share the how&lt;/strong&gt; in case it can help somebody else. It is also my way to contribute to the R community since I myself learned R and programming thanks to the kind people who post their experience on the web (and to the ones who have the patience to answer questions in StackOverflow too).&lt;/p&gt;
-&lt;p&gt;We created maps of data showing changes over a span of time for different countries and pointing at all kinds of cities. That basically means that we need to &lt;strong&gt;map any region of the world with R&lt;/strong&gt;. Today there are all kinds of packages and techniques to do that. I will share the strategy I used with &lt;a href=&#34;https://cran.r-project.org/web/packages/ggplot2/index.html&#34; target=&#34;_blank&#34;&gt;ggplot2&lt;/a&gt; and &lt;a href=&#34;https://cran.r-project.org/web/packages/maps/index.html&#34; target=&#34;_blank&#34;&gt;maps&lt;/a&gt; packages, using support of &lt;a href=&#34;https://www.openstreetmap.org/&#34; target=&#34;_blank&#34;&gt;Open Street Map&lt;/a&gt; to obtain the coordinates of cities and finally making it interactive with &lt;a href=&#34;https://shiny.rstudio.com/&#34; target=&#34;_blank&#34;&gt;shiny&lt;/a&gt;. The project is quite long for a single post, so my idea is to split it into a few smaller blog posts. The list can still change but I thought something like this:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;1. The basic map
-2. Web scrapping with nominatim open street maps
-3. Maps with cities
-4. Dynamic maps in time
-5. Making a single script for fast replication
-6. Making the code interactive in a shiny app
-&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;When you prepare for a job interview one of the questions they always tell you to prepare is &amp;ldquo;What are you most proud of?&amp;rdquo;. Personally I&amp;rsquo;ve never been asked that question in a job interview but it kept me thinking. Some years ago I developed the R code for the creation of maps of infrastructure for a Political Sciences project, and I can say that this is one of the projects I&amp;rsquo;m most proud of. However, it is also true what they say to developers, that &lt;strong&gt;nobody cares about how you did it&lt;/strong&gt;. The final user only cared about what was done, while the research team about what are the possibilities.&lt;/p&gt;
+&lt;p&gt;The project taught me so much in terms of technical skills that I have decided to &lt;strong&gt;share the how&lt;/strong&gt; in case it can help somebody else. It is also my way to contribute to the R community since I myself learned R and programming thanks to the kind people who post their experience on the web (and to the ones who have the patience to answer questions in StackOverflow too). Due to the confidentiality agreement of the client, I also cannot share a git repository.&lt;/p&gt;
+&lt;p&gt;We created maps of data showing changes over a span of time for different countries and pointing at all kinds of cities. That basically means that we need to &lt;strong&gt;map any region of the world with R&lt;/strong&gt;. Today there are all kinds of packages and techniques to do that. I will share the strategy I used with &lt;a href=&#34;https://cran.r-project.org/web/packages/ggplot2/index.html&#34; target=&#34;_blank&#34;&gt;ggplot2&lt;/a&gt; and &lt;a href=&#34;https://cran.r-project.org/web/packages/maps/index.html&#34; target=&#34;_blank&#34;&gt;maps&lt;/a&gt; packages, using support of &lt;a href=&#34;https://www.openstreetmap.org/&#34; target=&#34;_blank&#34;&gt;Open Street Map&lt;/a&gt; to obtain the coordinates of cities and finally making it interactive with &lt;a href=&#34;https://shiny.rstudio.com/&#34; target=&#34;_blank&#34;&gt;shiny&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;The project itself is quite long for a single post, and just recently I managed to extract the base code I created and make it public, without compromising any privacy issues. On the other hand, it is a live project that I am currently working on. Therefore, I decided to share my path and experiences along the creation process of the Shiny app. The posts are not only about the Shiny app, but the package I created behind it. I will touch topics of functions crafting, creation of the maps, classes of objects, etc., as well as any interesting issue that appear on the way. It is my way to contribute to the R community and at the same time keeping the project documented for myself.&lt;/p&gt;
+&lt;p&gt;You can find all the posts on this series under the tag &lt;a href=&#34;https://blog.rwhitedwarf.com/tags/maps-app/&#34; target=&#34;_blank&#34;&gt;maps-app&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;You can also find the current state of the project under &lt;a href=&#34;https://github.com/teotenn&#34; target=&#34;_blank&#34;&gt;my GitHub&lt;/a&gt; repo &lt;a href=&#34;https://github.com/teotenn/mapic&#34; target=&#34;_blank&#34;&gt;mapic&lt;/a&gt; (including the Spanish versions).&lt;/p&gt;
+&lt;p&gt;This first post is asbout the creation of &lt;strong&gt;The basic map&lt;/strong&gt;&lt;/p&gt;
 &lt;p&gt;I hope you all enjoy it. Feel free to leave any kind of comment and/or question at the end.&lt;/p&gt;
 &lt;h2 id=&#34;background&#34;&gt;Background&lt;/h2&gt;
 &lt;p&gt;When I joined the team all what they knew is that the wanted to make maps of infrastructure (say hospitals, cafes, churches, public offices, etc., but the project can basically be applied to anything countable per city). The maps should change in time according to the data (usually growth) and it should be possible to apply it for any country and thus, any kind of city of that particular country can be listed there. This last point represents a challenge because to make a map you need the coordinates of a particular point to map, but instead we got address in the best scenario, or only city name in the worst. Therefore, we left it to the level of city and decided to work with that.&lt;/p&gt;
@@ -1979,11 +2344,142 @@ map_country(&amp;quot;Germany&amp;quot;, c(-2, 22), c(47, 55))
 &lt;p&gt;The lower part of the function is exactly the same as our first map, replacing the actual values for the arguments. We also have changed the colors for more specific ones. Almost by the end of the function we have added &lt;code&gt;scale_x_continuous(n.breaks = 20)&lt;/code&gt; which will add 20 marks of the X axis scale (same for Y). We want to use it to ensure that, in case the user doesn&amp;rsquo;t have idea of which limit values to choose, it can have a good approach regarding the position of the target country. In case that both limits for X and Y are passed to the function, our other theme will mask this 20 breaks with &lt;code&gt;axis.text.x = element_blank()&lt;/code&gt; and &lt;code&gt;axis.ticks.x = element_blank()&lt;/code&gt;.&lt;/p&gt;
 &lt;p&gt;The final line is the test that our function can plot a map other than Spain, in this case I chose Germany. We can basically choose any country included in the &lt;code&gt;maps&lt;/code&gt; package and now make the map with the same standards in one line of R code.&lt;/p&gt;
 &lt;h2 id=&#34;final-remarks&#34;&gt;Final remarks&lt;/h2&gt;
-&lt;p&gt;Here I am somehow showing one of the methods I use to create functions: I basically write first the code of what I want to achieve and once it does exactly what I want, I wrap it in a function, replacing the arguments that the user will need to modify later. Then I think what could go wrong and create the corresponding warnings an errors. It is a good practice to do that not only for the user to know better how to use the function, but also for yourself, it proves very useful when we need to debug code. Another good practice in R functions is the call to the libraries inside the function using &lt;code&gt;require()&lt;/code&gt;. Even if you are writing many functions that use the same libraries, is good to repeat it on each function to make it self contained and again, help yourself in the debugging process. Not long ago I started collaborating in a project where there was no call to the libraries per function, but rather only at the top level when the main action of the program was called. This made almost impossible for me to test and debug code so, the first activity I did as a new member of the team was to spend 2 full working days adding &lt;code&gt;require()&lt;/code&gt; where necessary.&lt;/p&gt;
+&lt;p&gt;Here I am somehow showing one of the methods I use to create functions: I basically write first the code of what I want to achieve and once it does exactly what I want, I wrap it in a function, replacing the arguments that the user will need to modify later. Then I think what could go wrong and create the corresponding warnings an errors. It is a good practice to do that not only for the user to know better how to use the function, but also for yourself, it proves very useful when we need to debug code. Another good practice in R functions is the call to the libraries inside the function using &lt;code&gt;require()&lt;/code&gt;. Even if you are writing many functions that use the same libraries, is good to repeat it on each function, or per script, to make it self contained and again, help yourself in the debugging process. Not long ago I started collaborating in a project where there was no call to the libraries per function, but rather only at the top level when the main action of the program was called. This made almost impossible for me to test and debug code so, the first activity I did as a new member of the team was to spend 2 full working days adding &lt;code&gt;require()&lt;/code&gt; where necessary.&lt;/p&gt;
 &lt;p&gt;&lt;img class=&#34;img-zoomable&#34; src=&#34;https://blog.rwhitedwarf.com/post/2022/map_any_region_with_ggplot2_part_I/maps_CompareCode.png&#34; alt=&#34;Code of the function explained&#34; /&gt;
 &lt;/p&gt;
 &lt;p&gt;I hope you get some fun mapping different countries. Because different countries have different sizes and shapes, one way to improve the visuals related to this is by adjusting the ratio, for example, my own map of Germany looks out of shape, but it improves considerably if instead of 1.3 we give a ratio of 1.4, check the documentation to learn more about it.&lt;/p&gt;
 &lt;p&gt;Once that we have the basic map, we could add the cities were we want to add data values. Unfortunately, for cities there are many limitations, specially for countries where no special packages has been created to be mapped, and even there, most packages of particular countries don&amp;rsquo;t contain all the cities, especially minor ones. Thus, in our second part I will show how I tackled this problem doing some web scrapping to open street maps.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Mapa de cualquier región del mundo con R - Parte I: El mapa base</title>
+      <link>https://blog.rwhitedwarf.com/es/post/2022/mapa_de_cualquier_region_con_ggplot2_i/</link>
+      <pubDate>Sat, 08 Oct 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.rwhitedwarf.com/es/post/2022/mapa_de_cualquier_region_con_ggplot2_i/</guid>
+      <description>&lt;h2 id=&#34;sobre-esta-entrada&#34;&gt;Sobre esta entrada&lt;/h2&gt;
+&lt;p&gt;Cuando nos preparamos para una entrevista de trabajo, una de las preguntas que más recomiendan preparar es &amp;ldquo;Menciona el proyecto del que estés más orgulloso?&amp;rdquo;. Personalmente nunca me han hecho esa pregunta en una entrevista de trabajo pero me mantuvo pensando. Hace algunos años desarrollé el código en R para la creación de mapas de infraestructura para un proyecto de Ciencias Políticas, y puedo decir que este es uno de los proyectos de los que estoy más orgulloso. Sin embargo, también es cierto lo que comúnmente se dice entre los desarrolladores, que &lt;strong&gt;a nadie le importa cómo lo hiciste&lt;/strong&gt;. Al usuario final solo le interesa el producto final y cómo utilizarlo, mientras que al equipo de investigación le interesa saber las posibilidades que propone.&lt;/p&gt;
+&lt;p&gt;El proyecto me enseñó tanto en términos de habilidades técnicas que he decidido compartir el &lt;strong&gt;cómo&lt;/strong&gt; en caso de que pueda ayudar a alguien más. También es mi forma de contribuir a la comunidad de R, ya que yo mismo aprendí R y programación gracias a las amables personas que publican su experiencia en la web (y también a los que tienen la paciencia de responder preguntas en StackOverflow). Debido al acuerdo de confidencialidad con mi cliente no puedo compartir el código completo o el repositorio de Git.&lt;/p&gt;
+&lt;p&gt;Creamos mapas de datos que muestran los cambios durante un período de tiempo para diferentes países y orientados a todo tipo de ciudades. Esto básicamente significa que necesitamos &lt;strong&gt;mapear cualquier región del mundo con R&lt;/strong&gt;. Hoy en día existen todo tipo de paquetes y técnicas para hacerlo. Compartiré la estrategia que utilicé con &lt;a href=&#34;https://cran.r-project.org/web/packages/ggplot2/index.html&#34; target=&#34;_blank&#34;&gt;ggplot2&lt;/a&gt; y [maps](&lt;a href=&#34;https://cran.r-project.org&#34; target=&#34;_blank&#34;&gt;https://cran.r-project.org&lt;/a&gt; /web/packages/maps/index.html), utilizando el soporte de &lt;a href=&#34;https://www.openstreetmap.org/&#34; target=&#34;_blank&#34;&gt;Open Street Map&lt;/a&gt; para obtener las coordenadas de las ciudades y finalmente hacerlo interactivo con [shiny](https ://shiny.rstudio.com/).&lt;/p&gt;
+&lt;p&gt;El proyecto es bastante largo para una sola publicación. Por otro lado, recientemente logré extraer el código base y hacerlo público sin comprometer la privacidad. También es un proyecto vivo en el que estoy trabajando actualmente. Por lo que decidí compartir mis experiencias durante el proceso de creación de la aplicación Shiny. Estas publicaciones no son sólo acerca de Shiny apps, si no más bien sobre la creación del paquete detrás. Tocaré temas sobre la generación de funciones, creación de los mapas, clases de objetos, entre otros, incluyendo cualquier tema interesante que aparezca en el camino. Es mi manera de contribuir a la comunidad de R y al mismo tiempo documentar el proyecto en si mismo.&lt;/p&gt;
+&lt;p&gt;Pueden encontrar todas las publicaciones en este tema bajo la etiqueta &lt;a href=&#34;https://blog.rwhitedwarf.com/tags/maps-app/&#34; target=&#34;_blank&#34;&gt;maps-app&lt;/a&gt; (incluyendo las versiones en inglés).&lt;/p&gt;
+&lt;p&gt;También pueden encontrar el estado actual del proyecto en &lt;a href=&#34;https://github.com/teotenn&#34; target=&#34;_blank&#34;&gt;mi GitHub&lt;/a&gt; repo &lt;a href=&#34;https://github.com/teotenn/mapic&#34; target=&#34;_blank&#34;&gt;mapic&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;Espero que lo disfruten. Siéntanse libres de dejar cualquier tipo de comentario y/o preguntas al final.&lt;/p&gt;
+&lt;h2 id=&#34;motivación&#34;&gt;Motivación&lt;/h2&gt;
+&lt;p&gt;Cuando me uní al equipo, todo lo que sabían era que querían hacer mapas de infraestructura (por ejemplo hospitales, cafés, iglesias, oficinas públicas, etc., pero el proyecto básicamente se puede aplicar a cualquier cosa contable en una ciudad dada). Los mapas deben cambiar en el tiempo de acuerdo con los datos (generalmente crecimiento) y debe ser posible aplicarlo para cualquier país y, por lo tanto, cualquier tipo de ciudad en dicho país. Este último punto representa un desafío porque para hacer un mapa se necesitan las coordenadas del punto en particular para mapear, pero en cambio obtuvimos las dirección postales en el mejor escenario, o solo el nombre de la ciudad en el peor. Por lo tanto, lo dejamos a nivel de ciudad y decidimos trabajar con eso.&lt;/p&gt;
+&lt;p&gt;La mayoría de los paquetes de R para hacer mapas tienen granularidad hasta algunas regiones y ciudades importantes por país, y estamos hablando de países donde alguien ha desarrollado algún paquete de R para eso. Sin embargo, incluso a los mejores paquetes les faltan algunas ciudades en sus datos. Necesitábamos estandarizar todo sin necesidad de cambiar paquetes por país. Antes de unirme, el equipo intentaron usar Google Maps y Microsoft Excel, pero la cantidad de datos se volvió desastrosa y la flexibilidad para editar los mapas era bastante limitada. Además no querían agregar problemas de derechos de autor o copyright a la lista de limitaciones. Por lo tanto, propuse usar R. Por supuesto, nadie en el equipo había oído hablar de él antes. Podríamos haber usado cualquier otra herramienta, aprendí que tanto Python como JavaScript tienen algunas posibilidades decentes. Pero R es lo que he estado usando durante los últimos 10 años y es lo que quería utilizar para este proyecto. Y así comencé a escribir código.&lt;/p&gt;
+&lt;p&gt;Los primeros mapas eran códigos personalizados para un país en particular con estilos decentes. Pero rápidamente se convirtió en un conjunto de funciones y argumentos para mantener los mismos estándares para cada mapa. El apoyo de los diseñadores gráficos también llevó los estilos a un nivel muy profesional. Después de unos meses teníamos mapas muy profesionales que se podían hacer en un par de horas (o menos) con un par de líneas de código. Cada mapa por cada país con el lapso de años deseado para ser impreso.&lt;/p&gt;
+&lt;p&gt;No puedo compartir cada uno de los detalles, pero al menos quiero mostrar cómo pasamos del mapa básico a su forma dinámica de mapeo durante un período de tiempo, y cómo lo envolví todo en un par de funciones para que sea rápidamente replicable para cualquier conjunto de datos dado. Siéntanse libres de compartir su opinión.&lt;/p&gt;
+&lt;h2 id=&#34;cómo-crear-un-mapa-de-cualquier-país-en-r-usando-la-librería-maps&#34;&gt;Cómo crear un mapa de cualquier país en R usando la librería maps&lt;/h2&gt;
+&lt;p&gt;El primer paso es crear el mapa básico de un país. Aquí está la función para lograr exactamente eso.&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;library(maps)
+library(ggplot2)
+
+## hacer un df con sólo pais para traslapar
+map_data_es &amp;lt;- map_data(&#39;world&#39;)[map_data(&#39;world&#39;)$region == &amp;quot;Spain&amp;quot;,]
+
+## El mapa (maps + ggplot2 )
+ggplot() +
+    ## Primera capa: mapa del mundo
+    geom_polygon(data = map_data(&amp;quot;world&amp;quot;),
+                 aes(x=long, y=lat, group = group),
+                 color = &#39;#9c9c9c&#39;, fill = &#39;#f3f3f3&#39;) +
+    ## Segunda capa: mapa del país
+    geom_polygon(data = map_data_es,
+                 aes(x=long, y=lat, group = group),
+                 color = &#39;red&#39;, fill = &#39;pink&#39;) +
+    coord_map() +
+    coord_fixed(1.3,
+                xlim = c(-13.5, 8.5),
+                ylim = c(34, 45)) +
+    ggtitle(&amp;quot;A map of Spain&amp;quot;) +
+    theme(panel.background =element_rect(fill = &#39;blue&#39;))
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img class=&#34;img-zoomable&#34; src=&#34;https://blog.rwhitedwarf.com/post/2022/map_any_region_with_ggplot2_part_I/basic_map-1.png&#34; alt=&#34;plot of chunk basic_map&#34; /&gt;
+&lt;/p&gt;
+&lt;p&gt;Utilizamos la librería &lt;a href=&#34;https://cran.r-project.org/web/packages/maps/index.html&#34; target=&#34;_blank&#34;&gt;maps&lt;/a&gt; en combinación con [ggplot2](&lt;a href=&#34;https://cran.r-project.org/&#34; target=&#34;_blank&#34;&gt;https://cran.r-project.org/&lt;/a&gt; web/packages/ggplot2/index.html). El paquete &lt;code&gt;maps&lt;/code&gt; contiene un sistema de coordenadas para un mapa de todo el mundo separado por países (aunque es posible que las fronteras políticas no estén totalmente actualizadas). También puede hacer los mapas, pero para eso decidí hacer uso del soporte &lt;code&gt;ggplot2&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;Empezamos extrayendo los datos relevantes del país que queremos mapear, en este caso &lt;code&gt;España&lt;/code&gt;. Por supuesto, es importante pasar el nombre del país de la misma manera que está escrito en &lt;code&gt;map_data(&#39;world&#39;)$region&lt;/code&gt;. Puedes usar la función &lt;code&gt;unique()&lt;/code&gt; para encontrar los nombres exactos de todos los países incluidos en los paquetes (si ejecutas &lt;code&gt;unique(map_data(&#39;world&#39;)$region)&lt;/code&gt; da 252 países al momento de escribir esta publicación).&lt;/p&gt;
+&lt;p&gt;Una vez que tengamos los datos para un país en particular, podríamos simplemente mapearlo directamente usando &lt;code&gt;geom_polygon()&lt;/code&gt; sin embargo, eso mapearía a España rodeada por un espacio vacío a su alrededor. Para ubicarlo en el contexto de su vecindario, aplicamos dos capas de &lt;code&gt;geom_polygon()&lt;/code&gt;: la primera con el mapa de todo el mundo y la segunda con el mapa del país únicamente.&lt;/p&gt;
+&lt;p&gt;&lt;img class=&#34;img-zoomable&#34; src=&#34;https://blog.rwhitedwarf.com/post/2022/map_any_region_with_ggplot2_part_I/maps_BasicMap.png&#34; alt=&#34;Explicación del código básico del mapa&#34; /&gt;
+&lt;/p&gt;
+&lt;p&gt;Luego necesitamos decirle a &lt;code&gt;ggplot&lt;/code&gt; que use un sistema de coordenadas para crear mapas en lugar de sólo polígonos. Para eso usamos la función &lt;a href=&#34;https://ggplot2.tidyverse.org/reference/coord_map.html&#34; target=&#34;_blank&#34;&gt;coord_map()&lt;/a&gt; y luego pasamos los detalles de la proporción del mapa y los límites en X e Y a la función &lt;code&gt;coord_fixed( )&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;Hasta aquí podemos obtener nuestro mapa. &lt;code&gt;ggplot&lt;/code&gt; está básicamente trazando lo que estamos especificando dentro del sistema de coordenadas, todo a su alrededor (los océanos) estará vacío y el gráfico será completado con las cuadrículas predeterminadas y los colores grises de &lt;code&gt;ggplot()&lt;/code&gt;. Por lo tanto, necesitamos definir el color de los océanos como color de fondo para todo el gráfico. Eso es lo que hace la última línea de código.&lt;/p&gt;
+&lt;p&gt;Por supuesto, hay muchas mejoras que hacer aún. Hasta ahora he dado colores exagerados para que el lector sepa qué fragmento de código controla qué. En ese sentido, puedes notar que se puede simplemente pasar los nombres de los colores, lo cual aplica los valores predeterminados, o se puede ser más específico y proporcionar la notación html del color (es decir, &lt;code&gt;&#39;#9c9c9c&#39;&lt;/code&gt;). Con esto podemos ahora mejorar las imágenes y al mismo tiempo crear una función para trazar cualquier país que queramos.&lt;/p&gt;
+&lt;h2 id=&#34;función-para-crear-el-mapa-básico-en-r&#34;&gt;Función para crear el mapa básico en R&lt;/h2&gt;
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;map_country &amp;lt;- function(country, x_limits = NULL, y_limits = NULL){
+    ## Verificar los argumentos tomados por la función
+    if(!is.character(country)) stop(&amp;quot;Nombre del país debe ser de tipo string&amp;quot;)
+    if(length(country) != 1) stop(&amp;quot;La función soporta sólo un país por mapa&amp;quot;)
+    ## Cargar las librerías
+    require(maps)
+    require(ggplot2)
+  if(!country %in% map_data(&#39;world&#39;)$region) stop(&#39;Nombre del país no reconocido\nPara ver una lista de paises reconocidos ejecute &amp;lt;unique(maps::map_data(&amp;quot;world&amp;quot;)$region)&amp;gt;&#39;)
+  ## Si no se proporcionaron los limites de las coordenadas, imprime el mapa mundial
+    if(missing(x_limits) || missing(y_limits)) {
+        warning(&amp;quot;Límites de X y/o Y no han sido encontrados.\nImprimiendo el mapa mundial&amp;quot;)
+        map_country_theme &amp;lt;- theme(panel.background = element_rect(fill = &#39;#4e91d2&#39;))
+    }
+    else {
+        if(length(x_limits) != 2 || length(y_limits) != 2 ||
+           !all(grepl(&#39;^-?[0-9.]+$&#39;, c(x_limits, y_limits)))){
+            stop(&amp;quot;Los límites de las coordenadas X y Y deben ser ingresadas como vectores con dos valores numéricos&amp;quot;)
+        }
+        else {
+            ## Definiendo el tema seleccionado para el mapa final
+            map_country_theme &amp;lt;- theme_bw() +
+                theme(panel.background = element_rect(fill = &#39;#4e91d2&#39;),
+                      legend.position = &#39;none&#39;,
+                      panel.grid.major = element_blank(),
+                      panel.grid.minor = element_blank(),
+                      axis.line = element_line(colour = &amp;quot;black&amp;quot;),
+                      axis.title.x=element_blank(),
+                      axis.text.x=element_blank(),
+                      axis.ticks.x=element_blank(),
+                      axis.title.y=element_blank(),
+                      axis.text.y=element_blank(),
+                      axis.ticks.y=element_blank())
+        }
+    }
+    ## Un df con el pais a agregar únicamente
+    map_data_country &amp;lt;- map_data(&#39;world&#39;)[map_data(&#39;world&#39;)$region == country,]
+    ## El mapa (maps + ggplot2 )
+    ggplot() +
+        ## Primera capa: mapa mundial
+        geom_polygon(data = map_data(&amp;quot;world&amp;quot;),
+                     aes(x=long, y=lat, group = group),
+                     color = &#39;#9c9c9c&#39;, fill = &#39;#f3f3f3&#39;) +
+        ## Segunda capa: mapa del país
+        geom_polygon(data = map_data_country,
+                     aes(x=long, y=lat, group = group),
+                     color = &#39;#4d696e&#39;, fill = &#39;#8caeb4&#39;) +
+        coord_map() +
+        coord_fixed(1.3,
+                    xlim = x_limits,
+                    ylim = y_limits) +
+        ggtitle(paste0(&amp;quot;A map of &amp;quot;, country)) +
+        scale_x_continuous(n.breaks = 20) +
+        scale_y_continuous(n.breaks = 20) +
+        map_country_theme
+}
+
+## Probando la función con un país diferente
+map_country(&amp;quot;Germany&amp;quot;, c(-2, 22), c(47, 55))
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img class=&#34;img-zoomable&#34; src=&#34;https://blog.rwhitedwarf.com/post/2022/map_any_region_with_ggplot2_part_I/function_map-1.png&#34; alt=&#34;plot of chunk function_map&#34; /&gt;
+&lt;/p&gt;
+&lt;p&gt;Aunque la función puede parecer complicada al principio, de hecho es el mismo código que usamos para crear el mapa en un principio, pero en lugar de escribir directamente el nombre del país o los límites para X o Y, los reemplazamos con los argumentos &lt;code&gt;país &lt;/code&gt;, &lt;code&gt;x_limits&lt;/code&gt; y &lt;code&gt;y_limits&lt;/code&gt; respectivamente; de esa manera todas las partes donde teníamos el string &lt;code&gt;&amp;quot;España&amp;quot;&lt;/code&gt; ahora tenemos el argumento &lt;code&gt;país&lt;/code&gt;, y así sucesivamente. Ahora estos son los únicos argumentos que necesitamos cambiar cuando queremos mapear un país diferente. Puedes definir más argumentos en caso de que quieras tener más posibilidades de ser editable, por ejemplo, podríamos definir un argumento &lt;code&gt;country_color&lt;/code&gt; para especificar el color que queremos para el país de destino. En nuestro caso, queríamos mantener los mismos estándares para todos los mapas por motivos de control de calidad, por lo tanto, queríamos tener exactamente los mismos colores y estilos para todos nuestros mapas.&lt;/p&gt;
+&lt;p&gt;También hay algunas adiciones en la parte superior antes del código inicial para hacer los mapas: son una serie de declaraciones &lt;code&gt;if&lt;/code&gt; y &lt;code&gt;else&lt;/code&gt; que simplemente se usan para validar que la información ingresada por el usuario es la información que realmente necesita la función para hacer su trabajo. Si se ingresa algún argumento incorrecto a la función, detenemos el proceso y escribimos un mensaje de lo que está mal utilizando la función &lt;code&gt;stop()&lt;/code&gt;. Para el caso de que no se definan límites de X o Y, se envía un mensaje de advertencia usando &lt;code&gt;warning()&lt;/code&gt;. En ese caso el proceso continúa pero definimos un &lt;code&gt;theme()&lt;/code&gt; que permite al usuario ver el país en el contexto del mapa mundial, con exceso de valores en los ejes X e Y para proporcionar los puntos de referencia y dar un idea de dónde poner los límites. Al final, cuando nos aseguramos de que todos los valores estén bien, definimos el tema final que realmente queremos aplicar. A este respecto debería hacer una mención especial sobre &lt;code&gt;!all(grepl(&#39;^-?[0-9.]+$&#39;, c(x_limits, y_limits))))&lt;/code&gt;: se usa para asegurar que tanto los valores de X como Y son de tipo numérico. Puedes ver la visualización del código a continuación junto con la ayuda de las funciones que no comprendes para obtener una explicación más detallada. Siéntete libre de probar los errores y advertencias proporcionando a la función nombres de países o letras donde debería haber números, etc.&lt;/p&gt;
+&lt;p&gt;&lt;img class=&#34;img-zoomable&#34; src=&#34;https://blog.rwhitedwarf.com/post/2022/map_any_region_with_ggplot2_part_I/maps_FunctionMap.png&#34; alt=&#34;Código de la función explicada&#34; /&gt;
+&lt;/p&gt;
+&lt;p&gt;La parte inferior de la función es exactamente igual a nuestro primer mapa, reemplazando los valores reales con los argumentos. También hemos cambiado los colores por unos más específicos. Casi al final de la función hemos agregado &lt;code&gt;scale_x_continuous(n.breaks = 20)&lt;/code&gt; que agrega 20 marcas en la escala del eje X (y después, lo mismo para Y). Usamos esto para asegurarnos de que, en caso de que el usuario no tenga idea de qué valores límite elegir, pueda tener un buen enfoque con respecto a la posición del país objetivo. En caso de que ambos límites para X e Y se ingresen a la función, nuestro otro tema enmascarará estas 20 marcas con &lt;code&gt;axis.text.x = element_blank()&lt;/code&gt; y &lt;code&gt;axis.ticks.x = element_blank()&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;La línea final es la prueba de que nuestra función puede trazar un mapa que no sea España, en este caso elegí Alemania. Básicamente, podemos elegir cualquier país incluido en el paquete &lt;code&gt;maps&lt;/code&gt; y entonces hacer el mapa con los mismos estándares en tan sólo una línea de código de R.&lt;/p&gt;
+&lt;h2 id=&#34;observaciones-finales&#34;&gt;Observaciones finales&lt;/h2&gt;
+&lt;p&gt;He querido mostrar aquí uno de los métodos que utilizo para crear funciones: básicamente escribo primero el código de lo que quiero lograr y, una vez que hace exactamente lo que quiero, lo envuelvo en una función, reemplazando valores por los argumentos que el usuario necesitará modificar más adelante. Luego pienso en qué podría salir mal y genero las advertencias y errores correspondientes. Es una buena práctica hacer eso no solo para que el usuario sepa mejor cómo usar la función, sino también para uno mismo, pues resulta muy útil cuando necesitamos depurar el código. Otra buena práctica en las funciones de R es la llamada a las librerías dentro de la función usando &lt;code&gt;require()&lt;/code&gt;. Incluso si se están escribiendo muchas funciones que usan las mismas bibliotecas, es bueno repetirlo en cada función, o al menos por script, para que se mantenga independiente y, nuevamente, nos ayude en el proceso de debug. No hace mucho comencé a colaborar en un proyecto donde no hacían la llamada a los paquetes de R por cada función, sino solo en el nivel superior cuando se llamaba al proceso principal del programa. Esto me hizo casi imposible probar y depurar el código, así que la primera actividad que hice como nuevo miembro del equipo fue pasar 2 días completos agregando &lt;code&gt;require()&lt;/code&gt; donde fuera necesario.&lt;/p&gt;
+&lt;p&gt;&lt;img class=&#34;img-zoomable&#34; src=&#34;https://blog.rwhitedwarf.com/post/2022/map_any_region_with_ggplot2_part_I/maps_CompareCode.png&#34; alt=&#34;Código de la función explicada&#34; /&gt;
+&lt;/p&gt;
+&lt;p&gt;Espero que te diviertas mapeando diferentes países. Debido a que los diferentes países tienen diferentes tamaños y formas, una forma de mejorar las imágenes es ajustando la proporción (&lt;code&gt;prportion&lt;/code&gt;), por ejemplo, mi propio mapa de Alemania parece fuera de forma, pero mejora considerablemente si en lugar de 1.3 le damos una proporción de 1.4, consulta la documentación para obtener más información al respecto.&lt;/p&gt;
+&lt;p&gt;Una vez que tengamos el mapa básico, podríamos agregar las ciudades donde queremos agregar valores de datos. Desafortunadamente, para las ciudades hay muchas limitaciones, especialmente para países donde no se tienen pquetes específicos. E incluso en los que se tienen, la mayoría de los paquetes tienen carencias de algunas ciudades, especialmente cuando son muy pequeñas. Por lo tanto, en la segunda parte se verá como enfrentar este problema haciendo un poco de web scrap utilizando open street maps.&lt;/p&gt;
 </description>
     </item>
     

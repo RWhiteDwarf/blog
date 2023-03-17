@@ -5,7 +5,7 @@ image: "/post/2022/map_any_region_with_ggplot2_part_I/maps_DrawingMap.png"
 draft: false
 date: 2022-11-04
 description: "Parte II de cómo hacer mapas de cualquier región del mundo utilizando las librerías ggplot2 y maps"
-tags: ["R maps", "Code Visuals", "R functions", "web-scrap", "database"]
+tags: ["maps-app", "R maps", "Code Visuals", "R functions", "web-scrap", "database"]
 categories: ["R"]
 archives: ["2022"]
 ---
@@ -14,16 +14,13 @@ archives: ["2022"]
 
 Esta es la segunda parte de las series de cómo crear mapas de cualquier región del mundo con R. De antemano me disculpo por detalles que puedan encontrar en la traducción, el post original lo creé en Inglés y el trabajo de traducción puede ser excesivo si voy a cada detalle. Por otro lado, recomiendo un conocimiento al menos básico del idioma Inglés si se quiere tener éxito en R o programación en general. Ayuda mucho a entender la sintaxis. 
 
-Estamos creando mapas de datos que muestran los cambios durante un período de tiempo para diferentes países y orientado a todo tipo de ciudades. Esto básicamente significa que necesitamos **mapear cualquier región del mundo con R**. Hoy en día existen todo tipo de paquetes y técnicas para hacerlo. Quiero compartir la estrategia que utilicé con [ggplot2](https://cran.r-project.org/web/packages/ggplot2/index.html) y [maps](https://cran.r-project.org /web/packages/maps/index.html), utilizando el soporte de [Open Street Map](https://www.openstreetmap.org/) para obtener las coordenadas de las ciudades y finalmente hacerlo interactivo con [shiny](https ://shiny.rstudio.com/). El proyecto es bastante largo para una sola publicación, por lo que mi idea es dividirlo en algunas publicaciones de blog más pequeñas. Hasta el momento, la lista es la siguiente:
+Estamos creando mapas de datos que muestran los cambios durante un período de tiempo para diferentes países y orientado a todo tipo de ciudades. Esto básicamente significa que necesitamos **mapear cualquier región del mundo con R**. Hoy en día existen todo tipo de paquetes y técnicas para hacerlo. Quiero compartir la estrategia que utilicé con [ggplot2](https://cran.r-project.org/web/packages/ggplot2/index.html) y [maps](https://cran.r-project.org/web/packages/maps/index.html), utilizando el soporte de [Open Street Map](https://www.openstreetmap.org/) para obtener las coordenadas de las ciudades y finalmente hacerlo interactivo con [shiny](https://shiny.rstudio.com/). 
 
-1. [El mapa básico](https://blog.rwhitedwarf.com/es/post/mapa_de_cualquier_region_con_ggplot2_i/)
-2. **Web scrapping with nominatim open street maps**
-3. Maps with cities
-4. Dynamic maps in time
-5. Making a single script for fast replication
-6. Making the code interactive in a shiny app
+Estas publicaciones comparten mi camino en la creación de la aplicación Shiny. Es un proyecto vivo en el que estoy trabajando actualmente y decidí compartir mis experiencias durante el proceso de creación. Estas publicaciones no son sólo acerca de Shiny apps, si no más bien sobre la creación del paquete detrás, incluyendo temas sobre la generación de funciones, creación de los mapas, clases de objetos, entre otros, incluyendo cualquier tema interesante que aparezca en el camino. Es mi manera de contribuir a la comunidad de R y al mismo tiempo documentar el proyecto en si mismo.
 
-La idea es compartir el procedimiento de uno de los proyectos de los que estoy más orgulloso y, al mismo tiempo, retribuir a la comunidad de R con la esperanza de que pueda ayudar a alguien más.
+Pueden encontrar todas las publicaciones en este tema bajo la etiqueta [maps-app](https://blog.rwhitedwarf.com/tags/maps-app/) (incluyendo las versiones en inglés).
+
+También pueden encontrar el estado actual del proyecto en [mi GitHub](https://github.com/teotenn) repo [mapic](https://github.com/teotenn/mapic).
 
 Espero que lo disfruten. Siéntanse libres de dejar cualquier tipo de comentario y/o pregunta al final.
 

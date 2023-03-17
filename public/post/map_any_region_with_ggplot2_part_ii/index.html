@@ -30,7 +30,7 @@
 <meta name="description" content="Part II of making maps of any region in the world with R using ggplot2 and maps packages" />
 
 
-<meta name="keywords" content="R maps, Code Visuals, R functions, web-scrap, database" />
+<meta name="keywords" content="maps-app, R maps, Code Visuals, R functions, web-scrap, database" />
 
 
 <meta property="og:title" content="Map any region in the world with R - Part II: Obtaining the coordinates" />
@@ -110,25 +110,20 @@
     <div class="post-item post-meta">
         <span><i class="iconfont icon-today-sharp"></i>&nbsp;2022-11-04</span>
 
-<span><i class="iconfont icon-file-tray-sharp"></i>&nbsp;2944 words</span>
+<span><i class="iconfont icon-file-tray-sharp"></i>&nbsp;2982 words</span>
 
-<span><i class="iconfont icon-pricetags-sharp"></i>&nbsp;<a href="/tags/r-maps">R maps</a>&nbsp;<a href="/tags/code-visuals">Code Visuals</a>&nbsp;<a href="/tags/r-functions">R functions</a>&nbsp;<a href="/tags/web-scrap">web-scrap</a>&nbsp;<a href="/tags/database">database</a>&nbsp;</span>
+<span><i class="iconfont icon-pricetags-sharp"></i>&nbsp;<a href="/tags/maps-app">maps-app</a>&nbsp;<a href="/tags/r-maps">R maps</a>&nbsp;<a href="/tags/code-visuals">Code Visuals</a>&nbsp;<a href="/tags/r-functions">R functions</a>&nbsp;<a href="/tags/web-scrap">web-scrap</a>&nbsp;<a href="/tags/database">database</a>&nbsp;</span>
 
     </div>
     
     <div class="post-content markdown-body">
         <h2 id="scope-of-this-post">Scope of this post</h2>
 <p>This is the second part of the series to create a map of any region of the world with R.</p>
-<p>We are creating maps of data showing changes over a span of time for different countries and pointing at all kinds of cities. That basically means that we need to <strong>map any region of the world with R</strong>. Today there are all kinds of packages and techniques to do that. I will share the strategy I used with <a href="https://cran.r-project.org/web/packages/ggplot2/index.html" target="_blank">ggplot2</a> and <a href="https://cran.r-project.org/web/packages/maps/index.html" target="_blank">maps</a> packages, using support of <a href="https://www.openstreetmap.org/" target="_blank">Open Street Map</a> to obtain the coordinates of cities and finally making it interactive with <a href="https://shiny.rstudio.com/" target="_blank">shiny</a>. The project is quite long for a single post, so my idea is to split it into a few smaller blog posts. So far, the list is a follows:</p>
-<ol>
-<li><a href="https://blog.rwhitedwarf.com/post/map_any_region_with_ggplot2_part_i/" target="_blank">The basic map</a></li>
-<li><strong>Web scrapping with nominatim open street maps</strong></li>
-<li>Maps with cities</li>
-<li>Dynamic maps in time</li>
-<li>Making a single script for fast replication</li>
-<li>Making the code interactive in a shiny app</li>
-</ol>
-<p>The ideas is to share the how-to of one of the projects I am most proud of and, at the same time to give back to the R community in hopes that it can help somebody else.</p>
+<p>We are creating maps of data showing changes over a span of time for different countries and pointing at all kinds of cities. That basically means that we need to <strong>map any region of the world with R</strong>. Today there are all kinds of packages and techniques to do that. I will share the strategy I used with <a href="https://cran.r-project.org/web/packages/ggplot2/index.html" target="_blank">ggplot2</a> and <a href="https://cran.r-project.org/web/packages/maps/index.html" target="_blank">maps</a> packages, using support of <a href="https://www.openstreetmap.org/" target="_blank">Open Street Map</a> to obtain the coordinates of cities and finally making it interactive with <a href="https://shiny.rstudio.com/" target="_blank">shiny</a>.</p>
+<p>This series of posts share my path towards the creation of the Shiny app. It is a live project and I decided to share my path and experiences along the creation process. The posts are not only about the Shiny app, but the package I created behind it, including topics of functions crafting, creation of the maps, classes of objects, etc., as well as any interesting issue that appear on the way. It is my way to contribute to the R community and at the same time keeping the project documented for myself.</p>
+<p>You can find all the posts on this series under the tag <a href="https://blog.rwhitedwarf.com/tags/maps-app/" title="#maps-app" target="_blank">maps-app</a> (including the Spanish versions).</p>
+<p>You can also find the current state of the project under <a href="https://github.com/teotenn" target="_blank">my GitHub</a> repo <a href="https://github.com/teotenn/mapic" target="_blank">mapic</a>.</p>
+<p>This post is about <strong>Web scrapping with nominatim open street maps</strong></p>
 <p>I hope you all enjoy it. Feel free to leave any kind of comment and/or question at the end.</p>
 <p><img class="img-zoomable" src="/post/2022/map_any_region_with_ggplot2_part_I/maps_DrawingMap.png" alt="R Maps" />
 </p>
@@ -369,7 +364,7 @@ site &lt;- paste0(start.nominatim, city, country, state, end.nominatim)
 }
 </code></pre>
 <p>For storing the data I have chosen to use <a href="https://www.sqlite.org/index.html" target="_blank">SQLite</a> through the R package <a href="https://rsqlite.r-dbi.org/" target="_blank">RSQLite</a>. If you are not familiar with SQL databases I recommend you to start with a general google search and then come back to the documentation of SQLite and the R package. I chose SQLite because we needed to have something light and portable that would allow us to move the information easily from country to country rather than a centralized database where we could store everything, but a very similar approach can be applied using other types of SQL databases.</p>
-<p>The function <code>dbConnect()</code> generates the SQLite file if it does not exist yet. Then we give SQLite the order to create the tables <code>orgs</code> if doesn&rsquo;t exist yet, and the structure for such table. Next we search for the coordinates of the entries one by one using <code>coords_from_city()</code> and finally we send it to the database. In that way we could stop the process at any time and continue later by simply retrieving the table <code>orgs</code> from the database, compare it with our original data and move forward from what is missing. For that, the column <code>ID</code> is critical, it is the column that allows us to link an entry between the original data, the R data.frame and the SQL table.</p>
+<p>The function <code>dbConnect()</code> generates the SQLite file if it does not exist yet. Then we give SQLite the order to create the table <code>orgs</code> if doesn&rsquo;t exist yet, and the structure for such table. Next we search for the coordinates of the entries one by one using <code>coords_from_city()</code> and finally we send it to the database. In that way we could stop the process at any time and continue later by simply retrieving the table <code>orgs</code> from the database, compare it with our original data and move forward from what is missing. For that, the column <code>ID</code> is critical, it is the column that allows us to link an entry between the original data, the R data.frame and the SQL table.</p>
 <p><img class="img-zoomable" src="/post/2022/map_any_region_with_ggplot2_part_II/maps_webscrap_to_sqlite.png" alt="Function webscrap_to_sqlite() in detail" />
 </p>
 <p>Our function also has a variable <code>ccount</code> that counts each time an entry was not found. In that way, once the query is finished it will print the amount of entries that were not found. The reasons for not finding an entry can be many, among the most common ones that I encountered are the following:</p>
@@ -553,11 +548,19 @@ site &lt;- paste0(start.nominatim, city, country, state, end.nominatim)
             </span>
             
             <span>
+                <a href="/tags/docker/">docker</a>
+            </span>
+            
+            <span>
                 <a href="/tags/emacs/">emacs</a>
             </span>
             
             <span>
                 <a href="/tags/ggplot2/">ggplot2</a>
+            </span>
+            
+            <span>
+                <a href="/tags/maps-app/">maps-app</a>
             </span>
             
             <span>
@@ -581,6 +584,10 @@ site &lt;- paste0(start.nominatim, city, country, state, end.nominatim)
             </span>
             
             <span>
+                <a href="/tags/r-mapas/">R mapas</a>
+            </span>
+            
+            <span>
                 <a href="/tags/r-maps/">R maps</a>
             </span>
             
@@ -590,6 +597,14 @@ site &lt;- paste0(start.nominatim, city, country, state, end.nominatim)
             
             <span>
                 <a href="/tags/r-tips/">R tips</a>
+            </span>
+            
+            <span>
+                <a href="/tags/references/">references</a>
+            </span>
+            
+            <span>
+                <a href="/tags/referencias/">referencias</a>
             </span>
             
             <span>
@@ -692,11 +707,19 @@ site &lt;- paste0(start.nominatim, city, country, state, end.nominatim)
             </span>
             
             <span>
+                <a href="/tags/docker/">docker</a>
+            </span>
+            
+            <span>
                 <a href="/tags/emacs/">emacs</a>
             </span>
             
             <span>
                 <a href="/tags/ggplot2/">ggplot2</a>
+            </span>
+            
+            <span>
+                <a href="/tags/maps-app/">maps-app</a>
             </span>
             
             <span>
@@ -720,6 +743,10 @@ site &lt;- paste0(start.nominatim, city, country, state, end.nominatim)
             </span>
             
             <span>
+                <a href="/tags/r-mapas/">R mapas</a>
+            </span>
+            
+            <span>
                 <a href="/tags/r-maps/">R maps</a>
             </span>
             
@@ -729,6 +756,14 @@ site &lt;- paste0(start.nominatim, city, country, state, end.nominatim)
             
             <span>
                 <a href="/tags/r-tips/">R tips</a>
+            </span>
+            
+            <span>
+                <a href="/tags/references/">references</a>
+            </span>
+            
+            <span>
+                <a href="/tags/referencias/">referencias</a>
             </span>
             
             <span>

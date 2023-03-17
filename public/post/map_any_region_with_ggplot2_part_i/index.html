@@ -30,7 +30,7 @@
 <meta name="description" content="Part I of making maps of any region in the world with R using ggplot2 and maps packages" />
 
 
-<meta name="keywords" content="R maps, ggplot2, Code Visuals, R functions" />
+<meta name="keywords" content="maps-app, R maps, ggplot2, Code Visuals, R functions" />
 
 
 <meta property="og:title" content="Map any region in the world with R - Part I: The basic map" />
@@ -110,24 +110,21 @@
     <div class="post-item post-meta">
         <span><i class="iconfont icon-today-sharp"></i>&nbsp;2022-10-08</span>
 
-<span><i class="iconfont icon-file-tray-sharp"></i>&nbsp;2536 words</span>
+<span><i class="iconfont icon-file-tray-sharp"></i>&nbsp;2637 words</span>
 
-<span><i class="iconfont icon-pricetags-sharp"></i>&nbsp;<a href="/tags/r-maps">R maps</a>&nbsp;<a href="/tags/ggplot2">ggplot2</a>&nbsp;<a href="/tags/code-visuals">Code Visuals</a>&nbsp;<a href="/tags/r-functions">R functions</a>&nbsp;</span>
+<span><i class="iconfont icon-pricetags-sharp"></i>&nbsp;<a href="/tags/maps-app">maps-app</a>&nbsp;<a href="/tags/r-maps">R maps</a>&nbsp;<a href="/tags/ggplot2">ggplot2</a>&nbsp;<a href="/tags/code-visuals">Code Visuals</a>&nbsp;<a href="/tags/r-functions">R functions</a>&nbsp;</span>
 
     </div>
     
     <div class="post-content markdown-body">
         <h2 id="scope-of-this-post">Scope of this post</h2>
-<p>When you prepare for a job interview one of the questions they always tell you to prepare is &ldquo;What are you most proud of?&rdquo;. Personally I&rsquo;ve never been asked that question in a job interview but it kept me thinking. Some years ago I developed the R code for the creation of maps of infrastructure for a Political Sciences project, and I can say that this is one of the projects I&rsquo;m most proud of. However, it is also true what they say to developers, that <strong>nobody cares about how you did it</strong>. The final user only cared about what was done, while the research team about what are the possibilities. Due to the confidentiality agreement of the client, I also cannot share a git repository.</p>
-<p>The project taught me so much in terms of technical skills that I have decided to <strong>share the how</strong> in case it can help somebody else. It is also my way to contribute to the R community since I myself learned R and programming thanks to the kind people who post their experience on the web (and to the ones who have the patience to answer questions in StackOverflow too).</p>
-<p>We created maps of data showing changes over a span of time for different countries and pointing at all kinds of cities. That basically means that we need to <strong>map any region of the world with R</strong>. Today there are all kinds of packages and techniques to do that. I will share the strategy I used with <a href="https://cran.r-project.org/web/packages/ggplot2/index.html" target="_blank">ggplot2</a> and <a href="https://cran.r-project.org/web/packages/maps/index.html" target="_blank">maps</a> packages, using support of <a href="https://www.openstreetmap.org/" target="_blank">Open Street Map</a> to obtain the coordinates of cities and finally making it interactive with <a href="https://shiny.rstudio.com/" target="_blank">shiny</a>. The project is quite long for a single post, so my idea is to split it into a few smaller blog posts. The list can still change but I thought something like this:</p>
-<pre><code>1. The basic map
-2. Web scrapping with nominatim open street maps
-3. Maps with cities
-4. Dynamic maps in time
-5. Making a single script for fast replication
-6. Making the code interactive in a shiny app
-</code></pre>
+<p>When you prepare for a job interview one of the questions they always tell you to prepare is &ldquo;What are you most proud of?&rdquo;. Personally I&rsquo;ve never been asked that question in a job interview but it kept me thinking. Some years ago I developed the R code for the creation of maps of infrastructure for a Political Sciences project, and I can say that this is one of the projects I&rsquo;m most proud of. However, it is also true what they say to developers, that <strong>nobody cares about how you did it</strong>. The final user only cared about what was done, while the research team about what are the possibilities.</p>
+<p>The project taught me so much in terms of technical skills that I have decided to <strong>share the how</strong> in case it can help somebody else. It is also my way to contribute to the R community since I myself learned R and programming thanks to the kind people who post their experience on the web (and to the ones who have the patience to answer questions in StackOverflow too). Due to the confidentiality agreement of the client, I also cannot share a git repository.</p>
+<p>We created maps of data showing changes over a span of time for different countries and pointing at all kinds of cities. That basically means that we need to <strong>map any region of the world with R</strong>. Today there are all kinds of packages and techniques to do that. I will share the strategy I used with <a href="https://cran.r-project.org/web/packages/ggplot2/index.html" target="_blank">ggplot2</a> and <a href="https://cran.r-project.org/web/packages/maps/index.html" target="_blank">maps</a> packages, using support of <a href="https://www.openstreetmap.org/" target="_blank">Open Street Map</a> to obtain the coordinates of cities and finally making it interactive with <a href="https://shiny.rstudio.com/" target="_blank">shiny</a>.</p>
+<p>The project itself is quite long for a single post, and just recently I managed to extract the base code I created and make it public, without compromising any privacy issues. On the other hand, it is a live project that I am currently working on. Therefore, I decided to share my path and experiences along the creation process of the Shiny app. The posts are not only about the Shiny app, but the package I created behind it. I will touch topics of functions crafting, creation of the maps, classes of objects, etc., as well as any interesting issue that appear on the way. It is my way to contribute to the R community and at the same time keeping the project documented for myself.</p>
+<p>You can find all the posts on this series under the tag <a href="https://blog.rwhitedwarf.com/tags/maps-app/" target="_blank">maps-app</a>.</p>
+<p>You can also find the current state of the project under <a href="https://github.com/teotenn" target="_blank">my GitHub</a> repo <a href="https://github.com/teotenn/mapic" target="_blank">mapic</a> (including the Spanish versions).</p>
+<p>This first post is asbout the creation of <strong>The basic map</strong></p>
 <p>I hope you all enjoy it. Feel free to leave any kind of comment and/or question at the end.</p>
 <h2 id="background">Background</h2>
 <p>When I joined the team all what they knew is that the wanted to make maps of infrastructure (say hospitals, cafes, churches, public offices, etc., but the project can basically be applied to anything countable per city). The maps should change in time according to the data (usually growth) and it should be possible to apply it for any country and thus, any kind of city of that particular country can be listed there. This last point represents a challenge because to make a map you need the coordinates of a particular point to map, but instead we got address in the best scenario, or only city name in the worst. Therefore, we left it to the level of city and decided to work with that.</p>
@@ -240,7 +237,7 @@ map_country(&quot;Germany&quot;, c(-2, 22), c(47, 55))
 <p>The lower part of the function is exactly the same as our first map, replacing the actual values for the arguments. We also have changed the colors for more specific ones. Almost by the end of the function we have added <code>scale_x_continuous(n.breaks = 20)</code> which will add 20 marks of the X axis scale (same for Y). We want to use it to ensure that, in case the user doesn&rsquo;t have idea of which limit values to choose, it can have a good approach regarding the position of the target country. In case that both limits for X and Y are passed to the function, our other theme will mask this 20 breaks with <code>axis.text.x = element_blank()</code> and <code>axis.ticks.x = element_blank()</code>.</p>
 <p>The final line is the test that our function can plot a map other than Spain, in this case I chose Germany. We can basically choose any country included in the <code>maps</code> package and now make the map with the same standards in one line of R code.</p>
 <h2 id="final-remarks">Final remarks</h2>
-<p>Here I am somehow showing one of the methods I use to create functions: I basically write first the code of what I want to achieve and once it does exactly what I want, I wrap it in a function, replacing the arguments that the user will need to modify later. Then I think what could go wrong and create the corresponding warnings an errors. It is a good practice to do that not only for the user to know better how to use the function, but also for yourself, it proves very useful when we need to debug code. Another good practice in R functions is the call to the libraries inside the function using <code>require()</code>. Even if you are writing many functions that use the same libraries, is good to repeat it on each function to make it self contained and again, help yourself in the debugging process. Not long ago I started collaborating in a project where there was no call to the libraries per function, but rather only at the top level when the main action of the program was called. This made almost impossible for me to test and debug code so, the first activity I did as a new member of the team was to spend 2 full working days adding <code>require()</code> where necessary.</p>
+<p>Here I am somehow showing one of the methods I use to create functions: I basically write first the code of what I want to achieve and once it does exactly what I want, I wrap it in a function, replacing the arguments that the user will need to modify later. Then I think what could go wrong and create the corresponding warnings an errors. It is a good practice to do that not only for the user to know better how to use the function, but also for yourself, it proves very useful when we need to debug code. Another good practice in R functions is the call to the libraries inside the function using <code>require()</code>. Even if you are writing many functions that use the same libraries, is good to repeat it on each function, or per script, to make it self contained and again, help yourself in the debugging process. Not long ago I started collaborating in a project where there was no call to the libraries per function, but rather only at the top level when the main action of the program was called. This made almost impossible for me to test and debug code so, the first activity I did as a new member of the team was to spend 2 full working days adding <code>require()</code> where necessary.</p>
 <p><img class="img-zoomable" src="/post/2022/map_any_region_with_ggplot2_part_I/maps_CompareCode.png" alt="Code of the function explained" />
 </p>
 <p>I hope you get some fun mapping different countries. Because different countries have different sizes and shapes, one way to improve the visuals related to this is by adjusting the ratio, for example, my own map of Germany looks out of shape, but it improves considerably if instead of 1.3 we give a ratio of 1.4, check the documentation to learn more about it.</p>
@@ -333,11 +330,19 @@ map_country(&quot;Germany&quot;, c(-2, 22), c(47, 55))
             </span>
             
             <span>
+                <a href="/tags/docker/">docker</a>
+            </span>
+            
+            <span>
                 <a href="/tags/emacs/">emacs</a>
             </span>
             
             <span>
                 <a href="/tags/ggplot2/">ggplot2</a>
+            </span>
+            
+            <span>
+                <a href="/tags/maps-app/">maps-app</a>
             </span>
             
             <span>
@@ -361,6 +366,10 @@ map_country(&quot;Germany&quot;, c(-2, 22), c(47, 55))
             </span>
             
             <span>
+                <a href="/tags/r-mapas/">R mapas</a>
+            </span>
+            
+            <span>
                 <a href="/tags/r-maps/">R maps</a>
             </span>
             
@@ -370,6 +379,14 @@ map_country(&quot;Germany&quot;, c(-2, 22), c(47, 55))
             
             <span>
                 <a href="/tags/r-tips/">R tips</a>
+            </span>
+            
+            <span>
+                <a href="/tags/references/">references</a>
+            </span>
+            
+            <span>
+                <a href="/tags/referencias/">referencias</a>
             </span>
             
             <span>
@@ -472,11 +489,19 @@ map_country(&quot;Germany&quot;, c(-2, 22), c(47, 55))
             </span>
             
             <span>
+                <a href="/tags/docker/">docker</a>
+            </span>
+            
+            <span>
                 <a href="/tags/emacs/">emacs</a>
             </span>
             
             <span>
                 <a href="/tags/ggplot2/">ggplot2</a>
+            </span>
+            
+            <span>
+                <a href="/tags/maps-app/">maps-app</a>
             </span>
             
             <span>
@@ -500,6 +525,10 @@ map_country(&quot;Germany&quot;, c(-2, 22), c(47, 55))
             </span>
             
             <span>
+                <a href="/tags/r-mapas/">R mapas</a>
+            </span>
+            
+            <span>
                 <a href="/tags/r-maps/">R maps</a>
             </span>
             
@@ -509,6 +538,14 @@ map_country(&quot;Germany&quot;, c(-2, 22), c(47, 55))
             
             <span>
                 <a href="/tags/r-tips/">R tips</a>
+            </span>
+            
+            <span>
+                <a href="/tags/references/">references</a>
+            </span>
+            
+            <span>
+                <a href="/tags/referencias/">referencias</a>
             </span>
             
             <span>

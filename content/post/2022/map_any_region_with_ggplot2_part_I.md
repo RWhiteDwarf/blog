@@ -22,7 +22,7 @@ The project itself is quite long for a single post, and just recently I managed 
 
 You can find all the posts on this series under the tag [maps-app](https://blog.rwhitedwarf.com/tags/maps-app/).
 
-You can also find the current state of the project under [my git hub](https://github.com/teotenn) repo [mapic](https://github.com/teotenn/mapic).
+You can also find the current state of the project under [my GitHub](https://github.com/teotenn) repo [mapic](https://github.com/teotenn/mapic) (including the Spanish versions).
 
 This first post is asbout the creation of **The basic map**
 	

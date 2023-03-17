@@ -15,16 +15,11 @@
       <guid>https://blog.rwhitedwarf.com/post/map_any_region_with_ggplot2_part_ii/</guid>
       <description>&lt;h2 id=&#34;scope-of-this-post&#34;&gt;Scope of this post&lt;/h2&gt;
 &lt;p&gt;This is the second part of the series to create a map of any region of the world with R.&lt;/p&gt;
-&lt;p&gt;We are creating maps of data showing changes over a span of time for different countries and pointing at all kinds of cities. That basically means that we need to &lt;strong&gt;map any region of the world with R&lt;/strong&gt;. Today there are all kinds of packages and techniques to do that. I will share the strategy I used with &lt;a href=&#34;https://cran.r-project.org/web/packages/ggplot2/index.html&#34; target=&#34;_blank&#34;&gt;ggplot2&lt;/a&gt; and &lt;a href=&#34;https://cran.r-project.org/web/packages/maps/index.html&#34; target=&#34;_blank&#34;&gt;maps&lt;/a&gt; packages, using support of &lt;a href=&#34;https://www.openstreetmap.org/&#34; target=&#34;_blank&#34;&gt;Open Street Map&lt;/a&gt; to obtain the coordinates of cities and finally making it interactive with &lt;a href=&#34;https://shiny.rstudio.com/&#34; target=&#34;_blank&#34;&gt;shiny&lt;/a&gt;. The project is quite long for a single post, so my idea is to split it into a few smaller blog posts. So far, the list is a follows:&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;&lt;a href=&#34;https://blog.rwhitedwarf.com/post/map_any_region_with_ggplot2_part_i/&#34; target=&#34;_blank&#34;&gt;The basic map&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;Web scrapping with nominatim open street maps&lt;/strong&gt;&lt;/li&gt;
-&lt;li&gt;Maps with cities&lt;/li&gt;
-&lt;li&gt;Dynamic maps in time&lt;/li&gt;
-&lt;li&gt;Making a single script for fast replication&lt;/li&gt;
-&lt;li&gt;Making the code interactive in a shiny app&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;The ideas is to share the how-to of one of the projects I am most proud of and, at the same time to give back to the R community in hopes that it can help somebody else.&lt;/p&gt;
+&lt;p&gt;We are creating maps of data showing changes over a span of time for different countries and pointing at all kinds of cities. That basically means that we need to &lt;strong&gt;map any region of the world with R&lt;/strong&gt;. Today there are all kinds of packages and techniques to do that. I will share the strategy I used with &lt;a href=&#34;https://cran.r-project.org/web/packages/ggplot2/index.html&#34; target=&#34;_blank&#34;&gt;ggplot2&lt;/a&gt; and &lt;a href=&#34;https://cran.r-project.org/web/packages/maps/index.html&#34; target=&#34;_blank&#34;&gt;maps&lt;/a&gt; packages, using support of &lt;a href=&#34;https://www.openstreetmap.org/&#34; target=&#34;_blank&#34;&gt;Open Street Map&lt;/a&gt; to obtain the coordinates of cities and finally making it interactive with &lt;a href=&#34;https://shiny.rstudio.com/&#34; target=&#34;_blank&#34;&gt;shiny&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;This series of posts share my path towards the creation of the Shiny app. It is a live project and I decided to share my path and experiences along the creation process. The posts are not only about the Shiny app, but the package I created behind it, including topics of functions crafting, creation of the maps, classes of objects, etc., as well as any interesting issue that appear on the way. It is my way to contribute to the R community and at the same time keeping the project documented for myself.&lt;/p&gt;
+&lt;p&gt;You can find all the posts on this series under the tag &lt;a href=&#34;https://blog.rwhitedwarf.com/tags/maps-app/&#34; title=&#34;#maps-app&#34; target=&#34;_blank&#34;&gt;maps-app&lt;/a&gt; (including the Spanish versions).&lt;/p&gt;
+&lt;p&gt;You can also find the current state of the project under &lt;a href=&#34;https://github.com/teotenn&#34; target=&#34;_blank&#34;&gt;my GitHub&lt;/a&gt; repo &lt;a href=&#34;https://github.com/teotenn/mapic&#34; target=&#34;_blank&#34;&gt;mapic&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;This post is about &lt;strong&gt;Web scrapping with nominatim open street maps&lt;/strong&gt;&lt;/p&gt;
 &lt;p&gt;I hope you all enjoy it. Feel free to leave any kind of comment and/or question at the end.&lt;/p&gt;
 &lt;p&gt;&lt;img class=&#34;img-zoomable&#34; src=&#34;https://blog.rwhitedwarf.com/post/2022/map_any_region_with_ggplot2_part_I/maps_DrawingMap.png&#34; alt=&#34;R Maps&#34; /&gt;
 &lt;/p&gt;
@@ -265,7 +260,7 @@ site &amp;lt;- paste0(start.nominatim, city, country, state, end.nominatim)
 }
 &lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;For storing the data I have chosen to use &lt;a href=&#34;https://www.sqlite.org/index.html&#34; target=&#34;_blank&#34;&gt;SQLite&lt;/a&gt; through the R package &lt;a href=&#34;https://rsqlite.r-dbi.org/&#34; target=&#34;_blank&#34;&gt;RSQLite&lt;/a&gt;. If you are not familiar with SQL databases I recommend you to start with a general google search and then come back to the documentation of SQLite and the R package. I chose SQLite because we needed to have something light and portable that would allow us to move the information easily from country to country rather than a centralized database where we could store everything, but a very similar approach can be applied using other types of SQL databases.&lt;/p&gt;
-&lt;p&gt;The function &lt;code&gt;dbConnect()&lt;/code&gt; generates the SQLite file if it does not exist yet. Then we give SQLite the order to create the tables &lt;code&gt;orgs&lt;/code&gt; if doesn&amp;rsquo;t exist yet, and the structure for such table. Next we search for the coordinates of the entries one by one using &lt;code&gt;coords_from_city()&lt;/code&gt; and finally we send it to the database. In that way we could stop the process at any time and continue later by simply retrieving the table &lt;code&gt;orgs&lt;/code&gt; from the database, compare it with our original data and move forward from what is missing. For that, the column &lt;code&gt;ID&lt;/code&gt; is critical, it is the column that allows us to link an entry between the original data, the R data.frame and the SQL table.&lt;/p&gt;
+&lt;p&gt;The function &lt;code&gt;dbConnect()&lt;/code&gt; generates the SQLite file if it does not exist yet. Then we give SQLite the order to create the table &lt;code&gt;orgs&lt;/code&gt; if doesn&amp;rsquo;t exist yet, and the structure for such table. Next we search for the coordinates of the entries one by one using &lt;code&gt;coords_from_city()&lt;/code&gt; and finally we send it to the database. In that way we could stop the process at any time and continue later by simply retrieving the table &lt;code&gt;orgs&lt;/code&gt; from the database, compare it with our original data and move forward from what is missing. For that, the column &lt;code&gt;ID&lt;/code&gt; is critical, it is the column that allows us to link an entry between the original data, the R data.frame and the SQL table.&lt;/p&gt;
 &lt;p&gt;&lt;img class=&#34;img-zoomable&#34; src=&#34;https://blog.rwhitedwarf.com/post/2022/map_any_region_with_ggplot2_part_II/maps_webscrap_to_sqlite.png&#34; alt=&#34;Function webscrap_to_sqlite() in detail&#34; /&gt;
 &lt;/p&gt;
 &lt;p&gt;Our function also has a variable &lt;code&gt;ccount&lt;/code&gt; that counts each time an entry was not found. In that way, once the query is finished it will print the amount of entries that were not found. The reasons for not finding an entry can be many, among the most common ones that I encountered are the following:&lt;/p&gt;
@@ -361,6 +356,355 @@ site &amp;lt;- paste0(start.nominatim, city, country, state, end.nominatim)
 &lt;p&gt;If you are new to R you could probably already had noticed that one of the strengths of R that I&amp;rsquo;m using a lot here is its use of functions. The first maps that we created were done writing scripts with a few hundreds of lines. Those gave us the basis to craft the necessary functions and so, the rest of the maps were possible using just a few lines. Some of the scripts for the web scrapping of the coordinates consist of less than 10 lines of code. That is possible using the functions above and a few others created for special or particular cases. I will not share absolutely everything but I want to give an idea of how to make the process more efficient. You can always create more functions for your particular cases or modify my proposed functions to adapt to your particular situation.&lt;/p&gt;
 &lt;p&gt;And speaking of extensibility, just while writting this blog I found out about the package &lt;a href=&#34;https://github.com/r-tmap/tmaptools&#34; target=&#34;_blank&#34;&gt;tmaptools&lt;/a&gt; which contains the function &lt;a href=&#34;https://www.rdocumentation.org/packages/tmap/versions/1.6-1/topics/geocode_OSM&#34; target=&#34;_blank&#34;&gt;geocode_OSM&lt;/a&gt; which uses nominatim to retrieve the coordinates of the searched point. The function has a more user friendly searching format and more possibilities for the return value, while my &lt;code&gt;coords_from_city()&lt;/code&gt; option stays quite stiff and still with the original format that it was envisioned a few years ago when I created it. If you are truly interested in the topic I invite you to check the package. Myself I have been busy maintaining the code and creating maps that I found little time to do any improvements to the original project. But that&amp;rsquo;s exactly my main task right now so, if I do any changes to the functions presented here using the &lt;a href=&#34;https://github.com/r-tmap/tmaptools&#34; target=&#34;_blank&#34;&gt;tmaptools&lt;/a&gt; package you can be sure that I will create a short post to share it as well.&lt;/p&gt;
 &lt;p&gt;Then, once we got the coordinates of our target cities and we know how to make the basic map, the next step is to add the cities to the base map. In the next post I will show you how I did that and a function to make the process faster and efficient.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Mapa de cualquier región del mundo con R - Parte II: obteniendo las coordenadas.</title>
+      <link>https://blog.rwhitedwarf.com/es/post/2022/mapa_de_cualquier_region_con_ggplot2ii/</link>
+      <pubDate>Fri, 04 Nov 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.rwhitedwarf.com/es/post/2022/mapa_de_cualquier_region_con_ggplot2ii/</guid>
+      <description>&lt;h2 id=&#34;sobre-este-post&#34;&gt;Sobre este post&lt;/h2&gt;
+&lt;p&gt;Esta es la segunda parte de las series de cómo crear mapas de cualquier región del mundo con R. De antemano me disculpo por detalles que puedan encontrar en la traducción, el post original lo creé en Inglés y el trabajo de traducción puede ser excesivo si voy a cada detalle. Por otro lado, recomiendo un conocimiento al menos básico del idioma Inglés si se quiere tener éxito en R o programación en general. Ayuda mucho a entender la sintaxis.&lt;/p&gt;
+&lt;p&gt;Estamos creando mapas de datos que muestran los cambios durante un período de tiempo para diferentes países y orientado a todo tipo de ciudades. Esto básicamente significa que necesitamos &lt;strong&gt;mapear cualquier región del mundo con R&lt;/strong&gt;. Hoy en día existen todo tipo de paquetes y técnicas para hacerlo. Quiero compartir la estrategia que utilicé con &lt;a href=&#34;https://cran.r-project.org/web/packages/ggplot2/index.html&#34; target=&#34;_blank&#34;&gt;ggplot2&lt;/a&gt; y &lt;a href=&#34;https://cran.r-project.org/web/packages/maps/index.html&#34; target=&#34;_blank&#34;&gt;maps&lt;/a&gt;, utilizando el soporte de &lt;a href=&#34;https://www.openstreetmap.org/&#34; target=&#34;_blank&#34;&gt;Open Street Map&lt;/a&gt; para obtener las coordenadas de las ciudades y finalmente hacerlo interactivo con &lt;a href=&#34;https://shiny.rstudio.com/&#34; target=&#34;_blank&#34;&gt;shiny&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;Estas publicaciones comparten mi camino en la creación de la aplicación Shiny. Es un proyecto vivo en el que estoy trabajando actualmente y decidí compartir mis experiencias durante el proceso de creación. Estas publicaciones no son sólo acerca de Shiny apps, si no más bien sobre la creación del paquete detrás, incluyendo temas sobre la generación de funciones, creación de los mapas, clases de objetos, entre otros, incluyendo cualquier tema interesante que aparezca en el camino. Es mi manera de contribuir a la comunidad de R y al mismo tiempo documentar el proyecto en si mismo.&lt;/p&gt;
+&lt;p&gt;Pueden encontrar todas las publicaciones en este tema bajo la etiqueta &lt;a href=&#34;https://blog.rwhitedwarf.com/tags/maps-app/&#34; target=&#34;_blank&#34;&gt;maps-app&lt;/a&gt; (incluyendo las versiones en inglés).&lt;/p&gt;
+&lt;p&gt;También pueden encontrar el estado actual del proyecto en &lt;a href=&#34;https://github.com/teotenn&#34; target=&#34;_blank&#34;&gt;mi GitHub&lt;/a&gt; repo &lt;a href=&#34;https://github.com/teotenn/mapic&#34; target=&#34;_blank&#34;&gt;mapic&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;Espero que lo disfruten. Siéntanse libres de dejar cualquier tipo de comentario y/o pregunta al final.&lt;/p&gt;
+&lt;p&gt;&lt;img class=&#34;img-zoomable&#34; src=&#34;https://blog.rwhitedwarf.com/post/2022/map_any_region_with_ggplot2_part_I/maps_DrawingMap.png&#34; alt=&#34;R Maps&#34; /&gt;
+&lt;/p&gt;
+&lt;h2 id=&#34;open-street-maps-y-nominatim&#34;&gt;Open Street Maps y Nominatim&lt;/h2&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Una búsqueda sencilla&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;library(&#39;RJSONIO&#39;)
+
+site &amp;lt;- (&amp;quot;http://nominatim.openstreetmap.org/search?city=Texcoco&amp;amp;limit=9&amp;amp;format=json&amp;quot;)
+(result &amp;lt;- fromJSON(site))
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;&amp;gt; [[1]]
+&amp;gt; [[1]]$place_id
+&amp;gt; [1] 1177116
+&amp;gt; 
+&amp;gt; [[1]]$licence
+&amp;gt; [1] &amp;quot;Data © OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright&amp;quot;
+&amp;gt; 
+&amp;gt; [[1]]$osm_type
+&amp;gt; [1] &amp;quot;node&amp;quot;
+&amp;gt; 
+&amp;gt; [[1]]$osm_id
+&amp;gt; [1] 336169214
+&amp;gt; 
+&amp;gt; [[1]]$boundingbox
+&amp;gt; [1] &amp;quot;29.619&amp;quot;       &amp;quot;29.659&amp;quot;       &amp;quot;-111.0786667&amp;quot; &amp;quot;-111.0386667&amp;quot;
+&amp;gt; 
+&amp;gt; [[1]]$lat
+&amp;gt; [1] &amp;quot;29.639&amp;quot;
+&amp;gt; 
+&amp;gt; [[1]]$lon
+&amp;gt; [1] &amp;quot;-111.0586667&amp;quot;
+&amp;gt; 
+&amp;gt; [[1]]$display_name
+&amp;gt; [1] &amp;quot;Texcoco, Carbó, Sonora, México&amp;quot;
+&amp;gt; 
+&amp;gt; [[1]]$class
+&amp;gt; [1] &amp;quot;place&amp;quot;
+&amp;gt; 
+&amp;gt; [[1]]$type
+&amp;gt; [1] &amp;quot;village&amp;quot;
+&amp;gt; 
+&amp;gt; [[1]]$importance
+&amp;gt; [1] 0.385
+&amp;gt; 
+&amp;gt; [[1]]$icon
+&amp;gt; [1] &amp;quot;https://nominatim.openstreetmap.org/ui/mapicons/poi_place_village.p.20.png&amp;quot;
+&amp;gt; 
+&amp;gt; 
+&amp;gt; [[2]]
+&amp;gt; [[2]]$place_id
+&amp;gt; [1] 3448536
+&amp;gt; 
+&amp;gt; [[2]]$licence
+&amp;gt; [1] &amp;quot;Data © OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright&amp;quot;
+&amp;gt; 
+&amp;gt; [[2]]$osm_type
+&amp;gt; [1] &amp;quot;node&amp;quot;
+&amp;gt; 
+&amp;gt; [[2]]$osm_id
+&amp;gt; [1] 458633446
+&amp;gt; 
+&amp;gt; [[2]]$boundingbox
+&amp;gt; [1] &amp;quot;16.551667&amp;quot;  &amp;quot;16.591667&amp;quot;  &amp;quot;-97.053333&amp;quot; &amp;quot;-97.013333&amp;quot;
+&amp;gt; 
+&amp;gt; [[2]]$lat
+&amp;gt; [1] &amp;quot;16.571667&amp;quot;
+&amp;gt; 
+&amp;gt; [[2]]$lon
+&amp;gt; [1] &amp;quot;-97.033333&amp;quot;
+&amp;gt; 
+&amp;gt; [[2]]$display_name
+&amp;gt; [1] &amp;quot;Texcoco, Santa María Sola, Oaxaca, México&amp;quot;
+&amp;gt; 
+&amp;gt; [[2]]$class
+&amp;gt; [1] &amp;quot;place&amp;quot;
+&amp;gt; 
+&amp;gt; [[2]]$type
+&amp;gt; [1] &amp;quot;hamlet&amp;quot;
+&amp;gt; 
+&amp;gt; [[2]]$importance
+&amp;gt; [1] 0.36
+&amp;gt; 
+&amp;gt; [[2]]$icon
+&amp;gt; [1] &amp;quot;https://nominatim.openstreetmap.org/ui/mapicons/poi_place_village.p.20.png&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Comenzamos con &lt;a href=&#34;https://www.openstreetmap.org/&#34; target=&#34;_blank&#34;&gt;Open Street Map&lt;/a&gt; y su API &lt;a href=&#34;https://nominatim.openstreetmap.org/ui/about.html&#34; target=&#34;_blank&#34;&gt;nominatim&lt;/a&gt;. En el código anterior podemos ver cómo realizar una consulta simple para una ciudad. Es básicamente un string (en R, &amp;ldquo;string&amp;rdquo; se utiliza para referirse a texto) largo que contiene primero la url de nominatim y al final los detalles de la búsqueda: aquí comenzamos la búsqueda de la ciudad, usando &lt;code&gt;?city=Texcoco&lt;/code&gt; que en este caso apunta a una ciudad con solo unos pocos resultados. A continuación, limitamos la cantidad de resultados a 9 con &lt;code&gt;&amp;amp;limit=9&lt;/code&gt; y finalmente solicitamos los resultados en formato JSON.&lt;/p&gt;
+&lt;p&gt;Básicamente, podríamos copiar el string que estamos pasando a la variable &lt;code&gt;site&lt;/code&gt; y pegarla en el navegador web para ver los resultados directamente ahí. Siéntete libre de cambiar la ciudad &lt;code&gt;Texcoco&lt;/code&gt; a cualquier otra ciudad, y juega un poco más con el resto de los parámetros. En particular, eche un vistazo a lo que sucede cuando elimina la parte &lt;code&gt;&amp;amp;format=json&lt;/code&gt; o cuando cambia &lt;code&gt;json&lt;/code&gt; por cualquier otra cadena abstracta como &lt;code&gt;csv&lt;/code&gt; u otro formato no reconocido.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Una búsqueda más sencilla&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;city &amp;lt;- &#39;San%20Francisco&#39;
+state &amp;lt;- &#39;&amp;amp;state=California&#39;
+country &amp;lt;- &#39;&amp;amp;countrycodes=US&#39;
+start.nominatim &amp;lt;- &amp;quot;http://nominatim.openstreetmap.org/search?city=&amp;quot;
+end.nominatim &amp;lt;- &amp;quot;&amp;amp;format=json&amp;quot;
+
+site &amp;lt;- paste0(start.nominatim, city, country, state, end.nominatim)
+(result &amp;lt;- fromJSON(site))
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;&amp;gt; [[1]]
+&amp;gt; [[1]]$place_id
+&amp;gt; [1] 297054975
+&amp;gt; 
+&amp;gt; [[1]]$licence
+&amp;gt; [1] &amp;quot;Data © OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright&amp;quot;
+&amp;gt; 
+&amp;gt; [[1]]$osm_type
+&amp;gt; [1] &amp;quot;relation&amp;quot;
+&amp;gt; 
+&amp;gt; [[1]]$osm_id
+&amp;gt; [1] 111968
+&amp;gt; 
+&amp;gt; [[1]]$boundingbox
+&amp;gt; [1] &amp;quot;37.6403143&amp;quot;  &amp;quot;37.929811&amp;quot;   &amp;quot;-123.173825&amp;quot; &amp;quot;-122.281479&amp;quot;
+&amp;gt; 
+&amp;gt; [[1]]$lat
+&amp;gt; [1] &amp;quot;37.7790262&amp;quot;
+&amp;gt; 
+&amp;gt; [[1]]$lon
+&amp;gt; [1] &amp;quot;-122.419906&amp;quot;
+&amp;gt; 
+&amp;gt; [[1]]$display_name
+&amp;gt; [1] &amp;quot;San Francisco, CAL Fire Northern Region, California, United States&amp;quot;
+&amp;gt; 
+&amp;gt; [[1]]$class
+&amp;gt; [1] &amp;quot;boundary&amp;quot;
+&amp;gt; 
+&amp;gt; [[1]]$type
+&amp;gt; [1] &amp;quot;administrative&amp;quot;
+&amp;gt; 
+&amp;gt; [[1]]$importance
+&amp;gt; [1] 1.035131
+&amp;gt; 
+&amp;gt; [[1]]$icon
+&amp;gt; [1] &amp;quot;https://nominatim.openstreetmap.org/ui/mapicons/poi_boundary_administrative.p.20.png&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Si exploramos OSM y nominatim un poco, veremos que podemos agregar argumentos de búsqueda usando &lt;code&gt;&amp;amp;&lt;/code&gt; seguido del argumento que queremos (es decir, &lt;code&gt;state&lt;/code&gt;), el símbolo igual (&lt;code&gt;=&lt;/code&gt;) y el argumento. En mi ejemplo anterior, puede verse cómo especificamos el estado y el país de nuestra consulta. Además, es importante saber cómo pasar espacios en un nombre, por ejemplo, San Francisco pasaría como &lt;code&gt;San%20Francisco&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;Con esta información básica en mente y sabiendo que el paquete &lt;code&gt;RJSONIO&lt;/code&gt; nos ayuda a recuperar los datos de la API JSON en un formato tabular compatible con R, podemos preparar fácilmente una función para buscar cualquier ciudad rápidamente, siempre que se proporcionen algunos detalles adicionales como una región, estado o condado, y especialmente importante, el país (intenta buscar ciudades como Londres o Praga sin proporcionar un país, te sorprenderá la cantidad de ciudades que existen en el mundo con esos nombres).&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;coords_from_city &amp;lt;- function(City,
+                             CountryTwoLetter,
+                             Region = NULL,
+                             State = NULL,
+                             County = NULL){
+    require(&#39;RJSONIO&#39;)
+    CityCoded &amp;lt;- gsub(&#39; &#39;,&#39;%20&#39;,City) #remover espacios de  URLs
+    CountryCoded &amp;lt;- paste(&amp;quot;&amp;amp;countrycodes=&amp;quot;, CountryTwoLetter, sep = &#39;&#39;)
+    extras &amp;lt;- c(state = State, region = Region, county = County)
+    extrasCoded &amp;lt;- &#39;&#39;
+    if(!is.null(extras)) {
+        for(i in 1:length(extras)){
+            if(extras[i] != &#39;&#39; &amp;amp;&amp;amp; !is.na(extras[i]) &amp;amp;&amp;amp; !grepl(&amp;quot;^\\s*$&amp;quot;, extras[i])){
+                valCoded &amp;lt;- gsub(&#39; &#39;, &#39;%20&#39;, extras[i])
+                extrasCoded &amp;lt;- paste0(extrasCoded, &#39;&amp;amp;&#39;, names(extras)[i], &#39;=&#39;, valCoded)
+            }
+        }
+    }
+    ## obtener los datos
+    url &amp;lt;- paste(
+        &amp;quot;http://nominatim.openstreetmap.org/search?city=&amp;quot;
+      , CityCoded
+      , CountryCoded
+      , extrasCoded
+      , &amp;quot;&amp;amp;format=json&amp;quot;
+      , sep=&amp;quot;&amp;quot;)
+    x &amp;lt;- fromJSON(url)
+    ## obtener las coordenadas
+    if(is.vector(x)){
+            message(paste(&#39;Found&#39;, x[[1]]$display_name))
+            lon &amp;lt;- x[[1]]$lon
+            lat &amp;lt;- x[[1]]$lat
+            osm_name &amp;lt;- x[[1]]$display_name
+            coords &amp;lt;- data.frame(&#39;lon&#39; = lon, &#39;lat&#39; = lat, &#39;osm_name&#39; = osm_name)
+    }
+    ## Si x no es un vector
+    else{
+        message(paste(&#39;No results found for&#39;, City, CountryTwoLetter))
+        coords &amp;lt;- data.frame(&#39;lon&#39; = NA, &#39;lat&#39; = NA)
+    }
+    ## regresa un df
+    coords
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Un detalle importante que debe saber es que, a menudo, proporcionar valores a los parámetros &amp;ldquo;state&amp;rdquo; o &amp;ldquo;region&amp;rdquo; arroja resultados similares, esto es particularmente útil en países donde no se usan estados o hay otras formas de organización presentes. Sin embargo, cuando el país tiene estrictamente estados, no puedes pasar el nombre de un Estado al parámetro &lt;code&gt;Region&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;La función devuelve un data frame que usaremos más adelante para crear una tabla con todos nuestros resultados. Como estamos interesados en crear mapas, solo necesitamos las coordenadas expresadas en latitud y longitud. En caso de que no se encuentre la consulta, la función completa los valores con &lt;code&gt;NA&lt;/code&gt;, que luego usaremos para realizar un seguimiento de lo que se encontró y lo que no. También mantenemos los valores dentro de &lt;code&gt;osm_name&lt;/code&gt;, que brinda suficiente información para brindarle al usuario detalles útiles sobre los resultados de la búsqueda, incluido el país de la ciudad encontrada y otros detalles como el estado o la región.&lt;/p&gt;
+&lt;p&gt;&lt;img class=&#34;img-zoomable&#34; src=&#34;https://blog.rwhitedwarf.com/post/2022/map_any_region_with_ggplot2_part_II/maps_coords_from_city.png&#34; alt=&#34;Funcion coords_from_city() en detalle&#34; /&gt;
+&lt;/p&gt;
+&lt;p&gt;Un punto importante a considerar en &lt;code&gt;coords_from_city&lt;/code&gt; es que devuelve solo el resultado superior de la consulta. Esto significa que cuanto más información se proporcione, más preciso será su resultado. Para nuestro proyecto funciona bien porque para los países grandes siempre recopilamos suficiente información sobre regiones y estados, mientras que para los países más pequeños, las opciones a menudo son demasiado pequeñas. Pero si usamos la función, es importante saber que si se proporciona un nombre de ciudad como &lt;code&gt;Springfield&lt;/code&gt;, &lt;code&gt;country = &#39;US&#39;&lt;/code&gt; y no proporciona información sobre el estado y el condado, la función recuperara solo el primer resultado de la búsqueda, y descarta las opciones restantes.&lt;/p&gt;
+&lt;h2 id=&#34;mantener-la-información-en-una-base-de-datos&#34;&gt;Mantener la información en una base de datos&lt;/h2&gt;
+&lt;p&gt;La función &lt;code&gt;coords_from_city&lt;/code&gt; podría ser suficiente si necesitamos obtener información unas pocas ciudades; Podríamos utilizar la iteración de &lt;code&gt;for&lt;/code&gt; para recuperar todas las coordenadas que necesitamos y almacenarlas en un data frame para luego guardarlas en formato csv, &lt;code&gt;Rdata&lt;/code&gt; o cualquier formato que elijamos. Lo mismo ocurre cuando buscamos cientos o miles de ciudades, pero con el aumento del tamaño, el tiempo de búsqueda también aumenta. Si, por alguna razón, la sesión de R se interrumpe, la información se perdería y tendremos que comenzar de nuevo desde la fila 1. Por lo tanto, enviaremos todos los resultados a una base de datos. De esa forma, no importa cuándo detengamos el proceso o cómo suceda, los datos se almacenan de forma segura fuera de R.&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;webscrap_to_sqlite &amp;lt;- function(db.name,
+                               dat,
+                               col.city = &#39;City&#39;,
+                               col.country = &#39;Country&#39;,
+                               region = NULL,
+                               state = NULL,
+                               county = NULL)
+{
+    require(RSQLite)
+    df_len &amp;lt;- nrow(dat)
+    ## Conexion a la db y la tabla
+    con &amp;lt;- dbConnect(drv=SQLite(), dbname=db.name)
+    dbExecute(conn = con,
+                &amp;quot;CREATE TABLE IF NOT EXISTS orgs
+                    (ID INTEGER UNIQUE,
+                     City TEXT, osm_name TEXT,
+                     lon REAL,lat REAL)&amp;quot;)
+    ## -- Iteraciones para el webscrap -- ##
+    ccount &amp;lt;- 0
+    ## For loop para el webscrapping
+    for(i in 1:df_len){
+        rg &amp;lt;- ifelse(is.null(region), &#39;&#39;, dat[[region]][i])
+        st &amp;lt;- ifelse(is.null(state), &#39;&#39;, dat[[state]][i])
+        ct &amp;lt;- ifelse(is.null(county), &#39;&#39;, dat[[county]][i])
+        print(paste(&#39;Entry&#39;, i))
+        ## Haz el webscrap
+        coords &amp;lt;- coords_from_city(dat[[col.city]][i],
+                                   dat[[col.country]][i],
+                                   Region = rg, State = st, County = ct)
+        ## Enviar resultados a DB sólo si se encontró algo
+        if(is.na(coords$lon[1])){
+            ccount &amp;lt;- ccount + 1
+        }
+        else{
+            sq &amp;lt;- dbExecute(con, &#39;INSERT OR IGNORE INTO orgs
+                             (ID, City, osm_name, lon, lat)
+                             VALUES (?, ?, ?, ?, ?);&#39;,
+                        list(dat[[&#39;ID&#39;]][i], dat[[col.city]][i],
+                             coords$osm_name, coords$lon[1], coords$lat[1]))
+        }
+        print(paste(&#39;Completed&#39;, (i/df_len)*100, &#39;%&#39;))
+    }
+    ## Cerrar la conexión
+    dbDisconnect(con)
+    message(paste(&amp;quot;WEB SCRAP FOR COORDINATES SEARCH FINISHED.&amp;quot;,
+                ccount, &amp;quot;ENTRIES NOT FOUND&amp;quot;))
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Para almacenar los datos elegí usar &lt;a href=&#34;https://www.sqlite.org/index.html&#34; target=&#34;_blank&#34;&gt;SQLite&lt;/a&gt; a través del paquete R &lt;a href=&#34;https://rsqlite.r-dbi.org/&#34; target=&#34;_blank&#34;&gt;RSQLite&lt;/a&gt;. Si no estas familiarizado con las bases de datos SQL te recomiendo que comiences con una búsqueda general en Google y luego regresar a la documentación de SQLite y el paquete R. Elegí SQLite porque necesitaba tener algo ligero y portátil que nos permitiera mover la información fácilmente de un país a otro en lugar de una base de datos centralizada donde pudiéramos almacenar todo, pero se puede aplicar un enfoque muy similar usando otros tipos de bases de datos SQL.&lt;/p&gt;
+&lt;p&gt;La función &lt;code&gt;dbConnect()&lt;/code&gt; genera el archivo SQLite si aún no existe. Luego le damos a SQLite la orden de crear la tabla &lt;code&gt;orgs&lt;/code&gt; si aún no existe, y la estructura para dicha tabla. A continuación buscamos las coordenadas de las entradas una a una usando &lt;code&gt;coords_from_city()&lt;/code&gt; y finalmente lo enviamos a la base de datos. De esa manera podríamos detener el proceso en cualquier momento y continuar más tarde simplemente recuperando la tabla &lt;code&gt;orgs&lt;/code&gt; de la base de datos, comparándola con nuestros datos originales y avanzando desde lo que falta. Para eso, la columna &lt;code&gt;ID&lt;/code&gt; es fundamental, es la columna que nos permite vincular una entrada entre los datos originales, el data frame de R y la tabla SQL.&lt;/p&gt;
+&lt;p&gt;&lt;img class=&#34;img-zoomable&#34; src=&#34;https://blog.rwhitedwarf.com/post/2022/map_any_region_with_ggplot2_part_II/maps_webscrap_to_sqlite.png&#34; alt=&#34;Función webscrap_to_sqlite() en detalle&#34; /&gt;
+&lt;/p&gt;
+&lt;p&gt;Nuestra función también tiene una variable &lt;code&gt;ccount&lt;/code&gt; que cuenta cada vez que no se encuentra una entrada. De esa forma, una vez finalizada la consulta, imprimirá la cantidad de entradas que no fueron encontradas. Las razones para no encontrar una entrada pueden ser muchas, entre las más comunes que encontré están las siguientes:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Error en la ortografía del nombre de la ciudad o exceso de información (es decir, valor &amp;ldquo;Praga, Distrito 3&amp;rdquo; cuando el nombre de la ciudad es simplemente &amp;ldquo;Praga&amp;rdquo;).&lt;/li&gt;
+&lt;li&gt;La ortografía incorrecta del nombre del Estado, Región y/o Condado.&lt;/li&gt;
+&lt;li&gt;La ciudad buscada simplemente no está en la base de datos de Open Street Maps (sucedió especialmente para pueblos muy pequeños).&lt;/li&gt;
+&lt;li&gt;Interrupciones de la conexión a internet. Esta es particularmente importante porque, a veces, ejecutar la consulta por segunda o tercera vez encontraría ciudades que no se encontraron la primera vez.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Para volver a leer los datos a R desde SQL, simplemente necesitamos hacer una conexión a la base de datos, leer la tabla y cerrar la conexión. La función &lt;code&gt;combine_df_sql&lt;/code&gt; se encarga de eso y al mismo tiempo une nuestros datos originales con los datos almacenados en la base de datos por el ID y el nombre de la ciudad. Esto fue importante para el proyecto porque queríamos mantener las coordenadas de las ciudades separadas del resto de la información debido a algunas razones prácticas internas. Pero creo que mantener todos los datos en SQL a la vez puede facilitar muchas cosas. Entre otros, podría identificar cuándo se encontró una ciudad en particular en el pasado y recuperar las coordenadas de la base de datos directamente en lugar de hacer una conexión con nominatim. Lo hice para algunos países y reduce considerablemente el tiempo de consulta. Para la presente publicación, decidí mostrar la versión separada de los datos para brindar más herramientas al lector.&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;combine_df_sql &amp;lt;- function(db.file, original.data){
+    require(dplyr)
+    require(RSQLite)
+    if(is.character(original.data)){
+        if(grepl(&#39;.csv&#39;, original.data, fixed = T)){
+            df &amp;lt;- read.csv(original.data)
+        }
+        else{
+            stop(&amp;quot;Incorrect file format for data&amp;quot;)
+        }
+    }
+    else if(is.data.frame(original.data)){
+        df &amp;lt;- original.data
+    }
+    else{
+        stop(&amp;quot;Incorrect data format&amp;quot;)
+    }
+    con &amp;lt;- dbConnect(drv=RSQLite::SQLite(), dbname = db.file)
+    db &amp;lt;- dbReadTable(con, &amp;quot;orgs&amp;quot;)
+    dbDisconnect(con)
+    result &amp;lt;- left_join(df, db, by = c(&#39;ID&#39;, &#39;City&#39;))
+    return(result)
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Otro detalle de nuestra función es la capacidad de leer desde el archivo &lt;code&gt;csv&lt;/code&gt; o desde un &lt;code&gt;data.frame&lt;/code&gt;. Dado que estábamos trabajando principalmente con archivos csv y usé data frames para los pruebas unitarias, estos 2 formatos fueron suficientes. Siéntanse libres de modificar o ampliar la función para los formatos de datos que puedan necesitarse.&lt;/p&gt;
+&lt;h2 id=&#34;datos-faltantes&#34;&gt;Datos faltantes&lt;/h2&gt;
+&lt;p&gt;Como se mencionó anteriormente, a veces los resultados de la consulta estaban incompletos y era necesaria una segunda o tercera ejecución, pero con menos filas. Algunas otras veces sólo necesitaba parar la consulta y continuar mas tarde desde donde la dejamos. Sin embargo, otras veces los datos estaban incompletos o incorrectos y esto se podía solucionar más tarde con el responsable de los datos. Los 3 escenarios me forzaban a leer el archivo csv a R, luego la tabla de la base de datos y compararlos para filtrar los valores faltantes. Así que creé la función &lt;code&gt;compare_db_data&lt;/code&gt; para comparar la base de datos (db) con los datos originales.&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;compare_db_data &amp;lt;- function(db.file, dat){
+    require(dplyr)
+    require(RSQLite)
+    if(is.character(dat)){
+        if(grepl(&#39;.csv&#39;, dat, fixed = T)){
+            df &amp;lt;- read.csv(dat)
+        }
+        else{
+            stop(&amp;quot;Incorrect file format for data&amp;quot;)
+        }
+    }
+    else if(is.data.frame(dat)){
+        df &amp;lt;- dat
+    }
+    else{
+        stop(&amp;quot;Incorrect data format&amp;quot;)
+    }
+    con &amp;lt;- dbConnect(drv=RSQLite::SQLite(), dbname = db.file)
+    db &amp;lt;- dbReadTable(con, &amp;quot;orgs&amp;quot;)
+    dbDisconnect(con)
+    filtered &amp;lt;- filter(df, !(as.character(ID) %in%
+                              as.character(db$ID)))
+    filtered
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Como se mencionó anteriormente, a veces Open Street Maps simplemente no tiene registro de ciertas &amp;ldquo;ciudades&amp;rdquo; (de hecho, sucedió solo con pueblos o poblaciones realmente pequeñas). Para solucionar eso, la función &lt;code&gt;add_coords_manually&lt;/code&gt; toma un archivo csv con una estructura particular para agregar los datos que faltan. El archivo csv debe tener las siguientes columnas:
+- Columna &lt;code&gt;ID&lt;/code&gt; nombrada exactamente así y que contiene la misma ID que los datos originales.
+- Una columna que contiene el nombre de la ciudad
+- Columnas que contienen la Latitud y Longitud donde queremos señalar la ciudad
+- Un valor para &lt;code&gt;osm_name&lt;/code&gt;. Esto podría dejarse vacío o podemos proporcionar el valor que queremos en esta punto. Lo importante es tener la columna presente en el archivo csv.&lt;/p&gt;
+&lt;p&gt;Luego, como en la función anterior, le pasamos a &lt;code&gt;add_coords_manualmente&lt;/code&gt; el nombre del archivo csv con la información complementaria, el nombre de la base de datos SQLite y los nombres de las columnas donde tenemos los valores para los nombres de &lt;code&gt;city&lt;/code&gt;, &lt;code&gt;osm_name&lt;/code&gt; , &lt;code&gt;lat&lt;/code&gt; y &lt;code&gt;long&lt;/code&gt;, todos con formato de string. El resto de la función es autodescriptiva, siempre que se tengan conocimientos básicos de sintaxis SQL.&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;add_coords_manually &amp;lt;- function(csv_file, db.name,
+                                city, osm_name, lat, lon){
+    require(tidyverse)
+    require(RSQLite)
+    csv_dat &amp;lt;- read_csv(csv_file)
+    csv_len &amp;lt;- length(csv_dat$ID)
+    con &amp;lt;- dbConnect(drv=RSQLite::SQLite(), dbname=db.name)
+    for(i in 1:csv_len){
+        dbSendQuery(con, &#39;INSERT OR IGNORE INTO orgs
+                      (ID, City, osm_name, lon, lat)
+                      VALUES (?, ?, ?, ?, ?);&#39;,
+                    list(csv_dat[[&#39;ID&#39;]][i],
+                         csv_dat[[city]][i],
+                         csv_dat[[osm_name]][i],
+                         csv_dat[[lat]][i],
+                         csv_dat[[lon]][i]))
+    }
+    dbDisconnect(con)
+    print(paste(csv_len, &#39;inserted&#39;))
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;siguientes-pasos&#34;&gt;Siguientes pasos&lt;/h2&gt;
+&lt;p&gt;Si eres nuevo en R, probablemente habrás notado que uno de los puntos fuertes de R que estoy usando mucho aquí es el uso de funciones. Los primeros mapas que creamos en el proyecto los hicimos escribiendo scripts con unos pocos cientos de líneas. Eso nos dio la base para crear las funciones necesarias y, por lo tanto, el resto de los mapas fueron posibles usando solo unas pocas líneas. Algunos de los scripts para el web scrapping de las coordenadas constan de menos de 10 líneas de código. Eso es posible usando las funciones anteriores y algunas otras creadas para casos especiales o particulares. No compartiré absolutamente todo, pero quiero dar una idea de cómo hacer que el proceso sea más eficiente. Siempre puedes crear más funciones para tus casos particulares o modificar mis funciones propuestas para adaptarlas a tu situación particular.&lt;/p&gt;
+&lt;p&gt;Y hablando de extensibilidad, mientras escribía este blog descubrí una librería que no conocía, &lt;a href=&#34;https://github.com/r-tmap/tmaptools&#34; target=&#34;_blank&#34;&gt;tmaptools&lt;/a&gt; que contiene la función [geocode_OSM](&lt;a href=&#34;https://www.rdocumentation&#34; target=&#34;_blank&#34;&gt;https://www.rdocumentation&lt;/a&gt;. org/packages/tmap/versions/1.6-1/topics/geocode_OSM) que usa nominatim para recuperar las coordenadas del punto buscado. La función tiene un formato de búsqueda más fácil de usar y más posibilidades para el valor de retorno, mientras que mi opción &lt;code&gt;coords_from_city()&lt;/code&gt; se mantiene bastante rígida y aún con el formato original que se imaginó hace unos años cuando la creé. Si realmente te interesa el tema te invito a revisar el paquete. Yo mismo he estado ocupado manteniendo el código y creando mapas, por lo que tengo muy poco tiempo para hacer mejoras al proyecto original. Pero esa es exactamente mi tarea principal en este momento, así que si hago algún cambio en las funciones presentadas aquí usando el paquete &lt;a href=&#34;https://github.com/r-tmap/tmaptools&#34; target=&#34;_blank&#34;&gt;tmaptools&lt;/a&gt;, puedes estar seguro de que crearé un breve publicación para compartirlo.&lt;/p&gt;
+&lt;p&gt;Luego, una vez que tenemos las coordenadas de nuestras ciudades objetivo y sabemos cómo hacer el mapa básico, el siguiente paso es agregar las ciudades al mapa base. En la próxima publicación, les mostraré cómo lo hice y una función para que el proceso sea más rápido y eficiente.&lt;/p&gt;
 </description>
     </item>
     

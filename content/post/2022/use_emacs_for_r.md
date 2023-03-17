@@ -44,7 +44,7 @@ This chapter is a brief overview of the rest of the post meant as a quick start 
  
  3. This is your configuration file. Paste the following code in your new window 
  
-``` emacs-lisp
+```{emacs-lisp emacs_init}
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
 
@@ -68,7 +68,7 @@ This chapter is a brief overview of the rest of the post meant as a quick start 
 
 This configuration assumes that you have installed R with all the defaults. If you have installed R in a directory of your choice, add the following line at the end of the configuration file, changing the path of my example for the path were you have installed R. 
 
-``` emacs-lisp
+```{emacs-lisp path_r}
 (setq inferior-ess-r-program "C:/Users/Manuel/path_where_R_is/R-4.2.1/bin/R.exe")
 ```
 
@@ -139,7 +139,7 @@ If you followed step 2 from within Emacs you should have now an empty screen whe
 
 Here are just a couple of lines that are useful to add to your dot Emacs file for writing R code:
 
-``` emacs-lisp
+```{emacs-lisp dot-emacs}
 ;; enable column numbers
 (setq column-number-mode t)
 (add-hook 'prog-mode-hook 'display-line-numbers-mode)
@@ -197,7 +197,7 @@ You can think of MELPA to ELPA like Bioconductor is to CRAN. In their own words,
 
 To configure Emacs to find MELPA packages we simply need two lines of code in our configuration file.
 
-``` emacs-lisp
+```{emacs-lisp enable-melpa}
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
 ```
@@ -237,7 +237,7 @@ Another way to install packages is by using the package [use-package](https://jw
 
 Let's use the example from the quick start, step 3:
 
-``` emacs-lisp
+```{emacs-lisp use-package}
 (unless (package-installed-p 'use-package)
   (package-refresh-contents)
   (package-install 'use-package))
@@ -292,7 +292,7 @@ The ESS debugging tool is also useful and powerful. You can simply type in you R
 
 Among all the libraries and Emacs functionalities that can help us writing R code, I think that [Company](https://company-mode.github.io/) deserves a special mention. It is an auto completion tool that is easy to set up for ESS and intuitive to use. If you followed the quick start you should already have it installed and ready to use.
 
-``` emacs-lisp
+```{emacs-lisp company}
 (use-package company
   :config
   (add-hook 'after-init-hook 'global-company-mode))

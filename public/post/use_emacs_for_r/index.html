@@ -143,7 +143,7 @@
 <ol start="3">
 <li>This is your configuration file. Paste the following code in your new window</li>
 </ol>
-<pre><code class="language-emacs-lisp">(require 'package)
+<pre><code class="language-{emacs-lisp">(require 'package)
 (add-to-list 'package-archives '(&quot;melpa&quot; . &quot;https://melpa.org/packages/&quot;))
 
 (unless (package-installed-p 'use-package)
@@ -164,7 +164,7 @@
       company-tooltip-limit 10)
 </code></pre>
 <p>This configuration assumes that you have installed R with all the defaults. If you have installed R in a directory of your choice, add the following line at the end of the configuration file, changing the path of my example for the path were you have installed R.</p>
-<pre><code class="language-emacs-lisp">(setq inferior-ess-r-program &quot;C:/Users/Manuel/path_where_R_is/R-4.2.1/bin/R.exe&quot;)
+<pre><code class="language-{emacs-lisp">(setq inferior-ess-r-program &quot;C:/Users/Manuel/path_where_R_is/R-4.2.1/bin/R.exe&quot;)
 </code></pre>
 <ol start="4">
 <li>
@@ -226,7 +226,7 @@
 </blockquote>
 <p>If you followed step 2 from within Emacs you should have now an empty screen where you can start typing Elisp code to tell Emacs how to start. After a new installation the file still does not exists (although you might already have created it if you followed the quick start). With the command <strong>C-x C-f</strong> we can create it. Make sure that it is stored in the home folder <code>~/</code> and not somewhere else. To demonstrate the point, type the following line anywhere in your <code>.emacs</code> file: <code>(setq inhibit-startup-screen t)</code>, that tells Emacs to inhibit the startup screen. Now save it with <strong>C-x C-s</strong>, close Emacs and open it again and now the startup screen showing you the tutorial should not be there anymore. If you still want to see the welcome screen at startup you can simply delete that line and the startup screen will be back (<strong>C-x C-f</strong> type <code>~/.emacs</code>, delete the line and save).</p>
 <p>Here are just a couple of lines that are useful to add to your dot Emacs file for writing R code:</p>
-<pre><code class="language-emacs-lisp">;; enable column numbers
+<pre><code class="language-{emacs-lisp">;; enable column numbers
 (setq column-number-mode t)
 (add-hook 'prog-mode-hook 'display-line-numbers-mode)
 
@@ -270,7 +270,7 @@
 <p>Extensible - contribute new recipes, and we&rsquo;ll build the packages</p>
 </blockquote>
 <p>To configure Emacs to find MELPA packages we simply need two lines of code in our configuration file.</p>
-<pre><code class="language-emacs-lisp">(require 'package)
+<pre><code class="language-{emacs-lisp">(require 'package)
 (add-to-list 'package-archives '(&quot;melpa&quot; . &quot;https://melpa.org/packages/&quot;))
 </code></pre>
 <p>Add those lines to your dot emacs file, save it and restart Emacs to take effect. Now, upon calling <code>list-packages</code> you should see an extended list of packages, some of which are tagged as &ldquo;melpa&rdquo; in the section &ldquo;Archive&rdquo; of the list.</p>
@@ -301,7 +301,7 @@ A short description of the package.</p>
 <p>The <code>use-package</code> macro allows you to isolate package configuration in your <code>.emacs</code> file in a way that is both performance-oriented and, well, tidy. I created it because I have over 80 packages that I use in Emacs, and things were getting difficult to manage. Yet with this utility my total load time is around 2 seconds, with no loss of functionality!</p>
 </blockquote>
 <p>Let&rsquo;s use the example from the quick start, step 3:</p>
-<pre><code class="language-emacs-lisp">(unless (package-installed-p 'use-package)
+<pre><code class="language-{emacs-lisp">(unless (package-installed-p 'use-package)
   (package-refresh-contents)
   (package-install 'use-package))
 
@@ -366,7 +366,7 @@ A short description of the package.</p>
 <p>The ESS debugging tool is also useful and powerful. You can simply type in you R console <code>debug(function)</code> and then run the function called inside <code>debug</code> or a function containing it and Emacs will run step by step and side by side the file each time you type RET in the console. Whenever you don&rsquo;t type RET you can do all sort of stuff locally such as print the state of an argument or even change its value.</p>
 <h3 id="company">Company</h3>
 <p>Among all the libraries and Emacs functionalities that can help us writing R code, I think that <a href="https://company-mode.github.io/" target="_blank">Company</a> deserves a special mention. It is an auto completion tool that is easy to set up for ESS and intuitive to use. If you followed the quick start you should already have it installed and ready to use.</p>
-<pre><code class="language-emacs-lisp">(use-package company
+<pre><code class="language-{emacs-lisp">(use-package company
   :config
   (add-hook 'after-init-hook 'global-company-mode))
 
@@ -546,11 +546,19 @@ A short description of the package.</p>
             </span>
             
             <span>
+                <a href="/tags/docker/">docker</a>
+            </span>
+            
+            <span>
                 <a href="/tags/emacs/">emacs</a>
             </span>
             
             <span>
                 <a href="/tags/ggplot2/">ggplot2</a>
+            </span>
+            
+            <span>
+                <a href="/tags/maps-app/">maps-app</a>
             </span>
             
             <span>
@@ -574,6 +582,10 @@ A short description of the package.</p>
             </span>
             
             <span>
+                <a href="/tags/r-mapas/">R mapas</a>
+            </span>
+            
+            <span>
                 <a href="/tags/r-maps/">R maps</a>
             </span>
             
@@ -583,6 +595,14 @@ A short description of the package.</p>
             
             <span>
                 <a href="/tags/r-tips/">R tips</a>
+            </span>
+            
+            <span>
+                <a href="/tags/references/">references</a>
+            </span>
+            
+            <span>
+                <a href="/tags/referencias/">referencias</a>
             </span>
             
             <span>
@@ -698,11 +718,19 @@ A short description of the package.</p>
             </span>
             
             <span>
+                <a href="/tags/docker/">docker</a>
+            </span>
+            
+            <span>
                 <a href="/tags/emacs/">emacs</a>
             </span>
             
             <span>
                 <a href="/tags/ggplot2/">ggplot2</a>
+            </span>
+            
+            <span>
+                <a href="/tags/maps-app/">maps-app</a>
             </span>
             
             <span>
@@ -726,6 +754,10 @@ A short description of the package.</p>
             </span>
             
             <span>
+                <a href="/tags/r-mapas/">R mapas</a>
+            </span>
+            
+            <span>
                 <a href="/tags/r-maps/">R maps</a>
             </span>
             
@@ -735,6 +767,14 @@ A short description of the package.</p>
             
             <span>
                 <a href="/tags/r-tips/">R tips</a>
+            </span>
+            
+            <span>
+                <a href="/tags/references/">references</a>
+            </span>
+            
+            <span>
+                <a href="/tags/referencias/">referencias</a>
             </span>
             
             <span>
