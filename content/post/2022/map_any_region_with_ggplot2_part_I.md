@@ -6,7 +6,7 @@ draft: false
 date: 2022-10-08
 description: "Part I of making maps of any region in the world with R using ggplot2 and maps packages"
 tags: ["R maps", "ggplot2", "Code Visuals", "R functions"]
-categories: ["R"]
+categories: ["R", "maps-app"]
 archives: ["2022"]
 ---
 
