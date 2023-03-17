@@ -20,6 +20,10 @@ We created maps of data showing changes over a span of time for different countr
 
 The project itself is quite long for a single post, and just recently I managed to extract the base code I created and make it public, without compromising any privacy issues. On the other hand, it is a live project that I am currently working on. Therefore, I decided to share my path and experiences along the creation process of the Shiny app. The posts are not only about the Shiny app, but the package I created behind it. I will touch topics of functions crafting, creation of the maps, classes of objects, etc., as well as any interesting issue that appear on the way. It is my way to contribute to the R community and at the same time keeping the project documented for myself.
 
+You can find all the posts on this series under the tag [maps-app](https://blog.rwhitedwarf.com/tags/maps-app/).
+
+You can also find the current state of the project under [my git hub](https://github.com/teotenn) repo [mapic](https://github.com/teotenn/mapic).
+
 This first post is asbout the creation of **The basic map**
 	
 I hope you all enjoy it. Feel free to leave any kind of comment and/or question at the end.

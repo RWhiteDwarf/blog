@@ -14,16 +14,15 @@ archives: ["2022"]
 
 This is the second part of the series to create a map of any region of the world with R.
 
-We are creating maps of data showing changes over a span of time for different countries and pointing at all kinds of cities. That basically means that we need to **map any region of the world with R**. Today there are all kinds of packages and techniques to do that. I will share the strategy I used with [ggplot2](https://cran.r-project.org/web/packages/ggplot2/index.html) and [maps](https://cran.r-project.org/web/packages/maps/index.html) packages, using support of [Open Street Map](https://www.openstreetmap.org/) to obtain the coordinates of cities and finally making it interactive with [shiny](https://shiny.rstudio.com/). The project is quite long for a single post, so my idea is to split it into a few smaller blog posts. So far, the list is a follows:
+We are creating maps of data showing changes over a span of time for different countries and pointing at all kinds of cities. That basically means that we need to **map any region of the world with R**. Today there are all kinds of packages and techniques to do that. I will share the strategy I used with [ggplot2](https://cran.r-project.org/web/packages/ggplot2/index.html) and [maps](https://cran.r-project.org/web/packages/maps/index.html) packages, using support of [Open Street Map](https://www.openstreetmap.org/) to obtain the coordinates of cities and finally making it interactive with [shiny](https://shiny.rstudio.com/). 
 
-1. [The basic map](https://blog.rwhitedwarf.com/post/map_any_region_with_ggplot2_part_i/)
-2. **Web scrapping with nominatim open street maps**
-3. Maps with cities
-4. Dynamic maps in time
-5. Making a single script for fast replication
-6. Making the code interactive in a shiny app
-	
-The ideas is to share the how-to of one of the projects I am most proud of and, at the same time to give back to the R community in hopes that it can help somebody else.
+This series of posts share my path towards the creation of the Shiny app. It is a live project and I decided to share my path and experiences along the creation process. The posts are not only about the Shiny app, but the package I created behind it., including topics of functions crafting, creation of the maps, classes of objects, etc., as well as any interesting issue that appear on the way. It is my way to contribute to the R community and at the same time keeping the project documented for myself.
+
+You can find all the posts on this series under the tag [maps-app](https://blog.rwhitedwarf.com/tags/maps-app/ "#maps-app").
+
+You can also find the current state of the project under [my git hub](https://github.com/teotenn) repo [mapic](https://github.com/teotenn/mapic).
+
+This post is about **Web scrapping with nominatim open street maps**
 
 I hope you all enjoy it. Feel free to leave any kind of comment and/or question at the end.
 
