@@ -4,8 +4,8 @@ knitr::opts_chunk$set(comment = '>')
 ## Set root folder, folder for posts and folder for images
 mdit.params <- list()
 mdit.params[['root.folder']] = paste0(getwd(), '/')
-mdit.params[['posts.folder']] = '/content/post/'
-mdit.params[['images.folder']] = '/static/post/'
+mdit.params[['posts.folder']] = '/content/'
+mdit.params[['images.folder']] = '/static/'
 
 ## Markdown one file only
 md_file <- function(rmd.file, dirs = NULL, func.params = mdit.params){
@@ -36,9 +36,6 @@ md_file <- function(rmd.file, dirs = NULL, func.params = mdit.params){
     if(class(changing.wd) == 'try-error'){
         stop("Path not found: ", work.in)
     }
-    #message('File is in ', work.in)
-    #message('Image goes to ', base.dir, fig.path)
-    #message('We need to point it at ', base.url, fig.path)
     opts_knit$set(base.dir = base.dir, base.url = base.url)
     opts_chunk$set(fig.path = fig.path)
     knit(rmd.file)
