@@ -1,34 +1,26 @@
 ---
 author: "Manuel Teodoro Tenango"
-title: "Mapa de cualquier región del mundo con R - Parte II.5: recreando las funciones"
+title: "Webscrap e iteraciones con R"
 image: ""
-draft: true
-date: 2023-02-24
-description: "Parte II.5 de cómo hacer mapas de cualquier región del mundo utilizando las librerías ggplot2 y maps"
-tags: ["R mapas", "R funciones", "web-scrap", "database", "Recursion"]
+draft: false
+date: 2023-03-24
+description: "Parte de cómo hacer mapas de cualquier región del mundo utilizando las librerías ggplot2 y maps"
+tags: ["maps-app", "R mapas", "R funciones", "web-scrap", "database", "recursion"]
 categories: ["R"]
 archives: ["2023"]
 ---
 
 ## Sobre este post
 
-Este es un comentario sobre la segunda parte que hice en las series de cómo crear mapas de cualquier región del mundo con R. Este post está escrito originalmente en español, desde el aeropuerto de Amsterdam, de camino a México.
+Estamos creando mapas de datos que muestran los cambios durante un período de tiempo para diferentes países y orientado a todo tipo de ciudades. Esto básicamente significa que necesitamos **mapear cualquier región del mundo con R**. Hoy en día existen todo tipo de paquetes y técnicas para hacerlo. Quiero compartir la estrategia que utilicé con [ggplot2](https://cran.r-project.org/web/packages/ggplot2/index.html) y [maps](https://cran.r-project.org/web/packages/maps/index.html), utilizando el soporte de [Open Street Map](https://www.openstreetmap.org/) para obtener las coordenadas de las ciudades y finalmente hacerlo interactivo con [shiny](https://shiny.rstudio.com/). 
 
-Debido a cambios considerables que he hecho en el código de la mayoría de las funciones presentadas en el post anterior, he decidido crear este post como la parte II.5 para compartir los cambios que hice a las funciones. En este post no explico cada detalle de las funciones presentadas, si no únicamente una descripción de los cambios y cómo funcionan.
+Estas publicaciones comparten mi camino en la creación de la aplicación Shiny. Es un proyecto vivo en el que estoy trabajando actualmente y decidí compartir mis experiencias durante el proceso de creación. Estas publicaciones no son sólo acerca de Shiny apps, si no más bien sobre la creación del paquete detrás, incluyendo temas sobre la generación de funciones, creación de los mapas, clases de objetos, entre otros, incluyendo cualquier tema interesante que aparezca en el camino. Es mi manera de contribuir a la comunidad de R y al mismo tiempo documentar el proyecto en si mismo.
 
-Sobre las series: estamos creando mapas de datos que muestran los cambios durante un período de tiempo para diferentes países y orientado a todo tipo de ciudades. Esto básicamente significa que necesitamos **mapear cualquier región del mundo con R**. Hoy en día existen todo tipo de paquetes y técnicas para hacerlo. Quiero compartir la estrategia que utilicé con [ggplot2](https://cran.r-project.org/web/packages/ggplot2/index.html) y [maps](https://cran.r-project.org /web/packages/maps/index.html), utilizando el soporte de [Open Street Map](https://www.openstreetmap.org/) para obtener las coordenadas de las ciudades y finalmente hacerlo interactivo con [shiny](https ://shiny.rstudio.com/). El proyecto es bastante largo para una sola publicación, por lo que mi idea es dividirlo en algunas publicaciones de blog más pequeñas. Hasta el momento, la lista es la siguiente:
+Pueden encontrar todas las publicaciones en este tema bajo la etiqueta [maps-app](https://blog.rwhitedwarf.com/tags/maps-app/) (incluyendo las versiones en inglés).
 
-1. [El mapa básico] **ADD LINK**
-2. Web scrapping with nominatim open street maps
-   2.1. Recreando las funciones 
-3. Maps with cities
-4. Dynamic maps in time
-5. Making a single script for fast replication
-6. Making the code interactive in a shiny app
+También pueden encontrar el estado actual del proyecto en [mi GitHub](https://github.com/teotenn) repo [mapic](https://github.com/teotenn/mapic).
 
-La idea es compartir el procedimiento de uno de los proyectos de los que estoy más orgulloso y, al mismo tiempo, retribuir a la comunidad de R con la esperanza de que pueda ayudar a alguien más.
-
-Espero que lo disfruten. Siéntanse libres de dejar cualquier tipo de comentario y/o pregunta al final.
+Este post está escrito originalmente en español, desde el aeropuerto de Amsterdam, de camino a México. Espero que lo disfruten. Siéntanse libres de dejar cualquier tipo de comentario y/o pregunta al final.
 
 ![R Maps](/post/2022/map_any_region_with_ggplot2_part_I/maps_DrawingMap.png)
 
@@ -42,7 +34,7 @@ Por este motivo había querido hacer cambios para adecuar las funciones a paradi
 
 Sin embargo, para bien o para mal, 2022 fue un año lleno de cambios y retos para mi y mi familia, lo que me obligó a dejar de lado el proyecto por un tiempo, resignar mi posición como director de la división, y enfocarme únicamente a mi carrera, mi salud y mi familia. Esto resultó en que, al recuperar la estabilidad en mi vida, me encontré con mas tiempo libre y menos obligaciones para re pensar el código y trabajar en ello. Adicionalmente, mi trabajo principal tuvo un giro que fue de la estadística a mas orientado a la programación en R, lo cual me ha dado mas herramientas para mejorar el código, y me ha motivado a retomar viejas lecciones sobre programación funcional y, sobre todo, iteración. 
 
-Esto me permitió mejorar las dos funciones principales: la encargada del webscrapping y la que manda los datos a SQLite. 
+Esto me permitió mejorar las dos funciones principales: la encargada del webscrapping y la que manda los datos a SQLite. Puedes encontrar las funciones originales en el post anterior [Mapa de cualquier región del mundo con R - Parte I: El mapa base](https://blog.rwhitedwarf.com/es/post/2022/mapa_de_cualquier_region_con_ggplot2_i/) y compararlos con las nuevas funciones mejoradas en este.
 
 ## Webscrapp a SQLite
 La función `webscrap_to_sqlite` se encarga de enviar las coordenadas encontradas por Open Street Map a nuestra base de datos. La función como está definida originalmente es poco efectiva, ya que hace cada operación línea por línea. También es muy rígida en la forma en la que dirige los valores de las regiones, tanto su petición a la API como la colocación de los valores en la base de datos, lo que hace cualquier extensión o modificación muy complicada.
@@ -50,7 +42,8 @@ La función `webscrap_to_sqlite` se encarga de enviar las coordenadas encontrada
 Por lo tanto, es la función que recibió mas cambios, fue prácticamente re escrita desde ceros, haciendo la búsqueda mas eficiente, permitiendo también búsqueda interna de los datos ya almacenados; mas flexible, lidiando con los parámetros de las regiones de forma mas clara; y mas entendible, mejorando el estilo del código.
 
 
-```{r webscrap_to_sqlite}
+
+```r
 webscrap_to_sqlite <- function(db.name,
                                dat,
                                city = "City",
@@ -163,7 +156,8 @@ En la propuesta anterior, únicamente las coordenadas encontradas eran enviadas 
 
 Para ello generé la función `remove_na_from_db`, una función muy simple pero que le otorga al usuario una propuesta remover `NA`s automáticamente.
 
-```{r remove_na}
+
+```r
 remove_na_from_db <- function(db.file) {
   require(RSQLite)
   con <- dbConnect(drv = RSQLite::SQLite(), dbname = db.file)
@@ -173,17 +167,18 @@ remove_na_from_db <- function(db.file) {
 }
 ```
 
-La función es únicamente una conexión a la base de datos que envía la orden de remover filas donde el campo `lon` está vacío, en sintaxis de SQLite. Esto es la manera mas segura, directa y rápida de hacerlo. También podríamos importar los datos de nuevo a R, filtrarlos y enviarlos de nuevo a SQLite, pero esto requeriría mayor uso de la memoria local, mayor cantidad de código y un mayor riesgo ya que requeriría re-escribir la base de datos a SQLite por completo. El poder de la librería `RSQLite` (o cualquier otra librería que conecta a R con SQL) está precisamente en la posibilidad de pasar ordenes escritas y ejecutadas directamente en SQL desde R.
+La función es únicamente una conexión a la base de datos que envía la orden de remover filas donde el campo `lon` está vacío, en sintaxis de SQLite. Esto es la manera mas segura, directa y rápida de hacerlo. También podríamos importar los datos de nuevo a R, filtrarlos y enviarlos de nuevo a SQLite, pero esto requeriría mayor uso de la memoria local, mayor cantidad de código y un mayor riesgo ya que requeriría re-escribir la base de datos a SQLite por completo. El poder de la librería `RSQLite` (o cualquier otra librería que conecta a R con SQL) está precisamente en la posibilidad de pasar ordenes escritas y ejecutadas directamente en SQL.
 
 ## La obtención de las coordenadas
-La función `coords_from_city` también recibió cambios considerables en lectura del código y flexibilidad, aunque menores en funcionamiento y eficiencia.
+La función `coords_from_city` también recibió cambios considerables en lectura del código y flexibilidad, y un poco menores en funcionamiento y eficiencia.
 
-```{r get_coords}
-coords_from_city <- function(City = NULL,
-                             CountryTwoLetter,
-                             Region = NULL,
-                             State = NULL,
-                             County = NULL) {
+
+```r
+coords_from_city <- function(city = NULL,
+                             country_code,
+                             region = NULL,
+                             state = NULL,
+                             county = NULL) {
   require("RJSONIO")
 
   ## 1. Abstracción de regiones para OSM
@@ -201,36 +196,67 @@ coords_from_city <- function(City = NULL,
   }
 
   ## 2. Respuesta
-  response <- paste(
+  link <- paste(
     "http://nominatim.openstreetmap.org/search?city="
   , extrasCoded
   , CountryCoded
   , "&format=json"
   , sep = ""
   )
-  x <- fromJSON(response)
 
-  ## 3. Organización de los resultados
-  if (is.vector(x)) {
-    message(paste("Found", x[[1]]$display_name))
-    lon <- x[[1]]$lon
-    lat <- x[[1]]$lat
-    osm_name <- x[[1]]$display_name
-    coords <- data.frame("lon" = lon, "lat" = lat, "osm_name" = osm_name)
-  } else {
-    message(paste("No results found for", extrasCoded, CountryTwoLetter))
-    coords <- data.frame("lon" = NA, "lat" = NA, "osm_name" = as.character(NA))
-  }
+  response <- try({fromJSON(link)},
+                  silent = TRUE)
 
-  return(coords)
+  if (class(response) == "try-error") {
+    stop(response[1])
+  } else if (class(response) == "response") {
+    response_status <- http_status(response)
+    if (response_status$category != "Success") {
+      stop(response_status$message)
+    }
+  } else if (is.list(response)) {
+
+    ## 3. Organización de los resultados
+    if (length(response) == 0) {
+      message(paste("No results found for", extrasCoded))
+      coords <- data.frame("lon" = NA, "lat" = NA, "osm_name" = as.character(NA))
+      
+    } else if (length(response) == 1) {
+      message(paste("Found", response[[1]]$display_name))
+      coords <- data.frame(
+        lon = response[[1]]$lon,
+        lat = response[[1]]$lat,
+        osm_name = response[[1]]$display_name
+      )
+      
+    } else {
+      message(paste("Several entries found for", city, country_code))
+      coords <- data.frame(
+        lon = response[[1]]$lon,
+        lat = response[[1]]$lat,
+        osm_name = response[[1]]$display_name
+      )
+    }
+    
+    ## 4. Salida como data frame
+    return(coords)
 }
 ```
 
-El cambio principal está en la sección 1, en lugar de pasar cada una de las regiones como su propio string y darles formato una por una, las he abstraído todas en un solo vector. Esto reduce la cantidad de código, el uso de memoria, y nos permite incluir la ciudad en la lista, convirtiéndolo también en un valor opcional. La razón por la que las había preparado por separado publicación anterior es simplemente porque la función creció lentamente: al principio solo necesitábamos ciudad, pero luego tuvimos que usar algunos campos adicionales según el país en el que trabajábamos. Para facilitarme las cosas, simplemente agregué cada campo de región según fuera necesario. Ahora que tengo tiempo para trabajar en el código, esta fue la primera función que modifiqué.
+```
+> Error: <text>:68:0: unexpected end of input
+> 66:     return(coords)
+> 67: }
+>    ^
+```
 
-Los siguientes pasos no cambiaron mucho. El paso 2 permanece igual, con la única diferencia del nuevo parámetro `extrasCoded`. El paso 3 cambia un poco la organización de los resultados, devolviendo un data frame con las mismas columnas cuando los resultados no fueron encontrados, pero ahora con los campos vacíos. Esto ayuda a las funciones presentadas anteriormente para llenar la base de datos. 
+El principal cambio está en la sección 1, en lugar de pasar cada una de las regiones como su propio string y darles formato una por una, las he abstraído todas en un solo vector. Esto reduce la cantidad de código, el uso de memoria, y nos permite incluir la ciudad en la lista, convirtiéndolo también en un valor opcional. La razón por la que las había preparado por separado publicación anterior es simplemente porque la función creció lentamente: al principio solo necesitábamos ciudad, pero luego tuvimos que usar algunos campos adicionales según el país en el que trabajábamos. Para facilitarme las cosas, simplemente agregué cada campo de región según fuera necesario. Ahora que tengo tiempo para trabajar en el código, esta fue la primera función que modifiqué.
 
-Como ya he mencionado antes, estas nuevas funciones también nos permiten realizar búsquedas con el valor de ciudad vacío. Este fue un requisito solicitado en la última versión, ya que algunos usuarios comenzaron a hacer mapas por regiones, mientras que otros, al no encontrar ciudad muy pequeñas, decidieron agrupar los datos por región. Gracias a los cambios realizados en `coords_from_city`, la función `webscrap_to_sqlite` ahora puede obtener resultados cuando el valor para ciudad es `NA`, considerando que se encuentren las coordenadas para la región o el estado. 
+El paso 2 ahora imprime mensajes que nos ayudan a identificar el error cuando se trata de la conexión, al mismo tiempo que detiene el proceso. Ya sea un error local de conexión, o problemas del lado del API, obtendremos un mensaje y el proceso se detendrá, lo cual debe evitar tiempos de espera largos cuando no hay conexión y se está haciendo la búsqueda de muchas localidades.
+
+El paso 3 cambia un poco la organización de los resultados, devolviendo siempre un data frame con las mismas columnas cuando los resultados no fueron encontrados, pero ahora con los campos vacíos en dicho caso. Esto ayuda a las funciones presentadas anteriormente para llenar la base de datos. Adicionalmente, cuando muchos resultados fueron encontrados, se imprime esta información en pantalla; por ahora es sólo como información. La idea es mantener este espacio para realizar cambios en el futuro que nos permitan seleccionar la opción de manera interactiva. Esto es algo que aún necesito pensar y planear por que, por un lado quiero utilizarlo en una aplicación Shiny, y por otro lado queremos mantener la habilidad de que el web scrapping suceda automáticamente con menor intervención posible. 
+
+Como ya he mencionado antes, estas nuevas funciones también nos permiten realizar búsquedas con el valor de ciudad vacío. Este fue un requisito solicitado en la última versión, ya que algunos usuarios comenzaron a hacer mapas por regiones, mientras que otros, al no encontrar ciudades muy pequeñas, decidieron agrupar los datos por región. Gracias a los cambios realizados en `coords_from_city`, la función `webscrap_to_sqlite` ahora puede obtener resultados cuando el valor para ciudad es `NA`, considerando que se encuentren las coordenadas para la región o el estado. Aquí es importante mencionar que se recomienda utilizar el argumento `state` para la búsqueda de regiones, por alguna razón, esto función mejor en la API de OSM. Como ejemplo, la búsqueda `coords_from_city(state = "Castilla La Mancha", country_code = "ES")` nos arroja los resultados esperados, a pesar de que España no tiene estados; sin embargo si hacemos `coords_from_city(region = "Castilla La Mancha", country_code = "ES")` nominatim no encuentra los resultados.
 
 ## Conclusiones
 
