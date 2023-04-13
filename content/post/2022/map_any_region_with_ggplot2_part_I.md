@@ -10,6 +10,10 @@ categories: ["R"]
 archives: ["2022"]
 ---
 
+You can find all the posts on this series under the tag [maps-app](https://blog.rwhitedwarf.com/tags/maps-app/).
+
+You can also find the current state of the project under [my GitHub](https://github.com/teotenn) repo [mapic](https://github.com/teotenn/mapic) (including the Spanish versions).
+
 ## Scope of this post
 
 When you prepare for a job interview one of the questions they always tell you to prepare is "What are you most proud of?". Personally I've never been asked that question in a job interview but it kept me thinking. Some years ago I developed the R code for the creation of maps of infrastructure for a Political Sciences project, and I can say that this is one of the projects I'm most proud of. However, it is also true what they say to developers, that **nobody cares about how you did it**. The final user only cared about what was done, while the research team about what are the possibilities. 
@@ -19,10 +23,6 @@ The project taught me so much in terms of technical skills that I have decided t
 We created maps of data showing changes over a span of time for different countries and pointing at all kinds of cities. That basically means that we need to **map any region of the world with R**. Today there are all kinds of packages and techniques to do that. I will share the strategy I used with [ggplot2](https://cran.r-project.org/web/packages/ggplot2/index.html) and [maps](https://cran.r-project.org/web/packages/maps/index.html) packages, using support of [Open Street Map](https://www.openstreetmap.org/) to obtain the coordinates of cities and finally making it interactive with [shiny](https://shiny.rstudio.com/). 
 
 The project itself is quite long for a single post, and just recently I managed to extract the base code I created and make it public, without compromising any privacy issues. On the other hand, it is a live project that I am currently working on. Therefore, I decided to share my path and experiences along the creation process of the Shiny app. The posts are not only about the Shiny app, but the package I created behind it. I will touch topics of functions crafting, creation of the maps, classes of objects, etc., as well as any interesting issue that appear on the way. It is my way to contribute to the R community and at the same time keeping the project documented for myself.
-
-You can find all the posts on this series under the tag [maps-app](https://blog.rwhitedwarf.com/tags/maps-app/).
-
-You can also find the current state of the project under [my GitHub](https://github.com/teotenn) repo [mapic](https://github.com/teotenn/mapic) (including the Spanish versions).
 
 This first post is asbout the creation of **The basic map**
 	

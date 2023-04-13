@@ -10,19 +10,19 @@ categories: ["R"]
 archives: ["2022"]
 ---
 
+Pueden encontrar todas las publicaciones en este tema bajo la etiqueta [maps-app](https://blog.rwhitedwarf.com/tags/maps-app/) (incluyendo las versiones en inglés).
+
+También pueden encontrar el estado actual del proyecto en [mi GitHub](https://github.com/teotenn) repo [mapic](https://github.com/teotenn/mapic).
+
 ## Sobre esta entrada
 
 Cuando nos preparamos para una entrevista de trabajo, una de las preguntas que más recomiendan preparar es "Menciona el proyecto del que estés más orgulloso?". Personalmente nunca me han hecho esa pregunta en una entrevista de trabajo pero me mantuvo pensando. Hace algunos años desarrollé el código en R para la creación de mapas de infraestructura para un proyecto de Ciencias Políticas, y puedo decir que este es uno de los proyectos de los que estoy más orgulloso. Sin embargo, también es cierto lo que comúnmente se dice entre los desarrolladores, que **a nadie le importa cómo lo hiciste**. Al usuario final solo le interesa el producto final y cómo utilizarlo, mientras que al equipo de investigación le interesa saber las posibilidades que propone.
 
 El proyecto me enseñó tanto en términos de habilidades técnicas que he decidido compartir el **cómo** en caso de que pueda ayudar a alguien más. También es mi forma de contribuir a la comunidad de R, ya que yo mismo aprendí R y programación gracias a las amables personas que publican su experiencia en la web (y también a los que tienen la paciencia de responder preguntas en StackOverflow). Debido al acuerdo de confidencialidad con mi cliente no puedo compartir el código completo o el repositorio de Git.
 
-Creamos mapas de datos que muestran los cambios durante un período de tiempo para diferentes países y orientados a todo tipo de ciudades. Esto básicamente significa que necesitamos **mapear cualquier región del mundo con R**. Hoy en día existen todo tipo de paquetes y técnicas para hacerlo. Compartiré la estrategia que utilicé con [ggplot2](https://cran.r-project.org/web/packages/ggplot2/index.html) y [maps](https://cran.r-project.org /web/packages/maps/index.html), utilizando el soporte de [Open Street Map](https://www.openstreetmap.org/) para obtener las coordenadas de las ciudades y finalmente hacerlo interactivo con [shiny](https ://shiny.rstudio.com/). 
+Creamos mapas de datos que muestran los cambios durante un período de tiempo para diferentes países y orientados a todo tipo de ciudades. Esto básicamente significa que necesitamos **mapear cualquier región del mundo con R**. Hoy en día existen todo tipo de paquetes y técnicas para hacerlo. Compartiré la estrategia que utilicé con [ggplot2](https://cran.r-project.org/web/packages/ggplot2/index.html) y [maps](https://cran.r-project.org/web/packages/maps/index.html), utilizando el soporte de [Open Street Map](https://www.openstreetmap.org/) para obtener las coordenadas de las ciudades y finalmente hacerlo interactivo con [shiny](https://shiny.rstudio.com/).
 
 El proyecto es bastante largo para una sola publicación. Por otro lado, recientemente logré extraer el código base y hacerlo público sin comprometer la privacidad. También es un proyecto vivo en el que estoy trabajando actualmente. Por lo que decidí compartir mis experiencias durante el proceso de creación de la aplicación Shiny. Estas publicaciones no son sólo acerca de Shiny apps, si no más bien sobre la creación del paquete detrás. Tocaré temas sobre la generación de funciones, creación de los mapas, clases de objetos, entre otros, incluyendo cualquier tema interesante que aparezca en el camino. Es mi manera de contribuir a la comunidad de R y al mismo tiempo documentar el proyecto en si mismo.
-
-Pueden encontrar todas las publicaciones en este tema bajo la etiqueta [maps-app](https://blog.rwhitedwarf.com/tags/maps-app/) (incluyendo las versiones en inglés).
-
-También pueden encontrar el estado actual del proyecto en [mi GitHub](https://github.com/teotenn) repo [mapic](https://github.com/teotenn/mapic).
 
 Espero que lo disfruten. Siéntanse libres de dejar cualquier tipo de comentario y/o preguntas al final.
 
