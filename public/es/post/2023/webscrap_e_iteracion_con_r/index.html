@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+<meta name="HandheldFriendly" content="True" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<meta name="generator" content="Hugo 0.111.3">
+
+
+<link rel="apple-touch-icon" sizes="180x180" href="favicon/RWD-apple-touch-icon.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="favicon/RWD-favicon-32x32.png" />
+<link rel="icon" type="image/png" sizes="16x16" href="favicon/RWD-favicon-16x16.png" />
+<link rel="manifest" href="favicon/site.webmanifest" />
+<link rel="shortcut icon" type="image/x-icon" href="favicon/RWD-favicon.ico" />
+<meta name="theme-color" content="#ffffff">
+
+
+
+<title>Webscrap e iteraciones con R | R with White Dwarf</title>
+
+
+<meta name="author" content="Manuel Teodoro Tenango" />
+
+
+<meta name="description" content="Parte de cómo hacer mapas de cualquier región del mundo utilizando las librerías ggplot2 y maps" />
+
+
+<meta name="keywords" content="maps-app, R mapas, R funciones, web-scrap, database, recursion" />
+
+
+<meta property="og:title" content="Webscrap e iteraciones con R" />
+<meta name="twitter:title" content="Webscrap e iteraciones con R" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://blog.rwhitedwarf.com/es/post/2023/webscrap_e_iteracion_con_r/" /><meta property="og:description" content="Parte de cómo hacer mapas de cualquier región del mundo utilizando las librerías ggplot2 y maps" />
+<meta name="twitter:description" content="Parte de cómo hacer mapas de cualquier región del mundo utilizando las librerías ggplot2 y maps" /><meta property="og:image" content="https://blog.rwhitedwarf.com/favicon/RWD-favicon-48x48.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://blog.rwhitedwarf.com/favicon/RWD-favicon-48x48.png" /><meta property="article:published_time" content="2023-03-24T00:00:00+00:00" /><meta property="article:modified_time" content="2023-03-24T00:00:00+00:00" />
+
+
+<style>
+    @media (prefers-color-scheme: dark) {
+        body[data-theme='auto'] img {
+            filter: brightness(60%);
+        }
+    }
+
+    body[data-theme='dark'] img {
+        filter: brightness(60%);
+    }
+</style>
+
+
+
+
+<link rel="stylesheet" href="https://blog.rwhitedwarf.com/assets/css/fuji.min.css" />
+
+
+
+
+
+
+
+
+</head>
+
+<body
+  data-theme="auto"
+  data-theme-auto='true'
+  >
+    <script data-cfasync="false">
+  
+  var fujiThemeData = localStorage.getItem('fuji_data-theme');
+  
+  if (!fujiThemeData) {
+    localStorage.setItem('fuji_data-theme', 'auto');
+  } else {
+    
+    if (fujiThemeData !== 'auto') {
+      document.body.setAttribute('data-theme', fujiThemeData === 'dark' ? 'dark' : 'light');
+    }
+  }
+</script>
+
+    <header>
+    <div class="container-lg clearfix">
+        <div class="col-12 header">
+            <a class="title-main" href="https://blog.rwhitedwarf.com">R with White Dwarf</a>
+            
+            <span class="title-sub">A distant star coding in R</span>
+            
+        </div>
+    </div>
+</header>
+
+    <main>
+        <div class="container-lg clearfix">
+            
+            <div class="col-12 col-md-9 float-left content">
+                
+<article>
+    
+    <h2 class="post-item post-title">
+        <a href="https://blog.rwhitedwarf.com/es/post/2023/webscrap_e_iteracion_con_r/">Webscrap e iteraciones con R</a>
+    </h2>
+    <div class="post-item post-meta">
+        <span><i class="iconfont icon-today-sharp"></i>&nbsp;2023-03-24</span>
+
+<span><i class="iconfont icon-file-tray-sharp"></i>&nbsp;2601 words</span>
+
+<span><i class="iconfont icon-pricetags-sharp"></i>&nbsp;<a href="/tags/maps-app">maps-app</a>&nbsp;<a href="/tags/r-mapas">R mapas</a>&nbsp;<a href="/tags/r-funciones">R funciones</a>&nbsp;<a href="/tags/web-scrap">web-scrap</a>&nbsp;<a href="/tags/database">database</a>&nbsp;<a href="/tags/recursion">recursion</a>&nbsp;</span>
+
+    </div>
+    
+    <div class="post-content markdown-body">
+        <h2 id="sobre-este-post">Sobre este post</h2>
+<p>Estamos creando mapas de datos que muestran los cambios durante un período de tiempo para diferentes países y orientado a todo tipo de ciudades. Esto básicamente significa que necesitamos <strong>mapear cualquier región del mundo con R</strong>. Hoy en día existen todo tipo de paquetes y técnicas para hacerlo. Quiero compartir la estrategia que utilicé con <a href="https://cran.r-project.org/web/packages/ggplot2/index.html" target="_blank">ggplot2</a> y <a href="https://cran.r-project.org/web/packages/maps/index.html" target="_blank">maps</a>, utilizando el soporte de <a href="https://www.openstreetmap.org/" target="_blank">Open Street Map</a> para obtener las coordenadas de las ciudades y finalmente hacerlo interactivo con <a href="https://shiny.rstudio.com/" target="_blank">shiny</a>.</p>
+<p>Estas publicaciones comparten mi camino en la creación de la aplicación Shiny. Es un proyecto vivo en el que estoy trabajando actualmente y decidí compartir mis experiencias durante el proceso de creación. Estas publicaciones no son sólo acerca de Shiny apps, si no más bien sobre la creación del paquete detrás, incluyendo temas sobre la generación de funciones, creación de los mapas, clases de objetos, entre otros, incluyendo cualquier tema interesante que aparezca en el camino. Es mi manera de contribuir a la comunidad de R y al mismo tiempo documentar el proyecto en si mismo.</p>
+<p>Pueden encontrar todas las publicaciones en este tema bajo la etiqueta <a href="https://blog.rwhitedwarf.com/tags/maps-app/" target="_blank">maps-app</a> (incluyendo las versiones en inglés).</p>
+<p>También pueden encontrar el estado actual del proyecto en <a href="https://github.com/teotenn" target="_blank">mi GitHub</a> repo <a href="https://github.com/teotenn/mapic" target="_blank">mapic</a>.</p>
+<p>Este post está escrito originalmente en español, desde el aeropuerto de Amsterdam, de camino a México. Espero que lo disfruten. Siéntanse libres de dejar cualquier tipo de comentario y/o pregunta al final.</p>
+<p><img class="img-zoomable" src="/post/2022/map_any_region_with_ggplot2_part_I/maps_DrawingMap.png" alt="R Maps" />
+</p>
+<h2 id="motivación">Motivación</h2>
+<p>Como mencioné en los posts anteriores de la serie, he estado trabajando últimamente en el código para la creación de los mapas y he hecho cambios que incrementan la eficiencia de las funciones, la lectura del código, y facilitan su uso, al mismo tiempo que me permite extender las funciones mas allá de cómo fueron originalmente diseñadas.</p>
+<p>He mencionado en algunas ocasiones que el código evolucionó poco a poco a partir de scripts creados para generar el mapa específico de algún país. Por lo tanto, las primeras funciones son más bien una colección de los pasos utilizados para generar el mapa, atrapados en forma de funciones para automatizar el proceso.</p>
+<p>Por este motivo había querido hacer cambios para adecuar las funciones a paradigmas mas adecuados a la programación funcional, que es el punto fuerte de R. Sin embargo, la prioridad era generar los mapas, así que la mayoría de mi tiempo iba dirigido a la creación de los mapas y el debug del código cuando era necesario. A esto debo agregar que este proyecto es parte de un trabajo voluntario para una ONG, de la cual pasé a ser el director de la división de investigación, lo que me generaba aún mas responsabilidades y trabajo. Y todo como trabajo secundario, separado de mi fuente principal de ingresos (que también esta basada en R).</p>
+<p>Sin embargo, para bien o para mal, 2022 fue un año lleno de cambios y retos para mi y mi familia, lo que me obligó a dejar de lado el proyecto por un tiempo, resignar mi posición como director de la división, y enfocarme únicamente a mi carrera, mi salud y mi familia. Esto resultó en que, al recuperar la estabilidad en mi vida, me encontré con mas tiempo libre y menos obligaciones para re pensar el código y trabajar en ello. Adicionalmente, mi trabajo principal tuvo un giro que fue de la estadística a mas orientado a la programación en R, lo cual me ha dado mas herramientas para mejorar el código, y me ha motivado a retomar viejas lecciones sobre programación funcional y, sobre todo, iteración.</p>
+<p>Esto me permitió mejorar las dos funciones principales: la encargada del webscrapping y la que manda los datos a SQLite. Puedes encontrar las funciones originales en el post anterior <a href="https://blog.rwhitedwarf.com/es/post/2022/mapa_de_cualquier_region_con_ggplot2_i/" target="_blank">Mapa de cualquier región del mundo con R - Parte I: El mapa base</a> y compararlos con las nuevas funciones mejoradas en este.</p>
+<h2 id="webscrapp-a-sqlite">Webscrapp a SQLite</h2>
+<p>La función <code>webscrap_to_sqlite</code> se encarga de enviar las coordenadas encontradas por Open Street Map a nuestra base de datos. La función como está definida originalmente es poco efectiva, ya que hace cada operación línea por línea. También es muy rígida en la forma en la que dirige los valores de las regiones, tanto su petición a la API como la colocación de los valores en la base de datos, lo que hace cualquier extensión o modificación muy complicada.</p>
+<p>Por lo tanto, es la función que recibió mas cambios, fue prácticamente re escrita desde ceros, haciendo la búsqueda mas eficiente, permitiendo también búsqueda interna de los datos ya almacenados; mas flexible, lidiando con los parámetros de las regiones de forma mas clara; y mas entendible, mejorando el estilo del código.</p>
+<pre><code class="language-r">webscrap_to_sqlite &lt;- function(db.name,
+                               dat,
+                               city = &quot;City&quot;,
+                               country = &quot;Country&quot;,
+                               region = NULL,
+                               state = NULL,
+                               county = NULL,
+                               db_backup_after = 10) {
+  ## Cargas las liberarias necesarias
+  require(RSQLite)
+  require(dplyr)
+
+  ## 1. Conexion a la DB
+  con &lt;- dbConnect(drv = SQLite(), dbname = db.name)
+  dbExecute(conn = con,
+            &quot;CREATE TABLE IF NOT EXISTS orgs
+                    (ID INTEGER UNIQUE,
+                     City TEXT,
+                     Country TEXT, 
+                     Region TEXT,
+                     State TEXT,
+                     County TEXT,
+                     osm_name TEXT,
+                     lon REAL,
+                     lat REAL)&quot;)
+  db &lt;- as_tibble(dbReadTable(con, &quot;orgs&quot;))
+
+  ## 2. Filtrado de los datos
+  new_coords &lt;- data.frame()
+  dat_local &lt;- compare_db_data(db.name, dat)
+  df_len &lt;- nrow(dat_local)
+
+  ## 3. Mientras haya filas en DF repetimos:
+  if (df_len != 0) {
+    ## 3.1 Definir tamaño de la sub-muestra
+    dat_local &lt;- dat_local[c(1:db_backup_after), ]
+    dat_local &lt;- filter(dat_local, rowSums(is.na(dat_local)) != ncol(dat_local))
+
+    ## 3.2 for loop para el webscrapping
+    for (i in 1:nrow(dat_local)) {
+      print(paste0(&quot;Searching entry &quot;, dat_local[[&quot;ID&quot;]][i]))
+      
+      ## 3.3 Abstracción de la info
+      rg &lt;- ifelse(is.null(region), &quot;&quot;, dat_local[[region]][i])
+      st &lt;- ifelse(is.null(state), &quot;&quot;, dat_local[[state]][i])
+      ct &lt;- ifelse(is.null(county), &quot;&quot;, dat_local[[county]][i])
+      rcity &lt;- dat_local[[city]][i]
+      rcountry &lt;- dat_local[[country]][i]
+
+      ## 3.4 Obtener las coordenadas
+      ## 3.4.1. Primero buscamos si ya existen en DB
+      search_query &lt;- filter(db, City == rcity, Country == rcountry,
+                             Region == rg, State == st, County == ct)
+      if (nrow(search_query != 0)) {
+        coords &lt;- search_query[1, ]
+        coords$ID &lt;- dat_local[[&quot;ID&quot;]][i]
+        print(&quot;Found from memory&quot;)
+        
+        ## 3.4.2 Si aun no existen, busca en OSM API
+      } else {
+        coords &lt;- coords_from_city(rcity, rcountry,
+                                   Region = rg, State = st, County = ct)
+        coords &lt;- cbind(ID = dat_local[[&quot;ID&quot;]][i],
+                        City = rcity,
+                        Country = rcountry,
+                        Region = rg,
+                        State = st,
+                        County = ct,
+                        coords)
+      }
+      new_coords &lt;- rbind(new_coords, coords)
+    }
+
+    ## Y envía sólo los nuevos resultados a la DB
+    dbWriteTable(con, &quot;orgs&quot;, new_coords, append = TRUE)
+    dbDisconnect(con)
+
+    ## 3.4.3 Repetir
+    webscrap_to_sqlite(db.name = db.name,
+                       dat = dat,
+                       city = city,
+                       country = country,
+                       region = region,
+                       state = state,
+                       county = county,
+                       db_backup_after = db_backup_after)
+
+    ## 4. Terminar la iteracion
+  } else {
+    db_final &lt;- import_db_as_df(db.name)
+    size &lt;- nrow(db_final)
+    not_found &lt;- nrow(db_final[is.na(db_final$lat), ])
+    message(paste(&quot;Search finished.\n&quot;,
+                  size, &quot;entries searched.\n&quot;,
+                  not_found, &quot;ENTRIES NOT FOUND&quot;))
+  }
+}        
+</code></pre>
+<p>La función comienza llamando a las librerías necesarias y (1) conectándose a la base de datos, creándola si es necesario. (2) Luego genero dos data frames, uno vacío que almacenará nuevas coordenadas y otro relativo que contiene únicamente los datos que aún no existen en la base de datos. (3) Así pues, mientras haya datos en esta última data frame, la función continuará repitiéndose.</p>
+<p>(3.1) Luego definimos la sub-muestra, que es un sub conjunto de <code>dat_local</code> del tamaño de <code>db_backup_after</code> y nos enfocamos únicamente en esta sub-muestra. (3.2) Sobre esa sub muestra hacemos las iteraciones utilizando <code>for</code> para obtener las coordenadas. Primero (3.3) preparamos la información como strings y después (3.4) buscamos las coordenadas. (3.4.1) Si ya existen en la base de datos lo tomamos de ahí, y si no (3.4.2) se buscan utilizado <code>coords_from_city</code>. Finalmente, (3.4.3) repetimos todo de nuevo permitiendo a la función llamarse a si misma.</p>
+<p>Dado que en el paso 2 se filtran los datos que aún no están en la base de datos y en 3 se colocan los resultados de nuevas búsquedas en un data frame vacío, la función se llama a sí misma y aplica únicamente para cada sub conjunto de datos. Cuando finalmente <code>compare_db_data</code> arroja 0 valores por que todos los datos que se ingresaron a la función ya están contenidos en la base de datos, podemos salir de la función. En este caso decidí importar de nuevo los datos desde SQLite para obtener detalles de la búsqueda, y terminar la iteración enviando un mensaje al usuario sobre el total de entradas y la cantidad de las cuales no fueron encontradas.</p>
+<p>Si comparamos esta función con la propuesta en mi post anterior, la función es completamente diferente pero el resultado final es el mismo. Los argumentos utilizados por la función también son los mismo y toman los mismos valores, lo cual evita conflictos para el usuario. El único parámetro nuevo es <code>db_backup_after</code> que nos permite controlar a cada cuantas filas se realiza la iteración. Un valor mas pequeño significa más iteraciones, lo que resultado en un mayor uso de la memoria local, pero también mayor agilidad para encontrar datos que ya existen en la DB. Por otro lado, un valor mas alto reduce el número de iteraciones pero incrementa el número de conexiones a la API. Por este motivo le he otorgado un valor pre definido de 10. Esto, además de ser un valor balanceado, también reduce la confusión del usuario que podría no estar familiarizado con los cambios.</p>
+<h2 id="remover-valores-faltantes-de-la-base-de-datos">Remover valores faltantes de la base de datos</h2>
+<p>En la propuesta anterior, únicamente las coordenadas encontradas eran enviadas a la base de datos, y las no encontradas se ignoraban. En la propuesta presente, todas las entradas se envían a la DB. Por lo tanto, es importante tener alguna opción para remover las entradas no encontradas.</p>
+<p>Para ello generé la función <code>remove_na_from_db</code>, una función muy simple pero que le otorga al usuario una propuesta remover <code>NA</code>s automáticamente.</p>
+<pre><code class="language-r">remove_na_from_db &lt;- function(db.file) {
+  require(RSQLite)
+  con &lt;- dbConnect(drv = RSQLite::SQLite(), dbname = db.file)
+  dbExecute(conn = con,
+            &quot;DELETE FROM orgs WHERE lon IS NULL OR trim(lon) = '';&quot;)
+  dbDisconnect(con)
+}
+</code></pre>
+<p>La función es únicamente una conexión a la base de datos que envía la orden de remover filas donde el campo <code>lon</code> está vacío, en sintaxis de SQLite. Esto es la manera mas segura, directa y rápida de hacerlo. También podríamos importar los datos de nuevo a R, filtrarlos y enviarlos de nuevo a SQLite, pero esto requeriría mayor uso de la memoria local, mayor cantidad de código y un mayor riesgo ya que requeriría re-escribir la base de datos a SQLite por completo. El poder de la librería <code>RSQLite</code> (o cualquier otra librería que conecta a R con SQL) está precisamente en la posibilidad de pasar ordenes escritas y ejecutadas directamente en SQL.</p>
+<h2 id="la-obtención-de-las-coordenadas">La obtención de las coordenadas</h2>
+<p>La función <code>coords_from_city</code> también recibió cambios considerables en lectura del código y flexibilidad, y un poco menores en funcionamiento y eficiencia.</p>
+<pre><code class="language-r">coords_from_city &lt;- function(city = NULL,
+                             country_code,
+                             region = NULL,
+                             state = NULL,
+                             county = NULL) {
+  require(&quot;RJSONIO&quot;)
+
+  ## 1. Abstracción de regiones para OSM
+  CityCoded &lt;- gsub(&quot; &quot;, &quot;%20&quot;, City) 
+  CountryCoded &lt;- paste(&quot;&amp;countrycodes=&quot;, CountryTwoLetter, sep = &quot;&quot;)
+  extras &lt;- c(city = City, state = State, region = Region, county = County)
+  extrasCoded &lt;- &quot;&quot;
+  if (!is.null(extras)) {
+    for (i in 1:length(extras)) {
+      if (extras[i] != &quot;&quot; &amp;&amp; !is.na(extras[i]) &amp;&amp; !grepl(&quot;^\\s*$&quot;, extras[i])) {
+        valCoded &lt;- gsub(&quot; &quot;, &quot;%20&quot;, extras[i])
+        extrasCoded &lt;- paste0(extrasCoded, &quot;&amp;&quot;, names(extras)[i], &quot;=&quot;, valCoded)
+      }
+    }
+  }
+
+  ## 2. Respuesta
+  link &lt;- paste(
+    &quot;http://nominatim.openstreetmap.org/search?city=&quot;
+  , extrasCoded
+  , CountryCoded
+  , &quot;&amp;format=json&quot;
+  , sep = &quot;&quot;
+  )
+
+  response &lt;- try({fromJSON(link)},
+                  silent = TRUE)
+
+  if (class(response) == &quot;try-error&quot;) {
+    stop(response[1])
+  } else if (class(response) == &quot;response&quot;) {
+    response_status &lt;- http_status(response)
+    if (response_status$category != &quot;Success&quot;) {
+      stop(response_status$message)
+    }
+  } else if (is.list(response)) {
+
+    ## 3. Organización de los resultados
+    if (length(response) == 0) {
+      message(paste(&quot;No results found for&quot;, extrasCoded))
+      coords &lt;- data.frame(&quot;lon&quot; = NA, &quot;lat&quot; = NA, &quot;osm_name&quot; = as.character(NA))
+      
+    } else if (length(response) == 1) {
+      message(paste(&quot;Found&quot;, response[[1]]$display_name))
+      coords &lt;- data.frame(
+        lon = response[[1]]$lon,
+        lat = response[[1]]$lat,
+        osm_name = response[[1]]$display_name
+      )
+      
+    } else {
+      message(paste(&quot;Several entries found for&quot;, city, country_code))
+      coords &lt;- data.frame(
+        lon = response[[1]]$lon,
+        lat = response[[1]]$lat,
+        osm_name = response[[1]]$display_name
+      )
+    }
+    
+    ## 4. Salida como data frame
+    return(coords)
+}
+</code></pre>
+<pre><code>&gt; Error: &lt;text&gt;:68:0: unexpected end of input
+&gt; 66:     return(coords)
+&gt; 67: }
+&gt;    ^
+</code></pre>
+<p>El principal cambio está en la sección 1, en lugar de pasar cada una de las regiones como su propio string y darles formato una por una, las he abstraído todas en un solo vector. Esto reduce la cantidad de código, el uso de memoria, y nos permite incluir la ciudad en la lista, convirtiéndolo también en un valor opcional. La razón por la que las había preparado por separado publicación anterior es simplemente porque la función creció lentamente: al principio solo necesitábamos ciudad, pero luego tuvimos que usar algunos campos adicionales según el país en el que trabajábamos. Para facilitarme las cosas, simplemente agregué cada campo de región según fuera necesario. Ahora que tengo tiempo para trabajar en el código, esta fue la primera función que modifiqué.</p>
+<p>El paso 2 ahora imprime mensajes que nos ayudan a identificar el error cuando se trata de la conexión, al mismo tiempo que detiene el proceso. Ya sea un error local de conexión, o problemas del lado del API, obtendremos un mensaje y el proceso se detendrá, lo cual debe evitar tiempos de espera largos cuando no hay conexión y se está haciendo la búsqueda de muchas localidades.</p>
+<p>El paso 3 cambia un poco la organización de los resultados, devolviendo siempre un data frame con las mismas columnas cuando los resultados no fueron encontrados, pero ahora con los campos vacíos en dicho caso. Esto ayuda a las funciones presentadas anteriormente para llenar la base de datos. Adicionalmente, cuando muchos resultados fueron encontrados, se imprime esta información en pantalla; por ahora es sólo como información. La idea es mantener este espacio para realizar cambios en el futuro que nos permitan seleccionar la opción de manera interactiva. Esto es algo que aún necesito pensar y planear por que, por un lado quiero utilizarlo en una aplicación Shiny, y por otro lado queremos mantener la habilidad de que el web scrapping suceda automáticamente con menor intervención posible.</p>
+<p>Como ya he mencionado antes, estas nuevas funciones también nos permiten realizar búsquedas con el valor de ciudad vacío. Este fue un requisito solicitado en la última versión, ya que algunos usuarios comenzaron a hacer mapas por regiones, mientras que otros, al no encontrar ciudades muy pequeñas, decidieron agrupar los datos por región. Gracias a los cambios realizados en <code>coords_from_city</code>, la función <code>webscrap_to_sqlite</code> ahora puede obtener resultados cuando el valor para ciudad es <code>NA</code>, considerando que se encuentren las coordenadas para la región o el estado. Aquí es importante mencionar que se recomienda utilizar el argumento <code>state</code> para la búsqueda de regiones, por alguna razón, esto función mejor en la API de OSM. Como ejemplo, la búsqueda <code>coords_from_city(state = &quot;Castilla La Mancha&quot;, country_code = &quot;ES&quot;)</code> nos arroja los resultados esperados, a pesar de que España no tiene estados; sin embargo si hacemos <code>coords_from_city(region = &quot;Castilla La Mancha&quot;, country_code = &quot;ES&quot;)</code> nominatim no encuentra los resultados.</p>
+<h2 id="conclusiones">Conclusiones</h2>
+<p>Estos cambios han resultado muy importantes para agilizar el proceso de la búsqueda de coordenadas y la automatización de la creación de mapas. Por otro lado, me permitió darle mas estilo al código y mejorar su eficiencia. Ya que mi principal proyecto por ahora es convertirlo en una aplicación Shiny, era importante para mi el mejorar el código y la eficiencia antes de lidiar con los detalles del server. Ya que este es un trabajo reciente que he realizado en los últimos meses, decidí compartirlo de inmediato ahora que tengo fresca la información de los cambios. Espero que pueda a ayudar a mas de uno a hacer código mas abstracto y practicar recursión.</p>
+
+    </div>
+    <div class="bg-white dark:bg-warmgray-900 p-5 my-4">
+      <div class="post-comment">
+	<script src="https://utteranc.es/client.js"
+            repo="RWhiteDwarf/blog"
+            issue-term="pathname"
+            theme="github-light"
+            crossorigin="anonymous"
+            async>
+</script>
+
+      </div>
+    </div>
+</article>
+
+
+
+            </div>
+            <aside class="col-12 col-md-3 float-left sidebar">
+    
+    <div class="sidebar-item sidebar-pages">
+        <h3>Pages</h3>
+        <ul>
+            
+            <li>
+                <a href="/es/">Español</a>
+            </li>
+            
+            <li>
+                <a href="/">Home</a>
+            </li>
+            
+            <li>
+                <a href="/archives/">Archives</a>
+            </li>
+            
+            <li>
+                <a href="/about/">About</a>
+            </li>
+            
+            <li>
+                <a href="/search/">Search</a>
+            </li>
+            
+            <li>
+                <a href="/index.xml">RSS</a>
+            </li>
+            
+        </ul>
+    </div>
+    
+    <div class="sidebar-item sidebar-links">
+        <h3>Links</h3>
+        <ul>
+            
+            <li>
+                <a href="https://www.r-project.org/" target="_blank"><span>The R Project</span></a>
+            </li>
+            
+            <li>
+                <a href="https://www.r-bloggers.com/" target="_blank"><span>R Bloggers</span></a>
+            </li>
+            
+            <li>
+                <a href="https://www.bioconductor.org/" target="_blank"><span>Bioconductor</span></a>
+            </li>
+            
+        </ul>
+    </div>
+    
+    <div class="sidebar-item sidebar-tags">
+        <h3>Tags</h3>
+        <div>
+            
+            <span>
+                <a href="/tags/code-visuals/">Code Visuals</a>
+            </span>
+            
+            <span>
+                <a href="/tags/data-analysis/">data analysis</a>
+            </span>
+            
+            <span>
+                <a href="/tags/database/">database</a>
+            </span>
+            
+            <span>
+                <a href="/tags/docker/">docker</a>
+            </span>
+            
+            <span>
+                <a href="/tags/emacs/">emacs</a>
+            </span>
+            
+            <span>
+                <a href="/tags/ggplot2/">ggplot2</a>
+            </span>
+            
+            <span>
+                <a href="/tags/maps-app/">maps-app</a>
+            </span>
+            
+            <span>
+                <a href="/tags/minitutorial/">minitutorial</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-basics/">R basics</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-dev/">R-dev</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-funciones/">R funciones</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-functions/">R functions</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-mapas/">R mapas</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-maps/">R maps</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-shiny/">R shiny</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-tips/">R tips</a>
+            </span>
+            
+            <span>
+                <a href="/tags/recursion/">recursion</a>
+            </span>
+            
+            <span>
+                <a href="/tags/referencias/">referencias</a>
+            </span>
+            
+            <span>
+                <a href="/tags/web-scrap/">web-scrap</a>
+            </span>
+            
+        </div>
+    </div>
+    <div class="sidebar-item sidebar-toc">
+        <h3>Table of Contents</h3><nav id="TableOfContents">
+  <ul>
+    <li><a href="#sobre-este-post">Sobre este post</a></li>
+    <li><a href="#motivación">Motivación</a></li>
+    <li><a href="#webscrapp-a-sqlite">Webscrapp a SQLite</a></li>
+    <li><a href="#remover-valores-faltantes-de-la-base-de-datos">Remover valores faltantes de la base de datos</a></li>
+    <li><a href="#la-obtención-de-las-coordenadas">La obtención de las coordenadas</a></li>
+    <li><a href="#conclusiones">Conclusiones</a></li>
+  </ul>
+</nav></div>
+</aside>
+
+        </div>
+        <div class="btn">
+    <div class="btn-menu" id="btn-menu">
+        <i class="iconfont icon-grid-sharp"></i>
+    </div>
+    <div class="btn-toggle-mode">
+        <i class="iconfont icon-contrast-sharp"></i>
+    </div>
+    <div class="btn-scroll-top">
+        <i class="iconfont icon-chevron-up-circle-sharp"></i>
+    </div>
+</div>
+<aside class="sidebar-mobile" style="display: none;">
+  <div class="sidebar-wrapper">
+    
+    <div class="sidebar-item sidebar-pages">
+        <h3>Pages</h3>
+        <ul>
+            
+            <li>
+                <a href="/es/">Español</a>
+            </li>
+            
+            <li>
+                <a href="/">Home</a>
+            </li>
+            
+            <li>
+                <a href="/archives/">Archives</a>
+            </li>
+            
+            <li>
+                <a href="/about/">About</a>
+            </li>
+            
+            <li>
+                <a href="/search/">Search</a>
+            </li>
+            
+            <li>
+                <a href="/index.xml">RSS</a>
+            </li>
+            
+        </ul>
+    </div>
+    
+    <div class="sidebar-item sidebar-links">
+        <h3>Links</h3>
+        <ul>
+            
+            <li>
+                <a href="https://www.r-project.org/" target="_blank"><span>The R Project</span></a>
+            </li>
+            
+            <li>
+                <a href="https://www.r-bloggers.com/" target="_blank"><span>R Bloggers</span></a>
+            </li>
+            
+            <li>
+                <a href="https://www.bioconductor.org/" target="_blank"><span>Bioconductor</span></a>
+            </li>
+            
+        </ul>
+    </div>
+    
+    <div class="sidebar-item sidebar-tags">
+        <h3>Tags</h3>
+        <div>
+            
+            <span>
+                <a href="/tags/code-visuals/">Code Visuals</a>
+            </span>
+            
+            <span>
+                <a href="/tags/data-analysis/">data analysis</a>
+            </span>
+            
+            <span>
+                <a href="/tags/database/">database</a>
+            </span>
+            
+            <span>
+                <a href="/tags/docker/">docker</a>
+            </span>
+            
+            <span>
+                <a href="/tags/emacs/">emacs</a>
+            </span>
+            
+            <span>
+                <a href="/tags/ggplot2/">ggplot2</a>
+            </span>
+            
+            <span>
+                <a href="/tags/maps-app/">maps-app</a>
+            </span>
+            
+            <span>
+                <a href="/tags/minitutorial/">minitutorial</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-basics/">R basics</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-dev/">R-dev</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-funciones/">R funciones</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-functions/">R functions</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-mapas/">R mapas</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-maps/">R maps</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-shiny/">R shiny</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-tips/">R tips</a>
+            </span>
+            
+            <span>
+                <a href="/tags/recursion/">recursion</a>
+            </span>
+            
+            <span>
+                <a href="/tags/referencias/">referencias</a>
+            </span>
+            
+            <span>
+                <a href="/tags/web-scrap/">web-scrap</a>
+            </span>
+            
+        </div>
+    </div>
+    
+    
+  </div>
+</aside>
+    </main>
+
+    <footer>
+    <div class="container-lg clearfix">
+        <div class="col-12 footer">
+            
+            <span>&copy; 2021-2023
+                <a href="https://blog.rwhitedwarf.com">R White Dwarf</a>
+                
+                | Powered by <a href="https://github.com/dsrkafuu/hugo-theme-fuji/"
+                   target="_blank">Fuji-v2</a> &amp; <a href="https://gohugo.io/"
+                                                    target="_blank">Hugo</a> 
+            </span>
+        </div>
+    </div>
+</footer>
+
+    
+<script defer src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.6/dist/medium-zoom.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/lazysizes@5.3.2/lazysizes.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/prismjs@1.27.0/components/prism-core.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/prismjs@1.27.0/plugins/autoloader/prism-autoloader.min.js"></script>
+
+
+
+<script defer src="/assets/js/fuji.min.js"></script>
+
+
+
+</body>
+
+</html>

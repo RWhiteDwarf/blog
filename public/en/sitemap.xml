@@ -2,47 +2,98 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>https://blog.rwhitedwarf.com/tags/docker/</loc>
-    <lastmod>2023-02-11T00:00:00+00:00</lastmod>
+    <loc>https://blog.rwhitedwarf.com/tags/database/</loc>
+    <lastmod>2023-03-24T00:00:00+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="es"
-                href="https://blog.rwhitedwarf.com/es/tags/docker/"
+                href="https://blog.rwhitedwarf.com/es/tags/database/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="https://blog.rwhitedwarf.com/tags/docker/"
+                href="https://blog.rwhitedwarf.com/tags/database/"
                 />
   </url><url>
     <loc>https://blog.rwhitedwarf.com/es/</loc>
-    <lastmod>2023-02-11T00:00:00+00:00</lastmod>
+    <lastmod>2023-03-24T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://blog.rwhitedwarf.com/post/</loc>
-    <lastmod>2023-02-11T00:00:00+00:00</lastmod>
+    <loc>https://blog.rwhitedwarf.com/tags/maps-app/</loc>
+    <lastmod>2023-03-24T00:00:00+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="es"
-                href="https://blog.rwhitedwarf.com/es/post/"
+                href="https://blog.rwhitedwarf.com/es/tags/maps-app/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="https://blog.rwhitedwarf.com/post/"
+                href="https://blog.rwhitedwarf.com/tags/maps-app/"
                 />
+  </url><url>
+    <loc>https://blog.rwhitedwarf.com/tags/r-funciones/</loc>
+    <lastmod>2023-03-24T00:00:00+00:00</lastmod>
+    <xhtml:link
+                rel="alternate"
+                hreflang="es"
+                href="https://blog.rwhitedwarf.com/es/tags/r-funciones/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="en"
+                href="https://blog.rwhitedwarf.com/tags/r-funciones/"
+                />
+  </url><url>
+    <loc>https://blog.rwhitedwarf.com/tags/r-mapas/</loc>
+    <lastmod>2023-03-24T00:00:00+00:00</lastmod>
+    <xhtml:link
+                rel="alternate"
+                hreflang="es"
+                href="https://blog.rwhitedwarf.com/es/tags/r-mapas/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="en"
+                href="https://blog.rwhitedwarf.com/tags/r-mapas/"
+                />
+  </url><url>
+    <loc>https://blog.rwhitedwarf.com/</loc>
+    <lastmod>2023-03-24T00:00:00+00:00</lastmod>
+    <xhtml:link
+                rel="alternate"
+                hreflang="es"
+                href="https://blog.rwhitedwarf.com/es/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="en"
+                href="https://blog.rwhitedwarf.com/"
+                />
+  </url><url>
+    <loc>https://blog.rwhitedwarf.com/tags/recursion/</loc>
+    <lastmod>2023-03-24T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://blog.rwhitedwarf.com/tags/web-scrap/</loc>
+    <lastmod>2023-03-24T00:00:00+00:00</lastmod>
+    <xhtml:link
+                rel="alternate"
+                hreflang="es"
+                href="https://blog.rwhitedwarf.com/es/tags/web-scrap/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="en"
+                href="https://blog.rwhitedwarf.com/tags/web-scrap/"
+                />
+  </url><url>
+    <loc>https://blog.rwhitedwarf.com/es/post/2023/webscrap_e_iteracion_con_r/</loc>
+    <lastmod>2023-03-24T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://blog.rwhitedwarf.com/tags/docker/</loc>
+    <lastmod>2023-02-11T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://blog.rwhitedwarf.com/tags/r-shiny/</loc>
     <lastmod>2023-02-11T00:00:00+00:00</lastmod>
-    <xhtml:link
-                rel="alternate"
-                hreflang="es"
-                href="https://blog.rwhitedwarf.com/es/tags/r-shiny/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="en"
-                href="https://blog.rwhitedwarf.com/tags/r-shiny/"
-                />
   </url><url>
     <loc>https://blog.rwhitedwarf.com/tags/r-tips/</loc>
     <lastmod>2023-02-11T00:00:00+00:00</lastmod>
@@ -57,36 +108,7 @@
                 href="https://blog.rwhitedwarf.com/tags/r-tips/"
                 />
   </url><url>
-    <loc>https://blog.rwhitedwarf.com/</loc>
-    <lastmod>2023-02-11T00:00:00+00:00</lastmod>
-    <xhtml:link
-                rel="alternate"
-                hreflang="es"
-                href="https://blog.rwhitedwarf.com/es/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="en"
-                href="https://blog.rwhitedwarf.com/"
-                />
-  </url><url>
     <loc>https://blog.rwhitedwarf.com/tags/r-dev/</loc>
-    <lastmod>2023-02-11T00:00:00+00:00</lastmod>
-    <xhtml:link
-                rel="alternate"
-                hreflang="es"
-                href="https://blog.rwhitedwarf.com/es/tags/r-dev/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="en"
-                href="https://blog.rwhitedwarf.com/tags/r-dev/"
-                />
-  </url><url>
-    <loc>https://blog.rwhitedwarf.com/post/reference_dockerizing_shinny_apps/</loc>
-    <lastmod>2023-02-11T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://blog.rwhitedwarf.com/tags/references/</loc>
     <lastmod>2023-02-11T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://blog.rwhitedwarf.com/es/post/2023/referencia_dockerizar_shinny_apps/</loc>
@@ -94,35 +116,22 @@
   </url><url>
     <loc>https://blog.rwhitedwarf.com/tags/referencias/</loc>
     <lastmod>2023-02-11T00:00:00+00:00</lastmod>
-    <xhtml:link
-                rel="alternate"
-                hreflang="es"
-                href="https://blog.rwhitedwarf.com/es/tags/referencias/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="en"
-                href="https://blog.rwhitedwarf.com/tags/referencias/"
-                />
-  </url><url>
-    <loc>https://blog.rwhitedwarf.com/post/deploy_shiny_on_debian/</loc>
-    <lastmod>2023-01-22T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://blog.rwhitedwarf.com/tags/minitutorial/</loc>
-    <lastmod>2023-01-22T00:00:00+00:00</lastmod>
-    <xhtml:link
-                rel="alternate"
-                hreflang="es"
-                href="https://blog.rwhitedwarf.com/es/tags/minitutorial/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="en"
-                href="https://blog.rwhitedwarf.com/tags/minitutorial/"
-                />
   </url><url>
     <loc>https://blog.rwhitedwarf.com/tags/emacs/</loc>
     <lastmod>2022-12-29T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://blog.rwhitedwarf.com/post/</loc>
+    <lastmod>2022-12-29T00:00:00+00:00</lastmod>
+    <xhtml:link
+                rel="alternate"
+                hreflang="es"
+                href="https://blog.rwhitedwarf.com/es/post/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="en"
+                href="https://blog.rwhitedwarf.com/post/"
+                />
   </url><url>
     <loc>https://blog.rwhitedwarf.com/tags/r-basics/</loc>
     <lastmod>2022-12-29T00:00:00+00:00</lastmod>
@@ -169,19 +178,6 @@
                 href="https://blog.rwhitedwarf.com/tags/ggplot2/"
                 />
   </url><url>
-    <loc>https://blog.rwhitedwarf.com/tags/r-funciones/</loc>
-    <lastmod>2022-11-29T00:00:00+00:00</lastmod>
-    <xhtml:link
-                rel="alternate"
-                hreflang="es"
-                href="https://blog.rwhitedwarf.com/es/tags/r-funciones/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="en"
-                href="https://blog.rwhitedwarf.com/tags/r-funciones/"
-                />
-  </url><url>
     <loc>https://blog.rwhitedwarf.com/es/about/</loc>
     <lastmod>2022-11-06T00:00:00+00:00</lastmod>
   </url><url>
@@ -198,37 +194,11 @@
                 href="https://blog.rwhitedwarf.com/tags/code-visuals/"
                 />
   </url><url>
-    <loc>https://blog.rwhitedwarf.com/tags/database/</loc>
-    <lastmod>2022-11-04T00:00:00+00:00</lastmod>
-    <xhtml:link
-                rel="alternate"
-                hreflang="es"
-                href="https://blog.rwhitedwarf.com/es/tags/database/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="en"
-                href="https://blog.rwhitedwarf.com/tags/database/"
-                />
-  </url><url>
     <loc>https://blog.rwhitedwarf.com/post/map_any_region_with_ggplot2_part_ii/</loc>
     <lastmod>2022-11-04T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://blog.rwhitedwarf.com/es/post/2022/mapa_de_cualquier_region_con_ggplot2ii/</loc>
     <lastmod>2022-11-04T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://blog.rwhitedwarf.com/tags/maps-app/</loc>
-    <lastmod>2022-11-04T00:00:00+00:00</lastmod>
-    <xhtml:link
-                rel="alternate"
-                hreflang="es"
-                href="https://blog.rwhitedwarf.com/es/tags/maps-app/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="en"
-                href="https://blog.rwhitedwarf.com/tags/maps-app/"
-                />
   </url><url>
     <loc>https://blog.rwhitedwarf.com/tags/r-functions/</loc>
     <lastmod>2022-11-04T00:00:00+00:00</lastmod>
@@ -256,19 +226,6 @@
                 href="https://blog.rwhitedwarf.com/tags/r-maps/"
                 />
   </url><url>
-    <loc>https://blog.rwhitedwarf.com/tags/web-scrap/</loc>
-    <lastmod>2022-11-04T00:00:00+00:00</lastmod>
-    <xhtml:link
-                rel="alternate"
-                hreflang="es"
-                href="https://blog.rwhitedwarf.com/es/tags/web-scrap/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="en"
-                href="https://blog.rwhitedwarf.com/tags/web-scrap/"
-                />
-  </url><url>
     <loc>https://blog.rwhitedwarf.com/post/comparison_dplyr_vs_base_r/</loc>
     <lastmod>2022-10-20T00:00:00+00:00</lastmod>
   </url><url>
@@ -278,21 +235,21 @@
     <loc>https://blog.rwhitedwarf.com/es/post/2022/mapa_de_cualquier_region_con_ggplot2_i/</loc>
     <lastmod>2022-10-08T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://blog.rwhitedwarf.com/tags/r-mapas/</loc>
-    <lastmod>2022-10-08T00:00:00+00:00</lastmod>
+    <loc>https://blog.rwhitedwarf.com/es/post/2022/minitut_hacer_bool/</loc>
+    <lastmod>2022-09-18T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://blog.rwhitedwarf.com/tags/minitutorial/</loc>
+    <lastmod>2022-09-18T00:00:00+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="es"
-                href="https://blog.rwhitedwarf.com/es/tags/r-mapas/"
+                href="https://blog.rwhitedwarf.com/es/tags/minitutorial/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="https://blog.rwhitedwarf.com/tags/r-mapas/"
+                href="https://blog.rwhitedwarf.com/tags/minitutorial/"
                 />
-  </url><url>
-    <loc>https://blog.rwhitedwarf.com/es/post/2022/minitut_hacer_bool/</loc>
-    <lastmod>2022-09-18T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://blog.rwhitedwarf.com/post/minitut_makebool/</loc>
     <lastmod>2022-09-18T00:00:00+00:00</lastmod>

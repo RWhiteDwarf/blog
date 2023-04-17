@@ -2,100 +2,6 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>https://blog.rwhitedwarf.com/es/tags/docker/</loc>
-    <lastmod>2023-02-11T00:00:00+00:00</lastmod>
-    <xhtml:link
-                rel="alternate"
-                hreflang="en"
-                href="https://blog.rwhitedwarf.com/tags/docker/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="es"
-                href="https://blog.rwhitedwarf.com/es/tags/docker/"
-                />
-  </url><url>
-    <loc>https://blog.rwhitedwarf.com/es/post/</loc>
-    <lastmod>2023-02-11T00:00:00+00:00</lastmod>
-    <xhtml:link
-                rel="alternate"
-                hreflang="en"
-                href="https://blog.rwhitedwarf.com/post/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="es"
-                href="https://blog.rwhitedwarf.com/es/post/"
-                />
-  </url><url>
-    <loc>https://blog.rwhitedwarf.com/es/</loc>
-    <lastmod>2023-02-11T00:00:00+00:00</lastmod>
-    <xhtml:link
-                rel="alternate"
-                hreflang="en"
-                href="https://blog.rwhitedwarf.com/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="es"
-                href="https://blog.rwhitedwarf.com/es/"
-                />
-  </url><url>
-    <loc>https://blog.rwhitedwarf.com/es/tags/r-shiny/</loc>
-    <lastmod>2023-02-11T00:00:00+00:00</lastmod>
-    <xhtml:link
-                rel="alternate"
-                hreflang="en"
-                href="https://blog.rwhitedwarf.com/tags/r-shiny/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="es"
-                href="https://blog.rwhitedwarf.com/es/tags/r-shiny/"
-                />
-  </url><url>
-    <loc>https://blog.rwhitedwarf.com/es/tags/r-tips/</loc>
-    <lastmod>2023-02-11T00:00:00+00:00</lastmod>
-    <xhtml:link
-                rel="alternate"
-                hreflang="en"
-                href="https://blog.rwhitedwarf.com/tags/r-tips/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="es"
-                href="https://blog.rwhitedwarf.com/es/tags/r-tips/"
-                />
-  </url><url>
-    <loc>https://blog.rwhitedwarf.com/es/tags/r-dev/</loc>
-    <lastmod>2023-02-11T00:00:00+00:00</lastmod>
-    <xhtml:link
-                rel="alternate"
-                hreflang="en"
-                href="https://blog.rwhitedwarf.com/tags/r-dev/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="es"
-                href="https://blog.rwhitedwarf.com/es/tags/r-dev/"
-                />
-  </url><url>
-    <loc>https://blog.rwhitedwarf.com/es/post/referencia_dockerizar_shinny_apps/</loc>
-    <lastmod>2023-02-11T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://blog.rwhitedwarf.com/es/tags/referencias/</loc>
-    <lastmod>2023-02-11T00:00:00+00:00</lastmod>
-    <xhtml:link
-                rel="alternate"
-                hreflang="en"
-                href="https://blog.rwhitedwarf.com/tags/referencias/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="es"
-                href="https://blog.rwhitedwarf.com/es/tags/referencias/"
-                />
-  </url><url>
     <loc>https://blog.rwhitedwarf.com/es/tags/data-analysis/</loc>
     <lastmod>2022-11-29T00:00:00+00:00</lastmod>
     <xhtml:link
@@ -125,6 +31,19 @@
                 href="https://blog.rwhitedwarf.com/es/tags/ggplot2/"
                 />
   </url><url>
+    <loc>https://blog.rwhitedwarf.com/es/post/</loc>
+    <lastmod>2022-11-29T00:00:00+00:00</lastmod>
+    <xhtml:link
+                rel="alternate"
+                hreflang="en"
+                href="https://blog.rwhitedwarf.com/post/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="es"
+                href="https://blog.rwhitedwarf.com/es/post/"
+                />
+  </url><url>
     <loc>https://blog.rwhitedwarf.com/es/tags/r-basics/</loc>
     <lastmod>2022-11-29T00:00:00+00:00</lastmod>
     <xhtml:link
@@ -138,6 +57,19 @@
                 href="https://blog.rwhitedwarf.com/es/tags/r-basics/"
                 />
   </url><url>
+    <loc>https://blog.rwhitedwarf.com/es/</loc>
+    <lastmod>2022-11-29T00:00:00+00:00</lastmod>
+    <xhtml:link
+                rel="alternate"
+                hreflang="en"
+                href="https://blog.rwhitedwarf.com/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="es"
+                href="https://blog.rwhitedwarf.com/es/"
+                />
+  </url><url>
     <loc>https://blog.rwhitedwarf.com/es/tags/r-funciones/</loc>
     <lastmod>2022-11-29T00:00:00+00:00</lastmod>
     <xhtml:link
@@ -149,6 +81,19 @@
                 rel="alternate"
                 hreflang="es"
                 href="https://blog.rwhitedwarf.com/es/tags/r-funciones/"
+                />
+  </url><url>
+    <loc>https://blog.rwhitedwarf.com/es/tags/r-tips/</loc>
+    <lastmod>2022-11-29T00:00:00+00:00</lastmod>
+    <xhtml:link
+                rel="alternate"
+                hreflang="en"
+                href="https://blog.rwhitedwarf.com/tags/r-tips/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="es"
+                href="https://blog.rwhitedwarf.com/es/tags/r-tips/"
                 />
   </url><url>
     <loc>https://blog.rwhitedwarf.com/es/about/</loc>

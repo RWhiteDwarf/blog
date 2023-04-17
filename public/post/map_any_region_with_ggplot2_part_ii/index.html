@@ -9,7 +9,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 <meta http-equiv="Cache-Control" content="no-transform" />
 <meta http-equiv="Cache-Control" content="no-siteapp" />
-<meta name="generator" content="Hugo 0.104.2" />
+<meta name="generator" content="Hugo 0.111.3">
 
 
 <link rel="apple-touch-icon" sizes="180x180" href="favicon/RWD-apple-touch-icon.png" />
@@ -117,12 +117,12 @@
     </div>
     
     <div class="post-content markdown-body">
-        <h2 id="scope-of-this-post">Scope of this post</h2>
+        <p>You can find all the posts on this series under the tag <a href="https://blog.rwhitedwarf.com/tags/maps-app/" title="#maps-app" target="_blank">maps-app</a> (including the Spanish versions).</p>
+<p>You can also find the current state of the project under <a href="https://github.com/teotenn" target="_blank">my GitHub</a> repo <a href="https://github.com/teotenn/mapic" target="_blank">mapic</a>.</p>
+<h2 id="scope-of-this-post">Scope of this post</h2>
 <p>This is the second part of the series to create a map of any region of the world with R.</p>
 <p>We are creating maps of data showing changes over a span of time for different countries and pointing at all kinds of cities. That basically means that we need to <strong>map any region of the world with R</strong>. Today there are all kinds of packages and techniques to do that. I will share the strategy I used with <a href="https://cran.r-project.org/web/packages/ggplot2/index.html" target="_blank">ggplot2</a> and <a href="https://cran.r-project.org/web/packages/maps/index.html" target="_blank">maps</a> packages, using support of <a href="https://www.openstreetmap.org/" target="_blank">Open Street Map</a> to obtain the coordinates of cities and finally making it interactive with <a href="https://shiny.rstudio.com/" target="_blank">shiny</a>.</p>
 <p>This series of posts share my path towards the creation of the Shiny app. It is a live project and I decided to share my path and experiences along the creation process. The posts are not only about the Shiny app, but the package I created behind it, including topics of functions crafting, creation of the maps, classes of objects, etc., as well as any interesting issue that appear on the way. It is my way to contribute to the R community and at the same time keeping the project documented for myself.</p>
-<p>You can find all the posts on this series under the tag <a href="https://blog.rwhitedwarf.com/tags/maps-app/" title="#maps-app" target="_blank">maps-app</a> (including the Spanish versions).</p>
-<p>You can also find the current state of the project under <a href="https://github.com/teotenn" target="_blank">my GitHub</a> repo <a href="https://github.com/teotenn/mapic" target="_blank">mapic</a>.</p>
 <p>This post is about <strong>Web scrapping with nominatim open street maps</strong></p>
 <p>I hope you all enjoy it. Feel free to leave any kind of comment and/or question at the end.</p>
 <p><img class="img-zoomable" src="/post/2022/map_any_region_with_ggplot2_part_I/maps_DrawingMap.png" alt="R Maps" />
@@ -600,7 +600,7 @@ site &lt;- paste0(start.nominatim, city, country, state, end.nominatim)
             </span>
             
             <span>
-                <a href="/tags/references/">references</a>
+                <a href="/tags/recursion/">recursion</a>
             </span>
             
             <span>
@@ -759,7 +759,7 @@ site &lt;- paste0(start.nominatim, city, country, state, end.nominatim)
             </span>
             
             <span>
-                <a href="/tags/references/">references</a>
+                <a href="/tags/recursion/">recursion</a>
             </span>
             
             <span>
