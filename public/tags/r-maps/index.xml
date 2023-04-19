@@ -6,7 +6,677 @@
     <description>Recent content in R maps on R with White Dwarf</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Fri, 04 Nov 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.rwhitedwarf.com/tags/r-maps/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 19 Apr 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.rwhitedwarf.com/tags/r-maps/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Map any region in the world with R - Part III: Programming with ggplot2</title>
+      <link>https://blog.rwhitedwarf.com/post/map_any_region_with_ggplot2_part_iii/</link>
+      <pubDate>Wed, 19 Apr 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.rwhitedwarf.com/post/map_any_region_with_ggplot2_part_iii/</guid>
+      <description>&lt;p&gt;You can find all the posts on this series under the tag &lt;a href=&#34;https://blog.rwhitedwarf.com/tags/maps-app/&#34; title=&#34;#maps-app&#34; target=&#34;_blank&#34;&gt;maps-app&lt;/a&gt; (including the Spanish versions).&lt;/p&gt;
+&lt;p&gt;You can also find the current state of the project under &lt;a href=&#34;https://github.com/teotenn&#34; target=&#34;_blank&#34;&gt;my GitHub&lt;/a&gt; repo &lt;a href=&#34;https://github.com/teotenn/mapic&#34; target=&#34;_blank&#34;&gt;mapic&lt;/a&gt;.&lt;/p&gt;
+&lt;h2 id=&#34;scope-of-this-post&#34;&gt;Scope of this post&lt;/h2&gt;
+&lt;p&gt;We are creating maps of data showing changes over a span of time for different countries and pointing at all kinds of cities. That basically means that we need to &lt;strong&gt;map any region of the world with R&lt;/strong&gt;. Today there are all kinds of packages and techniques to do that. I will share the strategy I used with &lt;a href=&#34;https://cran.r-project.org/web/packages/ggplot2/index.html&#34; target=&#34;_blank&#34;&gt;ggplot2&lt;/a&gt; and &lt;a href=&#34;https://cran.r-project.org/web/packages/maps/index.html&#34; target=&#34;_blank&#34;&gt;maps&lt;/a&gt; packages, using support of &lt;a href=&#34;https://www.openstreetmap.org/&#34; target=&#34;_blank&#34;&gt;Open Street Map&lt;/a&gt; to obtain the coordinates of cities and finally making it interactive with &lt;a href=&#34;https://shiny.rstudio.com/&#34; target=&#34;_blank&#34;&gt;shiny&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;This series of posts share my path towards the creation of the Shiny app. It is a live project and I decided to share my path and experiences along the creation process. The posts are not only about the Shiny app, but the package I created behind it, including topics of functions crafting, creation of the maps, classes of objects, etc., as well as any interesting issue that appear on the way. It is my way to contribute to the R community and at the same time keeping the project documented for myself.&lt;/p&gt;
+&lt;p&gt;This post is about &lt;strong&gt;Creating functions for ggplot&lt;/strong&gt;.&lt;/p&gt;
+&lt;p&gt;I hope you all enjoy it. Feel free to leave any kind of comment and/or question at the end.&lt;/p&gt;
+&lt;p&gt;&lt;img class=&#34;img-zoomable&#34; src=&#34;https://blog.rwhitedwarf.com/post/2022/map_any_region_with_ggplot2_part_I/maps_DrawingMap.png&#34; alt=&#34;R Maps&#34; /&gt;
+&lt;/p&gt;
+&lt;h2 id=&#34;background-and-preliminaries&#34;&gt;Background and preliminaries&lt;/h2&gt;
+&lt;p&gt;In the &lt;a href=&#34;https://blog.rwhitedwarf.com/post/map_any_region_with_ggplot2_part_i/&#34; target=&#34;_blank&#34;&gt;first post&lt;/a&gt; we created a function to create the basic map. Since then I have modified the function slightly, but the concept is the same. You can see below the most up to date version and compare it with the &lt;a href=&#34;https://blog.rwhitedwarf.com/post/map_any_region_with_ggplot2_part_i/#function-to-create-the-basic-map-in-r&#34; target=&#34;_blank&#34;&gt;previous version&lt;/a&gt; if you wish.&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;my_country_prev &amp;lt;- function(country,
+                            map_colors,
+                            x_limits = NULL,
+                            y_limits = NULL,
+                            show_coords = FALSE) {
+  require(maps)
+  require(ggplot2)
+
+  ## Verifying the arguments passed to the function
+  if (length(country) != 1) stop(&amp;quot;Function supports only one country per map&amp;quot;)
+  stopifnot(is.logical(show_coords))
+  stopifnot(&amp;quot;Name of the country should be character&amp;quot; = is.character(country))
+
+  if (!country %in% map_data(&#39;world&#39;)$region) {
+    stop(paste(&amp;quot;Country name not recognized&amp;quot;,
+               &amp;quot;To see a list of recognized countries run&amp;quot;,
+               &amp;quot;&amp;lt;unique(maps::map_data(&#39;world&#39;)$region)&amp;gt;&amp;quot;, sep = &amp;quot;\n&amp;quot;))
+  }
+
+  ## If coords limits missing, print worldwide map with coordinates system to allow
+  ## User observe coords for reference
+  if (missing(x_limits) || missing(y_limits)) {
+    warning(&amp;quot;X and/or Y limits not provided.\nPrinting worldwide map.&amp;quot;)
+    map_country_theme &amp;lt;- theme(panel.background = element_rect(fill = map_colors$oceans))
+  } else if (show_coords) {
+    map_country_theme &amp;lt;- theme(panel.background = element_rect(fill = map_colors$oceans))
+  } else {
+    if (length(x_limits) != 2 || length(y_limits) != 2 ||
+         !all(grepl(&amp;quot;^-?[0-9.]+$&amp;quot;, c(x_limits, y_limits)))) {
+      stop(&amp;quot;Limits for X and Y coords should be provided as vectors with two numeric values&amp;quot;)
+    } else {
+
+      ## All the received inputs are correct.
+      ## Let&#39;s define our custom theme for the final map
+      map_country_theme &amp;lt;- theme_bw() +
+        theme(panel.background = element_rect(fill = map_colors$oceans),
+              legend.position = &amp;quot;none&amp;quot;,
+              panel.grid.major = element_blank(),
+              panel.grid.minor = element_blank(),
+              axis.line = element_line(colour = &amp;quot;black&amp;quot;),
+              axis.title.x = element_blank(),
+              axis.text.x = element_blank(),
+              axis.ticks.x = element_blank(),
+              axis.title.y = element_blank(),
+              axis.text.y = element_blank(),
+              axis.ticks.y = element_blank())
+    }
+  }
+
+  ## make a df with only the country to overlap
+  map_data_country &amp;lt;- map_data(&#39;world&#39;)[map_data(&#39;world&#39;)$region == country, ]
+  ## The map (maps + ggplot2 )
+  mapic &amp;lt;- ggplot() +
+    ## First layer: worldwide map
+    geom_polygon(data = map_data(&amp;quot;world&amp;quot;),
+                 aes(x = long, y = lat, group = group),
+                 color = map_colors$border_countries, # border countries
+                 fill = map_colors$empty_countries) + # empty countries
+    ## Second layer: Country map
+    geom_polygon(data = map_data_country,
+                 aes(x = long, y = lat, group = group),
+                 color = map_colors$border_countries, # border target country
+                 fill = map_colors$target_country) + # target country
+    coord_map() +
+    coord_fixed(1.3,
+                xlim = x_limits,
+                ylim = y_limits) +
+    map_country_theme
+
+  return(mapic)
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;One critical difference is the argument &lt;code&gt;map_colors&lt;/code&gt; that is nor explained or well defined. This is a list object containing the values for the colors to be used for all the elements of the maps. There are different ways to define and use this. The idea is to make it an S3 object and explain it on its own, but it is a topic that I am still exploring and I haven&amp;rsquo;t decided yet the details of it. For now, let&amp;rsquo;s use it simply as a list containing our chosen colors for the map.&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;map_colors &amp;lt;- list(dots_orgs = &amp;quot;#493252&amp;quot;,
+                   target_country = &amp;quot;#8caeb4&amp;quot;,
+                   empty_countries = &amp;quot;#f3f3f3&amp;quot;,
+                   border_countries = &amp;quot;#9c9c9c&amp;quot;,
+                   oceans = &amp;quot;#4e91d2&amp;quot;,
+                   text_cities = &amp;quot;#a0a0a0&amp;quot;,
+                   text_legend = &amp;quot;#493252&amp;quot;,
+                   background_legend = &amp;quot;#ffffff&amp;quot;,
+                   text_copyright = &amp;quot;#f3f3f3&amp;quot;)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The function easily prints the map of any country, using the naming from the package &lt;code&gt;maps&lt;/code&gt;. Now we want to add the data to it.&lt;/p&gt;
+&lt;p&gt;Now we need to define some simple data frame simulating a collection of organizations in Mexico.&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;mx_data &amp;lt;- data.frame(
+  ID = c(1:10),
+  Name = sprintf(&amp;quot;org%d&amp;quot;, seq(1:10)),
+  Registration_year = c(2001:2010),
+  Country = &amp;quot;MX&amp;quot;,
+  Region = c(&amp;quot;Mexico&amp;quot;,
+             &amp;quot;Baja California Norte&amp;quot;,
+             &amp;quot;Mexico&amp;quot;,
+             &amp;quot;Jalisco&amp;quot;,
+             &amp;quot;Queretaro&amp;quot;,
+             &amp;quot;Baja California Norte&amp;quot;,
+             &amp;quot;Mexico&amp;quot;,
+             &amp;quot;Morelos&amp;quot;,
+             &amp;quot;Mexico&amp;quot;,
+             &amp;quot;Estado de Mexico&amp;quot;),
+  City = c(&amp;quot;Ciudad de Mexico&amp;quot;,
+           &amp;quot;Tijuana&amp;quot;,
+           &amp;quot;Ciudad de Mexico&amp;quot;,
+           &amp;quot;Guadalajara&amp;quot;,
+           &amp;quot;Queretaro&amp;quot;,
+           &amp;quot;Tijuana&amp;quot;,
+           &amp;quot;Ciudad de Mexico&amp;quot;,
+           &amp;quot;Cuernavaca&amp;quot;,
+           &amp;quot;Ciudad de Mexico&amp;quot;,
+           &amp;quot;Texcoco&amp;quot;))
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;We can see it as a company that along 10 years managed to open one new franchise per year, and we want to map where each is located and where it has grown the most. For that, we need the coordinates of the cities where each franchise is located. We can easily obtain that using code from the previous posts: either directly from &lt;a href=&#34;https://blog.rwhitedwarf.com/post/map_any_region_with_ggplot2_part_ii/&#34; target=&#34;_blank&#34;&gt;part II&lt;/a&gt; or the &lt;a href=&#34;https://blog.rwhitedwarf.com/post/webscrap_and_iteration_in_r/&#34; target=&#34;_blank&#34;&gt;improved version of the function&lt;/a&gt;.&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;webscrap_to_db(db_name = &amp;quot;test-mex.sqlite&amp;quot;,
+               dat = mx_data,
+               city = &amp;quot;City&amp;quot;,
+               country = &amp;quot;Country&amp;quot;,
+               db_backup_after = 5)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;And also using previously defined functions, we can combine the data with the just obtained coordinates system.&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;(datmx &amp;lt;- combine_csv_sql(db_file = &amp;quot;test-mex.sqlite&amp;quot;,
+                         csv_file = mx_data))
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;&amp;gt;    ID  Name Registration_year             City Country Region State County
+&amp;gt; 1   1  org1              2001 Ciudad de Mexico      MX                    
+&amp;gt; 2   2  org2              2002          Tijuana      MX                    
+&amp;gt; 3   3  org3              2003 Ciudad de Mexico      MX                    
+&amp;gt; 4   4  org4              2004      Guadalajara      MX                    
+&amp;gt; 5   5  org5              2005        Queretaro      MX                    
+&amp;gt; 6   6  org6              2006          Tijuana      MX                    
+&amp;gt; 7   7  org7              2007 Ciudad de Mexico      MX                    
+&amp;gt; 8   8  org8              2008       Cuernavaca      MX                    
+&amp;gt; 9   9  org9              2009 Ciudad de Mexico      MX                    
+&amp;gt; 10 10 org10              2010          Texcoco      MX                    
+&amp;gt;                                                            osm_name        lon
+&amp;gt; 1                                          Ciudad de México, México  -99.13318
+&amp;gt; 2     Tijuana, Municipio de Tijuana, Baja California, 22320, México -117.01953
+&amp;gt; 3                                          Ciudad de México, México  -99.13318
+&amp;gt; 4                                      Guadalajara, Jalisco, México -103.33840
+&amp;gt; 5  Santiago de Querétaro, Municipio de Querétaro, Querétaro, México -100.39706
+&amp;gt; 6     Tijuana, Municipio de Tijuana, Baja California, 22320, México -117.01953
+&amp;gt; 7                                          Ciudad de México, México  -99.13318
+&amp;gt; 8                                Cuernavaca, Morelos, 62000, México  -99.23423
+&amp;gt; 9                                          Ciudad de México, México  -99.13318
+&amp;gt; 10                                   Texcoco, Carbó, Sonora, México -111.05867
+&amp;gt;         lat
+&amp;gt; 1  19.43263
+&amp;gt; 2  32.53174
+&amp;gt; 3  19.43263
+&amp;gt; 4  20.67204
+&amp;gt; 5  20.59547
+&amp;gt; 6  32.53174
+&amp;gt; 7  19.43263
+&amp;gt; 8  18.92183
+&amp;gt; 9  19.43263
+&amp;gt; 10 29.63900
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Now &lt;code&gt;datmx&lt;/code&gt; should have the coordinates, together with the rest of the data about our franchises. We should also have our SQLite file and, of course, our source data. It means that we are ready to add the data to the map.&lt;/p&gt;
+&lt;h2 id=&#34;programming-with-ggplot2&#34;&gt;Programming with ggplot2&lt;/h2&gt;
+&lt;p&gt;If you ever wondered how to create functions with ggplot2, there are a few ways, but here is the basic point that we need to understand, if we want to have them working in the same style as ggplot works:&lt;/p&gt;
+&lt;p&gt;Once you have the base plot with the function &lt;code&gt;ggplot()&lt;/code&gt; you can add geoms and stats to it by simply using &lt;code&gt;+&lt;/code&gt;, or you can create new functions by returning a &lt;code&gt;list&lt;/code&gt; of geoms and stats.&lt;/p&gt;
+&lt;p&gt;The first point is as simple as the following lines:&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;my_country_prev(&amp;quot;Mexico&amp;quot;, map_colors, x_limits = c(-118, -86), y_limits = c(14, 34)) +
+  ggtitle(&amp;quot;A map of Mexico&amp;quot;)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img class=&#34;img-zoomable&#34; src=&#34;https://blog.rwhitedwarf.com/post/2023/map_any_region_with_ggplot2_part_III/map1-1.png&#34; alt=&#34;plot of chunk map1&#34; /&gt;
+&lt;/p&gt;
+&lt;p&gt;Or we could do the same by creating a function and returning the title inside a list.&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;my_title &amp;lt;- function(text) {
+  return(list(ggtitle(text)))
+}
+
+my_country_prev(&amp;quot;Mexico&amp;quot;, map_colors, x_limits = c(-118, -86), y_limits = c(14, 34)) +
+  my_title(&amp;quot;The same map of Mexico&amp;quot;)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img class=&#34;img-zoomable&#34; src=&#34;https://blog.rwhitedwarf.com/post/2023/map_any_region_with_ggplot2_part_III/map2-1.png&#34; alt=&#34;plot of chunk map2&#34; /&gt;
+&lt;/p&gt;
+&lt;p&gt;With that in mind, we can do all the calculations we want and start adding the data in form of geoms and stats to the base map.&lt;/p&gt;
+&lt;h3 id=&#34;a-map-with-growing-dots-per-city&#34;&gt;A map with growing dots per city&lt;/h3&gt;
+&lt;p&gt;We started with something simple, adding the amount of organizations per city, as growing dots.&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;make_dots &amp;lt;- function(.df,
+                      year,
+                      map_colors,
+                      column_names = list(
+                        lat = &amp;quot;lat&amp;quot;,
+                        lon = &amp;quot;lon&amp;quot;,
+                        cities = &amp;quot;city&amp;quot;,
+                        start_year = &amp;quot;year&amp;quot;,
+                        end_year = NULL),
+                      dot_size = 1) {
+  require(dplyr)
+  require(tidyr)
+  require(stringr)
+
+  ## Some error handling
+  mandatory_cols &amp;lt;- c(&amp;quot;lat&amp;quot;, &amp;quot;lon&amp;quot;, &amp;quot;cities&amp;quot;, &amp;quot;start_year&amp;quot;)
+  if(!all(mandatory_cols %in% names(column_names))) {
+    stop(&amp;quot;Column names missing!&amp;quot;)
+  } else {
+    if (!&amp;quot;end_year&amp;quot; %in% names(column_names)) {
+      .df$final_year &amp;lt;- NA_real_
+      column_names[[&amp;quot;end_year&amp;quot;]] &amp;lt;- &amp;quot;final_year&amp;quot;
+    }
+  }
+
+  ## Dots base size
+  base_size &amp;lt;- 5
+  dot_sizes &amp;lt;- c(0.5 * (base_size * dot_size),
+                 1 * (base_size * dot_size),
+                 2 * (base_size * dot_size),
+                 3 * (base_size * dot_size),
+                 4 * (base_size * dot_size),
+                 5 * (base_size * dot_size),
+                 7 * (base_size * dot_size),
+                 8 * (base_size * dot_size),
+                 9 * (base_size * dot_size))
+
+  ## Data manipulation to be used in the map
+  filt &amp;lt;- .df  %&amp;gt;%
+    mutate(year_final = replace_na(!!sym(column_names$end_year), year + 1),
+           city_name = str_to_sentence(!!sym(column_names$cities))) %&amp;gt;%
+    filter(year_final &amp;gt; year &amp;amp; !!sym(column_names$start_year) &amp;lt;= year) %&amp;gt;%
+    group_by(city_name) %&amp;gt;%
+    summarise(x = median(!!sym(column_names$lon), na.rm = T),
+              y = median(!!sym(column_names$lat), na.rm = T),
+              n = n()) %&amp;gt;%
+    mutate(dot_size = case_when(n == 1 ~ dot_sizes[1], 
+                                n &amp;gt;= 2 &amp;amp; n &amp;lt;= 5 ~ dot_sizes[2], 
+                                n &amp;gt;= 6 &amp;amp; n &amp;lt;= 10 ~ dot_sizes[3], 
+                                n &amp;gt;= 11 &amp;amp; n &amp;lt;= 30 ~ dot_sizes[4], 
+                                n &amp;gt;= 31 &amp;amp; n &amp;lt;= 50 ~ dot_sizes[5], 
+                                n &amp;gt;= 51 &amp;amp; n &amp;lt;= 100 ~ dot_sizes[6], 
+                                n &amp;gt;= 101 &amp;amp; n &amp;lt;= 200 ~ dot_sizes[7], 
+                                n &amp;gt;= 201 &amp;amp; n &amp;lt;= 300 ~ dot_sizes[8], 
+                                n &amp;gt;= 301 ~ dot_sizes[9],
+                                TRUE ~ NA))
+
+  ## -------------------------- MAIN MAP ----------------------------------
+  map_points &amp;lt;- list(
+    geom_point(data = filt,
+               aes(x, y, size = dot_size),
+               color = map_colors$dots_orgs,
+               alpha = 7/10,
+               shape = 19) ,
+    scale_size_identity(&#39;&#39;,
+                        breaks = dot_sizes, 
+                        labels = c(&#39;1&#39;, &#39;2-5&#39;, &#39;6-10&#39;, &#39;11-30&#39;, &#39;31-50&#39;,
+                                   &#39;51-100&#39;, &#39;101-200&#39;, &#39;201-300&#39;, &#39;&amp;gt;300&#39;),
+                        guide = guide_legend(label.position = &#39;bottom&#39;,
+                                             label.vjust = 0,
+                                             nrow = 1)),
+    geom_point(data = filter(filt, n == 1),
+               aes(x, y),
+               color = map_colors$dots_orgs,
+               shape = 19,
+               size = 2.5) ,
+    theme(legend.position = &#39;bottom&#39;)
+  )
+
+  return(map_points)
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;As you can see, the function also requires our object &lt;code&gt;map_colors&lt;/code&gt;, which we created before. Another way of passing values from a list is by defining these values directly within the function arguments, as we did here for &lt;code&gt;column_names&lt;/code&gt;. We could pass the arguments directly when calling the function, or define them earlier to be used. Let&amp;rsquo;s use the second approach.&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;col_names = list(lat = &amp;quot;lat&amp;quot;,
+                 lon = &amp;quot;lon&amp;quot;,
+                 cities = &amp;quot;City&amp;quot;,
+                 start_year = &amp;quot;Registration_year&amp;quot;)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;If you look at the data frame that we created containing the data, this are simply the names of the columns as we specified them.&lt;/p&gt;
+&lt;p&gt;Now, about the function itself, it starts, as expected, by calling the libraries and then doing a bit of error handling to ensure that the fields that are strictly required are actually present in the data frame. There I am also adding the options for the &lt;code&gt;end_year&lt;/code&gt; which is used in case some franchise closed and we want to map it only for the period of time it was present.&lt;/p&gt;
+&lt;p&gt;Then we define the &lt;strong&gt;&amp;ldquo;Dots base size&amp;rdquo;&lt;/strong&gt;. Here we experimented with so many sizes, both for the dots and for the final map, and this are the ones that look the best. Still, I&amp;rsquo;m allowing this value to be changed as the parameter &lt;code&gt;dot_size&lt;/code&gt; in the function definition, however I wouldn&amp;rsquo;t recommend changing it. You can also play with the internal values and see it for yourself. Since the idea here is to create functions for the &amp;ldquo;standards&amp;rdquo; of the maps, allowing minimal changes, we are not so strict as per how big the dots should be, yet we have certain degree of control.&lt;/p&gt;
+&lt;p&gt;Then we do a little bit of data manipulation before being able to use the data. This includes the standardization of the names of Cities (up to some degree), filtering the data that does not match with the selected year, using only the median value of the latitude and longitude data, and defining the sizes of the dots according to the amount of franchises. The last one is a tricky one that I haven&amp;rsquo;t decided yet what amount of freedom should still be out there. Maybe there should be a separated function to define all that. Our maps were created to handle data containing from few hundreds of rows, to a couple of thousands, thus, the values presented here. But if you want to show just a few organizations (as is the case of this example), the map looks quite deserted; on the other hand, if you need to map values of thousands per city, the maps look overloaded. For the present post I&amp;rsquo;m keeping it as is, with a note for consideration. We also added one extra &lt;code&gt;geom_point&lt;/code&gt; to overwrite the alpha value for the case of only 1, and make it solid. This also works well on the visuals.&lt;/p&gt;
+&lt;p&gt;In any case, the function above shows how we can manipulate the data inside a function, and return only what we need to add it to an existent ggplot. We can now add the dots as we would normally do in ggplot style.&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;my_country_prev(&amp;quot;Mexico&amp;quot;,
+                map_colors,
+                 x_limits = c(-118, -86),
+                 y_limits = c(14, 34),
+                 show_coords = T) +
+  make_dots(datmx,
+            year = 2022,
+            map_colors, column_names = col_names) +
+  scale_x_continuous(n.breaks = 20) +
+  ggtitle(&amp;quot;A map of Mexico&amp;quot;)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img class=&#34;img-zoomable&#34; src=&#34;https://blog.rwhitedwarf.com/post/2023/map_any_region_with_ggplot2_part_III/unnamed-chunk-5-1.png&#34; alt=&#34;plot of chunk unnamed-chunk-5&#34; /&gt;
+&lt;/p&gt;
+&lt;h3 id=&#34;adding-labels-for-the-map&#34;&gt;Adding labels for the map&lt;/h3&gt;
+&lt;p&gt;Moving forward, we want to add some labels to the maps to know what we are seeing. Here I created one function to show which year is being mapped, and a second one to show the totals. Although we can achieve that easily in different ways, I managed to make it complicated, keeping in mind that we want to map any region in the world.&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;my_print_years &amp;lt;- function(year, map_colors, x_limits, y_limits, year_label = &amp;quot;Year&amp;quot;) {
+
+  ## POSITION FOR THE LABELS
+  ## Starting points
+  x_units &amp;lt;- abs(x_limits[1] - x_limits[2])/10
+  y_units &amp;lt;- abs(y_limits[1] - y_limits[2])/10
+  start_x &amp;lt;- min(x_limits)
+  start_y &amp;lt;- min(y_limits)
+  ## Frame
+  rectangle.start.x &amp;lt;- start_x
+  rectangle.wide &amp;lt;- rectangle.start.x + x_units
+  rectangle.start.y &amp;lt;- start_y
+  rectangle.high &amp;lt;- rectangle.start.y + y_units
+  ## Text
+  num.size &amp;lt;- 4
+  text.size &amp;lt;- 3  
+  num.position.x &amp;lt;- start_x + (x_units * 0.5)
+  text.position.x &amp;lt;- start_x + (x_units * 0.5)
+  num.position.y &amp;lt;- start_y + (y_units * 0.25)
+  text.position.y &amp;lt;- start_y + (y_units * 0.65)
+
+  ## Adding the ggplot geoms
+  pyears &amp;lt;- list(
+    geom_rect(
+      aes(xmin = rectangle.start.x, xmax = rectangle.wide,
+          ymin = rectangle.start.y, ymax = rectangle.high),
+      color = map_colors$text_legend,
+      fill = map_colors$text_legend,
+      alpha = 9/10),
+    geom_text(
+      aes(x = num.position.x,
+          y = num.position.y,
+          label = year),
+      size = num.size,
+      fontface = &#39;bold&#39;,
+      color = map_colors$background_legend),
+    geom_text(
+      aes(x = text.position.x,
+          y = text.position.y,
+          label = year_label),
+      size = text.size,
+      fontface = &#39;bold&#39;,
+      alpha = 9/10,
+      color = map_colors$background_legend)
+  )
+  return(pyears)
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Consider this some kind of snippet to add the labels wherever you want, and in any size you want. Our function is basically doing some basic simple calculations to place the labelling inside the map area, on the bottom-left corner. The first part with the comment &lt;code&gt;## POSITION FOR THE LABELS&lt;/code&gt; shows the basic calculations to do that, based on the coords, which should be the same as the coords specified in the map function. The calculations and the position are very stiff in size and location, but they will work the same regardless of the region mapped. On the other hand, it provides the basis for the function. Feel free to play with them to add custom options such as selecting the sizes or the corner where we want to display them.&lt;/p&gt;
+&lt;p&gt;The rest of the code is intuitive, &lt;code&gt;geom_text&lt;/code&gt; to add the info we want to show, one for the word &amp;ldquo;Year&amp;rdquo; and another one for the numeric value. We add the corresponding values to the &lt;code&gt;aes&lt;/code&gt;, the sizes, some alpha for transparency and our colors defined in &lt;code&gt;map_colors&lt;/code&gt;.&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;my_print_totals &amp;lt;- function(totals, map_colors, x_limits, y_limits, totals_label = &amp;quot;Totals&amp;quot;) {
+  ## POSITION FOR THE LABELS
+  ## Starting points
+  x_units &amp;lt;- abs(x_limits[1] - x_limits[2])/10
+  y_units &amp;lt;- abs(y_limits[1] - y_limits[2])/10
+  start_x &amp;lt;- min(x_limits) + x_units
+  start_y &amp;lt;- min(y_limits)
+  ## Frame
+  rectangle.start.x &amp;lt;- start_x
+  rectangle.wide &amp;lt;- rectangle.start.x + x_units
+  rectangle.start.y &amp;lt;- start_y
+  rectangle.high &amp;lt;- rectangle.start.y + y_units
+  ## Text
+  num.size &amp;lt;- 4
+  text.size &amp;lt;- 3  
+  num.position.x &amp;lt;- start_x + (x_units*0.5)
+  text.position.x &amp;lt;- start_x + (x_units*0.5)
+  num.position.y &amp;lt;- start_y + (y_units*0.25)
+  text.position.y &amp;lt;- start_y + (y_units*0.65)
+  
+    ptotals &amp;lt;- list(
+        geom_rect(aes(xmin = rectangle.start.x, xmax = rectangle.wide,
+                      ymin = rectangle.start.y, ymax = rectangle.high),
+                  color = &#39;#283151&#39;,
+                  fill = map_colors$background_legend,
+                  alpha = 9/10),
+        geom_text(
+            aes(x = num.position.x, y = num.position.y,
+                label = totals),
+            size = num.size,
+            fontface = &#39;bold&#39;,
+            alpha = 9/10,
+            color = map_colors$text_legend),
+        geom_text(
+            aes(x = text.position.x, y = text.position.y,
+                label = totals_label),
+            size = text.size,
+            fontface = &#39;bold&#39;,
+            alpha = 9/10,
+            color = map_colors$text_legend)
+    )
+    return(ptotals)
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;We can follow exactly the same approach for the totals, to place them right next to the year. For now we have to specify the value of the total that we want to be shown, but this actually should be calculated by the function. Actually, if you think about it, we are passing a great deal of information that should be coming from the previous functions, and we should keep here arguments that control the visuals of the labels only. That is not an easy topic and I decided to cover it in a separated post. Another reason why I don&amp;rsquo;t want to show it yet is because I haven&amp;rsquo;t decided yet which approach I want to use.&lt;/p&gt;
+&lt;p&gt;So, for now we have to pass each argument to each function and make sure that we are passing the same argument, but that is easy to achieve in R by directing the values to an object before passing it to the functions. Let&amp;rsquo;s see it in action.&lt;/p&gt;
+&lt;p&gt;The dataset has already been stored in &lt;code&gt;datmx&lt;/code&gt; and the colors in &lt;code&gt;map_colors&lt;/code&gt;. Now we need to define a few more.&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;x_coords &amp;lt;- c(-118, -86)
+y_coords &amp;lt;- c(14, 34)
+yr &amp;lt;- 2020
+totals &amp;lt;- 10
+my_country_prev(&amp;quot;Mexico&amp;quot;,
+                map_colors,
+                x_coords,
+                y_coords,
+                show_coords = T) +
+  make_dots(rbind(datmx, datmx),
+            map_colors,
+            year = yr,
+            col_names) +
+  my_print_years(yr, map_colors, x_coords, y_coords, &amp;quot;Año&amp;quot;) +
+  my_print_totals(totals, map_colors, x_coords, y_coords, &amp;quot;Totales&amp;quot;)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img class=&#34;img-zoomable&#34; src=&#34;https://blog.rwhitedwarf.com/post/2023/map_any_region_with_ggplot2_part_III/unnamed-chunk-8-1.png&#34; alt=&#34;plot of chunk unnamed-chunk-8&#34; /&gt;
+&lt;/p&gt;
+&lt;p&gt;And there it is. Since my map is for Mexico, I am adding labels in Spanish. Feel free to test it in your own language and with more data. We can also have a look at how the labels fit to other countries, for example, smaller and bigger compared to Mexico.&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;x_coords &amp;lt;- c(4, 18)
+y_coords &amp;lt;- c(47, 56)
+my_country_prev(&amp;quot;Germany&amp;quot;,
+                map_colors,
+                 x_coords, y_coords,
+                 show_coords = T) + 
+  my_print_years(yr, map_colors, x_coords, y_coords) +
+  my_print_totals(totals, map_colors, x_coords, y_coords) +
+  ggtitle(&amp;quot;A map of Germany&amp;quot;)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img class=&#34;img-zoomable&#34; src=&#34;https://blog.rwhitedwarf.com/post/2023/map_any_region_with_ggplot2_part_III/unnamed-chunk-9-1.png&#34; alt=&#34;plot of chunk unnamed-chunk-9&#34; /&gt;
+&lt;/p&gt;
+&lt;p&gt;Germany is also looking good. And since we have the possibility of passing the values for year and totals, we don&amp;rsquo;t actually need to have any data to test it, although the info shown is incorrect.&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;x_coords &amp;lt;- c(28, 185)
+y_coords &amp;lt;- c(10, 100)
+my_country_prev(&amp;quot;Russia&amp;quot;,
+                map_colors,
+                 x_coords, y_coords,
+                 show_coords = T) +
+  my_print_years(yr, map_colors, x_coords, y_coords) +
+  my_print_totals(totals, map_colors, x_coords, y_coords)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img class=&#34;img-zoomable&#34; src=&#34;https://blog.rwhitedwarf.com/post/2023/map_any_region_with_ggplot2_part_III/unnamed-chunk-10-1.png&#34; alt=&#34;plot of chunk unnamed-chunk-10&#34; /&gt;
+&lt;/p&gt;
+&lt;p&gt;Russia is a very particular case because the country is quite long but not so wide. If we specify coordinates too narrow for latitude, the map does not look good and the labels start getting deformed. It would be the same case with Chile, if we make it narrow in longitude but it is naturally long in latitude. Since the main aim of the functions is to take care of the aesthetics and visualization, we have to ensure that this should not happen, somehow. Having certain degree of the labels is one way to do that. We will see a few more in the future.&lt;/p&gt;
+&lt;h2 id=&#34;conclusions&#34;&gt;Conclusions&lt;/h2&gt;
+&lt;p&gt;If your aim is only to make maps like the above for any given country, our first 3 posts should have you covered. We could also import our functions to a shiny app and work with that. However, there are many improvements that we can still do.&lt;/p&gt;
+&lt;p&gt;Now that we know the basis for functional programming with ggplot2, we can extend the power of our functions in the way how they share arguments by exploring the OOP (Object Oriented Programming) in R, the &lt;code&gt;ggproto&lt;/code&gt; system to extend ggplot, and the use of environments.&lt;/p&gt;
+&lt;p&gt;Since we want the maps to be dynamic in time, we could also work on a couple of functions to cover that. It could easily be achieved in a for loop, which is perfectly fine. We could also use the &lt;code&gt;apply&lt;/code&gt; family of functions or the &lt;code&gt;map&lt;/code&gt; family of functions from the &lt;code&gt;purrr&lt;/code&gt; package (not to be confused with geographic maps or the package maps). The last options could be a bit of complication because of the excess of arguments in our functions. That only shows that it is worth it to still improve them.&lt;/p&gt;
+&lt;p&gt;The next posts will be focused on this topic, so stay connected if you are interested on how I tackle these challenges.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Webscrap and iteration in R</title>
+      <link>https://blog.rwhitedwarf.com/post/webscrap_and_iteration_in_r/</link>
+      <pubDate>Fri, 24 Mar 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.rwhitedwarf.com/post/webscrap_and_iteration_in_r/</guid>
+      <description>&lt;h2 id=&#34;about-this-post&#34;&gt;About this post&lt;/h2&gt;
+&lt;p&gt;We are creating maps of data showing changes over a span of time for different countries and pointing at all kinds of cities. That basically means that we need to &lt;strong&gt;map any region of the world with R&lt;/strong&gt;. Today there are all kinds of packages and techniques to do that. I will share the strategy I used with &lt;a href=&#34;https://cran.r-project.org/web/packages/ggplot2/index.html&#34; target=&#34;_blank&#34;&gt;ggplot2&lt;/a&gt; and &lt;a href=&#34;https://cran.r-project.org/web/packages/maps/index.html&#34; target=&#34;_blank&#34;&gt;maps&lt;/a&gt; packages, using support of &lt;a href=&#34;https://www.openstreetmap.org/&#34; target=&#34;_blank&#34;&gt;Open Street Map&lt;/a&gt; to obtain the coordinates of cities and finally making it interactive with &lt;a href=&#34;https://shiny.rstudio.com/&#34; target=&#34;_blank&#34;&gt;shiny&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;This series of posts share my path towards the creation of the Shiny app. It is a live project and I decided to share my path and experiences along the creation process. The posts are not only about the Shiny app, but the package I created behind it, including topics of functions crafting, creation of the maps, classes of objects, etc., as well as any interesting issue that appear on the way. It is my way to contribute to the R community and at the same time keeping the project documented for myself.&lt;/p&gt;
+&lt;p&gt;You can find all the posts on this series under the tag &lt;a href=&#34;https://blog.rwhitedwarf.com/tags/maps-app/&#34; title=&#34;#maps-app&#34; target=&#34;_blank&#34;&gt;maps-app&lt;/a&gt; (including the Spanish versions).&lt;/p&gt;
+&lt;p&gt;You can also find the current state of the project under &lt;a href=&#34;https://github.com/teotenn&#34; target=&#34;_blank&#34;&gt;my GitHub&lt;/a&gt; repo &lt;a href=&#34;https://github.com/teotenn/mapic&#34; target=&#34;_blank&#34;&gt;mapic&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;This post is originally written in Spanish, from the Amsterdam airport, on the way to Mexico. I hope you enjoy. Feel free to leave any type of comment and/or question at the end.&lt;/p&gt;
+&lt;p&gt;&lt;img class=&#34;img-zoomable&#34; src=&#34;https://blog.rwhitedwarf.com/post/2022/map_any_region_with_ggplot2_part_I/maps_DrawingMap.png&#34; alt=&#34;R Maps&#34; /&gt;
+&lt;/p&gt;
+&lt;h2 id=&#34;motivation&#34;&gt;Motivation&lt;/h2&gt;
+&lt;p&gt;As I mentioned in the previous posts in the series, I&amp;rsquo;ve been working lately on the code for creating the maps and I&amp;rsquo;ve made changes that increase the efficiency of the functions, the readability of the code, and make it easier to use. At the same it allows me to extend the functions beyond their original design.&lt;/p&gt;
+&lt;p&gt;I have mentioned on a few occasions that the code evolved slowly from scripts created to generate the specific map of some country. So, the first few functions are more of a collection of the steps used to generate the map, wrapped in the form of functions to automate the process.&lt;/p&gt;
+&lt;p&gt;For this reason, I wanted to make changes to adapt the functions to paradigms more suitable for functional programming, which is R&amp;rsquo;s strong point. However, back then the priority was to generate the maps, and thus, most of my time was devoted to creating the maps and the debugging of the code when it was necessary. I need to add that this project is part of a voluntary work for an NGO, of which I became the director of the research division, which generated even more responsibilities and work for me. And all as a side job, separated from my main source of income (which is also based on R).&lt;/p&gt;
+&lt;p&gt;However, for better or worse, 2022 was a year full of changes and challenges for me and my family, which forced me to put the project aside for a while, resign my position as responsible of the division, and focus solely on to my career, my health and my family. The result was that when I managed to regaining stability in my life, I found myself with more free time and fewer obligations to rethink the code and work on it. Additionally, my main job had a turn going from statistics to more programming oriented in R, which has given me more tools and experience to improve the code, and has motivated me to take up old lessons about functional programming and, above all, iteration.&lt;/p&gt;
+&lt;p&gt;This allowed me to improve the two main functions: the one in charge of the webscrapping and the one that sends the data to SQLite. You can find the original functions in the previous post, &lt;a href=&#34;https://blog.rwhitedwarf.com/post/map_any_region_with_ggplot2_part_i/&#34; target=&#34;_blank&#34;&gt;Map any region in the world with R - Part I: The basic map&lt;/a&gt; and compare it with the new, improved functions in this.&lt;/p&gt;
+&lt;h2 id=&#34;webscrapp-to-sqlite&#34;&gt;Webscrapp to SQLite&lt;/h2&gt;
+&lt;p&gt;The &lt;code&gt;webscrap_to_sqlite&lt;/code&gt; function is responsible for sending the coordinates found by Open Street Map to our database. The original function is inefficient, as it does each operation line by line. It is also very rigid in the way it directs the values of the regions, both its request to the API and the placement of the values in the database, which makes any extension or modification very complicated.&lt;/p&gt;
+&lt;p&gt;For these reasons, it is the function that received the most changes, it was practically rewritten from scratch, making the search more efficient, also allowing internal search of the data already stored; more flexible, dealing with region parameters more clearly; and more understandable, improving the style of the code.&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;webscrap_to_sqlite &amp;lt;- function(db.name,
+                               dat,
+                               city = &amp;quot;City&amp;quot;,
+                               country = &amp;quot;Country&amp;quot;,
+                               region = NULL,
+                               state = NULL,
+                               county = NULL,
+                               db_backup_after = 10) {
+  ## Loading libraries
+  require(RSQLite)
+  require(dplyr)
+
+  ## 1. DB connection
+  con &amp;lt;- dbConnect(drv = SQLite(), dbname = db.name)
+  dbExecute(conn = con,
+            &amp;quot;CREATE TABLE IF NOT EXISTS orgs
+                    (ID INTEGER UNIQUE,
+                     City TEXT,
+                     Country TEXT, 
+                     Region TEXT,
+                     State TEXT,
+                     County TEXT,
+                     osm_name TEXT,
+                     lon REAL,
+                     lat REAL)&amp;quot;)
+  db &amp;lt;- as_tibble(dbReadTable(con, &amp;quot;orgs&amp;quot;))
+
+  ## 2. Data filtering
+  new_coords &amp;lt;- data.frame()
+  dat_local &amp;lt;- compare_db_data(db.name, dat)
+  df_len &amp;lt;- nrow(dat_local)
+
+  ## 3. While there are rows in DF:
+  if (df_len != 0) {
+    ## 3.1 Define subsample size
+    dat_local &amp;lt;- dat_local[c(1:db_backup_after), ]
+    dat_local &amp;lt;- filter(dat_local, rowSums(is.na(dat_local)) != ncol(dat_local))
+
+    ## 3.2 for loop for the webscrapping
+    for (i in 1:nrow(dat_local)) {
+      print(paste0(&amp;quot;Searching entry &amp;quot;, dat_local[[&amp;quot;ID&amp;quot;]][i]))
+      
+      ## 3.3 Info abstraction
+      rg &amp;lt;- ifelse(is.null(region), &amp;quot;&amp;quot;, dat_local[[region]][i])
+      st &amp;lt;- ifelse(is.null(state), &amp;quot;&amp;quot;, dat_local[[state]][i])
+      ct &amp;lt;- ifelse(is.null(county), &amp;quot;&amp;quot;, dat_local[[county]][i])
+      rcity &amp;lt;- dat_local[[city]][i]
+      rcountry &amp;lt;- dat_local[[country]][i]
+
+      ## 3.4 Getting the coords
+      ## 3.4.1. First, check if they are already in the DB
+      search_query &amp;lt;- filter(db, City == rcity, Country == rcountry,
+                             Region == rg, State == st, County == ct)
+      if (nrow(search_query != 0)) {
+        coords &amp;lt;- search_query[1, ]
+        coords$ID &amp;lt;- dat_local[[&amp;quot;ID&amp;quot;]][i]
+        print(&amp;quot;Found from memory&amp;quot;)
+        
+        ## 3.4.2 If they are not, search with OSM API
+      } else {
+        coords &amp;lt;- coords_from_city(rcity, rcountry,
+                                   Region = rg, State = st, County = ct)
+        coords &amp;lt;- cbind(ID = dat_local[[&amp;quot;ID&amp;quot;]][i],
+                        City = rcity,
+                        Country = rcountry,
+                        Region = rg,
+                        State = st,
+                        County = ct,
+                        coords)
+      }
+      new_coords &amp;lt;- rbind(new_coords, coords)
+    }
+
+    ## Send only new results to DB
+    dbWriteTable(con, &amp;quot;orgs&amp;quot;, new_coords, append = TRUE)
+    dbDisconnect(con)
+
+    ## 3.4.3 Repeat
+    webscrap_to_sqlite(db.name = db.name,
+                       dat = dat,
+                       city = city,
+                       country = country,
+                       region = region,
+                       state = state,
+                       county = county,
+                       db_backup_after = db_backup_after)
+
+    ## 4. Exit iteration
+  } else {
+    db_final &amp;lt;- import_db_as_df(db.name)
+    size &amp;lt;- nrow(db_final)
+    not_found &amp;lt;- nrow(db_final[is.na(db_final$lat), ])
+    message(paste(&amp;quot;Search finished.\n&amp;quot;,
+                  size, &amp;quot;entries searched.\n&amp;quot;,
+                  not_found, &amp;quot;ENTRIES NOT FOUND&amp;quot;))
+  }
+}        
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The function starts by calling the necessary libraries and (1) connecting to the database, creating it if necessary. (2) Then it generates two data frames, an empty one that will store new coordinates and a relative one that contains only the data that does not yet exist in the database. (3) So, as long as there is data in this last data frame, the function will continue to loop.&lt;/p&gt;
+&lt;p&gt;(3.1) We then define the subsample, which is a subset of &lt;code&gt;dat_local&lt;/code&gt; the size of &lt;code&gt;db_backup_after&lt;/code&gt; and focus solely on this subsample. (3.2) On this subsample we make the iterations using &lt;code&gt;for&lt;/code&gt; to obtain the coordinates. First (3.3) we prepare the data as strings and then (3.4) we look up the coordinates. (3.4.1) If they already exist in the database we take it from there, and if not (3.4.2) they are searched using &lt;code&gt;coords_from_city&lt;/code&gt;. Finally, (3.4.3) we iterate all over again, allowing the function to call itself.&lt;/p&gt;
+&lt;p&gt;Since step 2 filters the data that is not yet in the database and step 3 places the results of new searches in an empty data frame, the function calls itself and applies only for each subset of data. When &lt;code&gt;compare_db_data&lt;/code&gt; finally returns 0 values because all the data that was fed into the function is already contained in the database, we can exit the function. In this case I decided to import the data again from SQLite to get details of the search, and end the iteration by sending a message to the user about the total number of entries and the number of which were not found.&lt;/p&gt;
+&lt;p&gt;If we compare this function with the one proposed in my previous post, the function is completely different but the end result is the same. The arguments used by the function are also the same and take the same values, which avoids conflicts for the user. The only new parameter is &lt;code&gt;db_backup_after&lt;/code&gt; which allows us to control how many rows the iteration is done. A smaller value means more iterations, which results in higher local memory usage, but also faster in finding data that already exists in the DB. On the other hand, a higher value reduces the number of iterations but increases the number of API connections. For this reason I have given it a default value of 10. This, in addition to being a balanced value, also reduces confusion for the user who might not be familiar with the changes.&lt;/p&gt;
+&lt;h2 id=&#34;remove-missing-values-from-the-database&#34;&gt;Remove missing values from the database&lt;/h2&gt;
+&lt;p&gt;In the previous proposal, only found coordinates were sent to the database, and those not found were ignored. In the present proposal, all entries are sent to the DB. Therefore, it is important to have some option to remove the missing entries.&lt;/p&gt;
+&lt;p&gt;For this I generated the function &lt;code&gt;remove_na_from_db&lt;/code&gt;, a very simple function which gives the user the possibility of removing &lt;code&gt;NA&lt;/code&gt;s automatically.&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;remove_na_from_db &amp;lt;- function(db.file) {
+  require(RSQLite)
+  con &amp;lt;- dbConnect(drv = RSQLite::SQLite(), dbname = db.file)
+  dbExecute(conn = con,
+            &amp;quot;DELETE FROM orgs WHERE lon IS NULL OR trim(lon) = &#39;&#39;;&amp;quot;)
+  dbDisconnect(con)
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The function is just a connection to the database that issues the command to remove rows where the &lt;code&gt;lon&lt;/code&gt; field is empty, in SQLite syntax. This is the safest, most direct and fastest way to do it. We could also import the data back into R, filter it, and send it back to SQLite, but this would require more local memory usage, more code, and more risk as it would require rewriting the database to SQLite entirely. . The power of the &lt;code&gt;RSQLite&lt;/code&gt; library (or any other library that connects R to SQL) lies precisely in the ability to pass commands written and executed directly in SQL.&lt;/p&gt;
+&lt;h2 id=&#34;obtaining-the-coordinates&#34;&gt;Obtaining the coordinates&lt;/h2&gt;
+&lt;p&gt;The &lt;code&gt;coords_from_city&lt;/code&gt; function also received significant changes in code readability and flexibility, and a bit less in functionality and efficiency.&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;coords_from_city &amp;lt;- function(city = NULL,
+                             country_code,
+                             region = NULL,
+                             state = NULL,
+                             county = NULL) {
+  require(&amp;quot;RJSONIO&amp;quot;)
+
+  ## 1. Abstract regions for OSM
+  CityCoded &amp;lt;- gsub(&amp;quot; &amp;quot;, &amp;quot;%20&amp;quot;, City) 
+  CountryCoded &amp;lt;- paste(&amp;quot;&amp;amp;countrycodes=&amp;quot;, CountryTwoLetter, sep = &amp;quot;&amp;quot;)
+  extras &amp;lt;- c(city = City, state = State, region = Region, county = County)
+  extrasCoded &amp;lt;- &amp;quot;&amp;quot;
+  if (!is.null(extras)) {
+    for (i in 1:length(extras)) {
+      if (extras[i] != &amp;quot;&amp;quot; &amp;amp;&amp;amp; !is.na(extras[i]) &amp;amp;&amp;amp; !grepl(&amp;quot;^\\s*$&amp;quot;, extras[i])) {
+        valCoded &amp;lt;- gsub(&amp;quot; &amp;quot;, &amp;quot;%20&amp;quot;, extras[i])
+        extrasCoded &amp;lt;- paste0(extrasCoded, &amp;quot;&amp;amp;&amp;quot;, names(extras)[i], &amp;quot;=&amp;quot;, valCoded)
+      }
+    }
+  }
+
+  ## 2. Response
+  link &amp;lt;- paste(
+    &amp;quot;http://nominatim.openstreetmap.org/search?city=&amp;quot;
+  , extrasCoded
+  , CountryCoded
+  , &amp;quot;&amp;amp;format=json&amp;quot;
+  , sep = &amp;quot;&amp;quot;
+  )
+
+  response &amp;lt;- try({fromJSON(link)},
+                  silent = TRUE)
+
+  if (class(response) == &amp;quot;try-error&amp;quot;) {
+    stop(response[1])
+  } else if (class(response) == &amp;quot;response&amp;quot;) {
+    response_status &amp;lt;- http_status(response)
+    if (response_status$category != &amp;quot;Success&amp;quot;) {
+      stop(response_status$message)
+    }
+  } else if (is.list(response)) {
+
+    ## 3. Organize results
+    if (length(response) == 0) {
+      message(paste(&amp;quot;No results found for&amp;quot;, extrasCoded))
+      coords &amp;lt;- data.frame(&amp;quot;lon&amp;quot; = NA, &amp;quot;lat&amp;quot; = NA, &amp;quot;osm_name&amp;quot; = as.character(NA))
+      
+    } else if (length(response) == 1) {
+      message(paste(&amp;quot;Found&amp;quot;, response[[1]]$display_name))
+      coords &amp;lt;- data.frame(
+        lon = response[[1]]$lon,
+        lat = response[[1]]$lat,
+        osm_name = response[[1]]$display_name
+      )
+      
+    } else {
+      message(paste(&amp;quot;Several entries found for&amp;quot;, city, country_code))
+      coords &amp;lt;- data.frame(
+        lon = response[[1]]$lon,
+        lat = response[[1]]$lat,
+        osm_name = response[[1]]$display_name
+      )
+    }
+  }
+    
+  ## 4. Exit as data frame
+  return(coords)
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The main change is in section 1, instead of passing each of the regions as its own string and formatting them one by one, I have abstracted them all into a single vector. This reduces the amount of code, memory usage, and allows us to include the city in the list, making it an optional value as well. The reason I had prepared them separately in the previous post is simply because the feature grew slowly: at first we only needed city, but then we had to use some additional fields depending on the country we were working in. To make things easier for me, I simply added each region field as needed. Now that I have time to work on the code, this was the first function I modified.&lt;/p&gt;
+&lt;p&gt;Step 2 now prints messages that help us identify the error when it comes to the connection, while also stopping the process. Whether it is a local connection error, or problems on the API side, we will get a message and the process will stop, which should avoid long waiting times when there is no connection and several locations are being searched.&lt;/p&gt;
+&lt;p&gt;Step 3 changes the organization of the results a bit, always returning a data frame with the same columns when the results were not found, but now with empty fields in such case. This helps the functions presented above to populate the database. Additionally, when many results were found, this information is printed on the screen; for now this is for information purposes only. The idea is to keep this space to make changes in the future that allow us to select the option interactively. This is something I still need to think about and plan properly because on one hand I want to use it in a Shiny app, and on the other we want to keep the ability for web scrapping to happen automatically with as little intervention as possible.&lt;/p&gt;
+&lt;p&gt;As I mentioned before, these new features also allow us to perform searches with the empty city value. This was a requested requirement in the last version, as some users started making maps by region, while others, not finding very small cities, decided to group the data by region. Thanks to the changes made to &lt;code&gt;coords_from_city&lt;/code&gt;, the &lt;code&gt;webscrap_to_sqlite&lt;/code&gt; function can now return results when the value for city is &lt;code&gt;NA&lt;/code&gt;, assuming that the coordinates for the region or state are found. Here it is important to mention that it is recommended to use the &lt;code&gt;state&lt;/code&gt; argument for region search, for some reason this works better in the OSM API. As an example, the search &lt;code&gt;coords_from_city(state = &amp;quot;Castilla La Mancha&amp;quot;, country_code = &amp;quot;ES&amp;quot;)&lt;/code&gt; returns the expected results, despite of the fact that Spain has no states; however if we do &lt;code&gt;coords_from_city(region = &amp;quot;Castilla La Mancha&amp;quot;, country_code = &amp;quot;ES&amp;quot;)&lt;/code&gt; nominatim does not find the results.&lt;/p&gt;
+&lt;h2 id=&#34;conclusions&#34;&gt;Conclusions&lt;/h2&gt;
+&lt;p&gt;These changes have been very important in speeding up the coordinate search process and automating map creation. On the other hand, it allowed me to style the code more and improve its efficiency. Since my main project for now is turning it into a Shiny app, it was important for me to improve the code and the efficiency before dealing with the details of the server. Since this is recent work that I have been doing in the last few months, I decided to share it right away now that I have fresh information on the changes. I hope it can help more than one to make more abstract code and practice recursion.&lt;/p&gt;
+</description>
+    </item>
+    
     <item>
       <title>Map any region in the world with R - Part II: Obtaining the coordinates</title>
       <link>https://blog.rwhitedwarf.com/post/map_any_region_with_ggplot2_part_ii/</link>

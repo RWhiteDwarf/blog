@@ -8,6 +8,18 @@
     <language>en</language>
     <lastBuildDate>Sat, 11 Feb 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.rwhitedwarf.com/tags/docker/index.xml" rel="self" type="application/rss+xml" />
     <item>
+      <title>Reference: Dockerizing shinny apps</title>
+      <link>https://blog.rwhitedwarf.com/post/reference_dockerizing_shinny_apps/</link>
+      <pubDate>Sat, 11 Feb 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.rwhitedwarf.com/post/reference_dockerizing_shinny_apps/</guid>
+      <description>&lt;p&gt;&lt;a href=&#34;https://youtube.com/@AndrewCouch&#34; target=&#34;_blank&#34;&gt;Andrew Couch&lt;/a&gt; has a nice video about &lt;a href=&#34;https://youtu.be/ARd5IldVFUs&#34; target=&#34;_blank&#34;&gt;deploying a shiny app using docker&lt;/a&gt;. He goes from the very basics, that asume no knowledge of docker whatsoever, which is the position of many R users like myself. I&amp;rsquo;ve been working in some shiny app lately, and although I&amp;rsquo;ve never needed docker so far,  I decided to start learning it because I can already foresee the future when it won&amp;rsquo;t be the case. Andrew makes some good points about how most tutorials assume the reader to know the basics of docker and start from there. While these are easy to follow, it is difficult to understand what we are doing and why we are doing it. That creates later problems to extend and debug the apps. Andrew shares his experience in searching for solid info and then proceeds with a tutorial where he explains basic parts, commands, and code of a docker file.&lt;/p&gt;
+&lt;p&gt;He also recommends a post from &lt;a href=&#34;https://www.statworx.com/en/content-hub/blog/how-to-dockerize-shinyapps/&#34; target=&#34;_blank&#34;&gt;statworx&lt;/a&gt; that is clearly the inspiration for his video. The post contains all the info necessary to dockerize a first shiny app. The post is short and clear, and it&amp;rsquo;s an excellent complement for the video.&lt;/p&gt;
+&lt;p&gt;I might try dockerizing some simple shiny app and share the experience here if I find something new or interesting that can add value to the mentioned links. Otherwise, you can stay with these as the basis for dockerizing a shiny app and wait for my post of dockerizing using Guix, which is my main target for now in order to make my app reproducible. Stay in orbit.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
       <title>Referencia: Dockerizando shinny apps</title>
       <link>https://blog.rwhitedwarf.com/es/post/2023/referencia_dockerizar_shinny_apps/</link>
       <pubDate>Sat, 11 Feb 2023 00:00:00 +0000</pubDate>

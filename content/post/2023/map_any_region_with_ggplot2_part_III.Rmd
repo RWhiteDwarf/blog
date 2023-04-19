@@ -2,13 +2,17 @@
 author: "Manuel Teodoro Tenango"
 title: "Map any region in the world with R - Part III: Programming with ggplot2"
 image: "/post/2022/map_any_region_with_ggplot2_part_I/maps_DrawingMap.png"
-draft: true
-date: 2023-04-18
-description: "Part III of making maps of any region in the world with R using ggplot2 and maps packages"
+draft: false
+date: 2023-04-19
+description: "Part III of making maps of any region in the world with R using ggplot2 and maps packages: how to make functions for graphics in R"
 tags: ["maps-app", "R maps", "R functions"]
 categories: ["R"]
 archives: ["2023"]
 ---
+
+```{r setup, include=FALSE} 
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
+```
 
 You can find all the posts on this series under the tag [maps-app](https://blog.rwhitedwarf.com/tags/maps-app/ "#maps-app") (including the Spanish versions).
 
@@ -19,16 +23,16 @@ We are creating maps of data showing changes over a span of time for different c
 
 This series of posts share my path towards the creation of the Shiny app. It is a live project and I decided to share my path and experiences along the creation process. The posts are not only about the Shiny app, but the package I created behind it, including topics of functions crafting, creation of the maps, classes of objects, etc., as well as any interesting issue that appear on the way. It is my way to contribute to the R community and at the same time keeping the project documented for myself.
 
-This post is about **Creating function with ggplot**
+This post is about **Creating functions for ggplot**.
 
 I hope you all enjoy it. Feel free to leave any kind of comment and/or question at the end.
 
 ![R Maps](/post/2022/map_any_region_with_ggplot2_part_I/maps_DrawingMap.png)
 
 ## Background and preliminaries
-In the [first post](https://blog.rwhitedwarf.com/post/map_any_region_with_ggplot2_part_i/) we created a function to create the basic map. Since then I have modified the function slightly, but the concept is the same. You can see here the most up to date version and compare it with the [previous version](https://blog.rwhitedwarf.com/post/map_any_region_with_ggplot2_part_i/#function-to-create-the-basic-map-in-r) if you wish.
+In the [first post](https://blog.rwhitedwarf.com/post/map_any_region_with_ggplot2_part_i/) we created a function to create the basic map. Since then I have modified the function slightly, but the concept is the same. You can see below the most up to date version and compare it with the [previous version](https://blog.rwhitedwarf.com/post/map_any_region_with_ggplot2_part_i/#function-to-create-the-basic-map-in-r) if you wish.
 
-```r
+```{r my_country_prev}
 my_country_prev <- function(country,
                             map_colors,
                             x_limits = NULL,
@@ -104,7 +108,7 @@ my_country_prev <- function(country,
 
 One critical difference is the argument `map_colors` that is nor explained or well defined. This is a list object containing the values for the colors to be used for all the elements of the maps. There are different ways to define and use this. The idea is to make it an S3 object and explain it on its own, but it is a topic that I am still exploring and I haven't decided yet the details of it. For now, let's use it simply as a list containing our chosen colors for the map. 
 
-```r
+```{r map_colors}
 map_colors <- list(dots_orgs = "#493252",
                    target_country = "#8caeb4",
                    empty_countries = "#f3f3f3",
@@ -120,7 +124,7 @@ The function easily prints the map of any country, using the naming from the pac
 
 Now we need to define some simple data frame simulating a collection of organizations in Mexico.
 
-```r
+```{r mx_data}
 mx_data <- data.frame(
   ID = c(1:10),
   Name = sprintf("org%d", seq(1:10)),
@@ -148,7 +152,7 @@ mx_data <- data.frame(
            "Texcoco"))
 ```
 
-We can see it as a franchise that along 10 years managed to open one new franchise per year, and we want to map where each is located and where it has grown the most. For that, we need the coordinates of the cities where each franchise is located. We can easily obtain that using code from the previous posts: either directly from [part II](https://blog.rwhitedwarf.com/post/map_any_region_with_ggplot2_part_ii/) or the [improved version of the function](https://blog.rwhitedwarf.com/post/webscrap_and_iteration_in_r/).
+We can see it as a company that along 10 years managed to open one new franchise per year, and we want to map where each is located and where it has grown the most. For that, we need the coordinates of the cities where each franchise is located. We can easily obtain that using code from the previous posts: either directly from [part II](https://blog.rwhitedwarf.com/post/map_any_region_with_ggplot2_part_ii/) or the [improved version of the function](https://blog.rwhitedwarf.com/post/webscrap_and_iteration_in_r/).
 
 ```{r, echo=FALSE, results='hide', message=FALSE}
 library(mapic)
@@ -164,26 +168,26 @@ webscrap_to_db(db_name = "test-mex.sqlite",
 
 And also using previously defined functions, we can combine the data with the just obtained coordinates system.
 
-```r
+```{r basic_data}
 (datmx <- combine_csv_sql(db_file = "test-mex.sqlite",
                          csv_file = mx_data))
 ```
 
-Now `datmx` should have the coordinates, together with the rest of the data about our franchises. We should also have our SQLite file and, of course, our source data. It means that we are ready to start adding the data to our basic map.
+Now `datmx` should have the coordinates, together with the rest of the data about our franchises. We should also have our SQLite file and, of course, our source data. It means that we are ready to add the data to the map.
 
 ## Programming with ggplot2
-The basic point to understand when creating functions for ggplot2 to have them working in the same style is this:
+If you ever wondered how to create functions with ggplot2, there are a few ways, but here is the basic point that we need to understand, if we want to have them working in the same style as ggplot works:
 
 Once you have the base plot with the function `ggplot()` you can add geoms and stats to it by simply using `+`, or you can create new functions by returning a `list` of geoms and stats.
 
 The first point is as simple as the following lines:
-```r
+```{r map1}
 my_country_prev("Mexico", map_colors, x_limits = c(-118, -86), y_limits = c(14, 34)) +
   ggtitle("A map of Mexico")
 ```
 
 Or we could do the same by creating a function and returning the title inside a list.
-```r
+```{r map2}
 my_title <- function(text) {
   return(list(ggtitle(text)))
 }
@@ -192,12 +196,12 @@ my_country_prev("Mexico", map_colors, x_limits = c(-118, -86), y_limits = c(14, 
   my_title("The same map of Mexico")
 ```
 
-With that in mind, we can do all the calculations we want and starting adding the data in form of geoms and stats to the base map.
+With that in mind, we can do all the calculations we want and start adding the data in form of geoms and stats to the base map.
 
-### Adding growing dots per city
+### A map with growing dots per city
 We started with something simple, adding the amount of organizations per city, as growing dots.
 
-```r
+```{r}
 make_dots <- function(.df,
                       year,
                       map_colors,
@@ -283,22 +287,24 @@ make_dots <- function(.df,
 
 As you can see, the function also requires our object `map_colors`, which we created before. Another way of passing values from a list is by defining these values directly within the function arguments, as we did here for `column_names`. We could pass the arguments directly when calling the function, or define them earlier to be used. Let's use the second approach.
 
-```r
+```{r}
 col_names = list(lat = "lat",
                  lon = "lon",
                  cities = "City",
                  start_year = "Registration_year")
 ```
 
-The function starts, as expected, by calling the libraries and then doing a bit of error handling to ensure that the fields that are strictly required are actually present in the data frame. There I am also adding the options for the `end_year` which is used in case some franchise closed and we want to map it only for the period of time it was present. 
+If you look at the data frame that we created containing the data, this are simply the names of the columns as we specified them.
 
-Then we define the "Dots base size". Here we experimented with so many sizes, both for the dots and for the final map, and this are the ones that look the best. Still I'm allowing this value to be changed as the parameter `dot_size` in the function definition, however I wouldn't recommend changing it. You can also play with the internal values and see it for yourself. Since the idea here is to create functions for the "standards" of the maps, allowing minimal changes, we are not so strict as per how big the dots should be, yet we have certain degree of control.
+Now, about the function itself, it starts, as expected, by calling the libraries and then doing a bit of error handling to ensure that the fields that are strictly required are actually present in the data frame. There I am also adding the options for the `end_year` which is used in case some franchise closed and we want to map it only for the period of time it was present. 
 
-Then we do a little bit of data manipulation before being able to use the data. This includes the standardization of the names of Cities (up to some degree), filtering the data that does not match with the selected year, using only the median value of the latitude and longitude data, and defining the sizes of the dots according to the amount of franchises. The last one is a tricky one that I haven't decided yet what amount of freedom should still be out there. Maybe there should be a separated function to define all that. Our maps were created to handle from few hundreds to a couple of thousand organizations, thus the values presented here. But if you want to show just a few organizations (as is the case of this example), the map looks quite deserted; on the other hand, if you need to map values of thousands per city, the maps look overloaded. For the present post I'm keeping it as is, with a note for consideration. We also added one extra `geom_point` to overwrite the alpha value for the case of only 1, and make it solid. This also works well on the visuals.
+Then we define the **"Dots base size"**. Here we experimented with so many sizes, both for the dots and for the final map, and this are the ones that look the best. Still, I'm allowing this value to be changed as the parameter `dot_size` in the function definition, however I wouldn't recommend changing it. You can also play with the internal values and see it for yourself. Since the idea here is to create functions for the "standards" of the maps, allowing minimal changes, we are not so strict as per how big the dots should be, yet we have certain degree of control.
 
-In any case, the function above shows how we can manipulate the data inside a function, and return only what we need to add to an existent ggplot. We can now add the dots as we would normally do in ggplot style.
+Then we do a little bit of data manipulation before being able to use the data. This includes the standardization of the names of Cities (up to some degree), filtering the data that does not match with the selected year, using only the median value of the latitude and longitude data, and defining the sizes of the dots according to the amount of franchises. The last one is a tricky one that I haven't decided yet what amount of freedom should still be out there. Maybe there should be a separated function to define all that. Our maps were created to handle data containing from few hundreds of rows, to a couple of thousands, thus, the values presented here. But if you want to show just a few organizations (as is the case of this example), the map looks quite deserted; on the other hand, if you need to map values of thousands per city, the maps look overloaded. For the present post I'm keeping it as is, with a note for consideration. We also added one extra `geom_point` to overwrite the alpha value for the case of only 1, and make it solid. This also works well on the visuals.
 
-``` r
+In any case, the function above shows how we can manipulate the data inside a function, and return only what we need to add it to an existent ggplot. We can now add the dots as we would normally do in ggplot style.
+
+``` {r}
 my_country_prev("Mexico",
                 map_colors,
                  x_limits = c(-118, -86),
@@ -311,10 +317,10 @@ my_country_prev("Mexico",
   ggtitle("A map of Mexico")
 ```
 
-### Adding labels
+### Adding labels for the map
 Moving forward, we want to add some labels to the maps to know what we are seeing. Here I created one function to show which year is being mapped, and a second one to show the totals. Although we can achieve that easily in different ways, I managed to make it complicated, keeping in mind that we want to map any region in the world.
 
-```r
+```{r}
 my_print_years <- function(year, map_colors, x_limits, y_limits, year_label = "Year") {
 
   ## POSITION FOR THE LABELS
@@ -368,7 +374,7 @@ Consider this some kind of snippet to add the labels wherever you want, and in a
 
 The rest of the code is intuitive, `geom_text` to add the info we want to show, one for the word "Year" and another one for the numeric value. We add the corresponding values to the `aes`, the sizes, some alpha for transparency and our colors defined in `map_colors`.
 
-```r
+```{r}
 my_print_totals <- function(totals, map_colors, x_limits, y_limits, totals_label = "Totals") {
   ## POSITION FOR THE LABELS
   ## Starting points
@@ -420,7 +426,7 @@ So, for now we have to pass each argument to each function and make sure that we
 
 The dataset has already been stored in `datmx` and the colors in `map_colors`. Now we need to define a few more.
 
-```r
+```{r}
 x_coords <- c(-118, -86)
 y_coords <- c(14, 34)
 yr <- 2020
@@ -440,7 +446,7 @@ my_country_prev("Mexico",
 
 And there it is. Since my map is for Mexico, I am adding labels in Spanish. Feel free to test it in your own language and with more data. We can also have a look at how the labels fit to other countries, for example, smaller and bigger compared to Mexico.
 
-```r
+```{r}
 x_coords <- c(4, 18)
 y_coords <- c(47, 56)
 my_country_prev("Germany",
@@ -454,15 +460,24 @@ my_country_prev("Germany",
 
 Germany is also looking good. And since we have the possibility of passing the values for year and totals, we don't actually need to have any data to test it, although the info shown is incorrect.
 
-```r
+```{r}
 x_coords <- c(28, 185)
 y_coords <- c(10, 100)
 my_country_prev("Russia",
                 map_colors,
                  x_coords, y_coords,
-                 show_coords = T) + 
+                 show_coords = T) +
   my_print_years(yr, map_colors, x_coords, y_coords) +
   my_print_totals(totals, map_colors, x_coords, y_coords)
 ```
 
 Russia is a very particular case because the country is quite long but not so wide. If we specify coordinates too narrow for latitude, the map does not look good and the labels start getting deformed. It would be the same case with Chile, if we make it narrow in longitude but it is naturally long in latitude. Since the main aim of the functions is to take care of the aesthetics and visualization, we have to ensure that this should not happen, somehow. Having certain degree of the labels is one way to do that. We will see a few more in the future. 
+
+## Conclusions
+If your aim is only to make maps like the above for any given country, our first 3 posts should have you covered. We could also import our functions to a shiny app and work with that. However, there are many improvements that we can still do.
+
+Now that we know the basis for functional programming with ggplot2, we can extend the power of our functions in the way how they share arguments by exploring the OOP (Object Oriented Programming) in R, the `ggproto` system to extend ggplot, and the use of environments. 
+
+Since we want the maps to be dynamic in time, we could also work on a couple of functions to cover that. It could easily be achieved in a for loop, which is perfectly fine. We could also use the `apply` family of functions or the `map` family of functions from the `purrr` package (not to be confused with geographic maps or the package maps). The last options could be a bit of complication because of the excess of arguments in our functions. That only shows that it is worth it to still improve them.
+
+The next posts will be focused on this topic, so stay connected if you are interested on how I tackle these challenges.

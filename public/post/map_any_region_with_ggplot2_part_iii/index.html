@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+<meta name="HandheldFriendly" content="True" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<meta name="generator" content="Hugo 0.111.3">
+
+
+<link rel="apple-touch-icon" sizes="180x180" href="favicon/RWD-apple-touch-icon.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="favicon/RWD-favicon-32x32.png" />
+<link rel="icon" type="image/png" sizes="16x16" href="favicon/RWD-favicon-16x16.png" />
+<link rel="manifest" href="favicon/site.webmanifest" />
+<link rel="shortcut icon" type="image/x-icon" href="favicon/RWD-favicon.ico" />
+<meta name="theme-color" content="#ffffff">
+
+
+
+<title>Map any region in the world with R - Part III: Programming with ggplot2 | R with White Dwarf</title>
+
+
+<meta name="author" content="Manuel Teodoro Tenango" />
+
+
+<meta name="description" content="Part III of making maps of any region in the world with R using ggplot2 and maps packages: how to make functions for graphics in R" />
+
+
+<meta name="keywords" content="maps-app, R maps, R functions" />
+
+
+<meta property="og:title" content="Map any region in the world with R - Part III: Programming with ggplot2" />
+<meta name="twitter:title" content="Map any region in the world with R - Part III: Programming with ggplot2" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://blog.rwhitedwarf.com/post/map_any_region_with_ggplot2_part_iii/" /><meta property="og:description" content="Part III of making maps of any region in the world with R using ggplot2 and maps packages: how to make functions for graphics in R" />
+<meta name="twitter:description" content="Part III of making maps of any region in the world with R using ggplot2 and maps packages: how to make functions for graphics in R" /><meta property="og:image" content="https://blog.rwhitedwarf.com/post/2022/map_any_region_with_ggplot2_part_I/maps_DrawingMap.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://blog.rwhitedwarf.com/post/2022/map_any_region_with_ggplot2_part_I/maps_DrawingMap.png" /><meta property="article:published_time" content="2023-04-19T00:00:00+00:00" /><meta property="article:modified_time" content="2023-04-19T00:00:00+00:00" />
+
+
+<style>
+    @media (prefers-color-scheme: dark) {
+        body[data-theme='auto'] img {
+            filter: brightness(60%);
+        }
+    }
+
+    body[data-theme='dark'] img {
+        filter: brightness(60%);
+    }
+</style>
+
+
+
+
+<link rel="stylesheet" href="https://blog.rwhitedwarf.com/assets/css/fuji.min.css" />
+
+
+
+
+
+
+
+
+</head>
+
+<body
+  data-theme="auto"
+  data-theme-auto='true'
+  >
+    <script data-cfasync="false">
+  
+  var fujiThemeData = localStorage.getItem('fuji_data-theme');
+  
+  if (!fujiThemeData) {
+    localStorage.setItem('fuji_data-theme', 'auto');
+  } else {
+    
+    if (fujiThemeData !== 'auto') {
+      document.body.setAttribute('data-theme', fujiThemeData === 'dark' ? 'dark' : 'light');
+    }
+  }
+</script>
+
+    <header>
+    <div class="container-lg clearfix">
+        <div class="col-12 header">
+            <a class="title-main" href="https://blog.rwhitedwarf.com">R with White Dwarf</a>
+            
+            <span class="title-sub">A distant star coding in R</span>
+            
+        </div>
+    </div>
+</header>
+
+    <main>
+        <div class="container-lg clearfix">
+            
+            <div class="col-12 col-md-9 float-left content">
+                
+<article>
+    
+    <h2 class="post-item post-title">
+        <a href="https://blog.rwhitedwarf.com/post/map_any_region_with_ggplot2_part_iii/">Map any region in the world with R - Part III: Programming with ggplot2</a>
+    </h2>
+    <div class="post-item post-meta">
+        <span><i class="iconfont icon-today-sharp"></i>&nbsp;2023-04-19</span>
+
+<span><i class="iconfont icon-file-tray-sharp"></i>&nbsp;3488 words</span>
+
+<span><i class="iconfont icon-pricetags-sharp"></i>&nbsp;<a href="/tags/maps-app">maps-app</a>&nbsp;<a href="/tags/r-maps">R maps</a>&nbsp;<a href="/tags/r-functions">R functions</a>&nbsp;</span>
+
+    </div>
+    
+    <div class="post-content markdown-body">
+        <p>You can find all the posts on this series under the tag <a href="https://blog.rwhitedwarf.com/tags/maps-app/" title="#maps-app" target="_blank">maps-app</a> (including the Spanish versions).</p>
+<p>You can also find the current state of the project under <a href="https://github.com/teotenn" target="_blank">my GitHub</a> repo <a href="https://github.com/teotenn/mapic" target="_blank">mapic</a>.</p>
+<h2 id="scope-of-this-post">Scope of this post</h2>
+<p>We are creating maps of data showing changes over a span of time for different countries and pointing at all kinds of cities. That basically means that we need to <strong>map any region of the world with R</strong>. Today there are all kinds of packages and techniques to do that. I will share the strategy I used with <a href="https://cran.r-project.org/web/packages/ggplot2/index.html" target="_blank">ggplot2</a> and <a href="https://cran.r-project.org/web/packages/maps/index.html" target="_blank">maps</a> packages, using support of <a href="https://www.openstreetmap.org/" target="_blank">Open Street Map</a> to obtain the coordinates of cities and finally making it interactive with <a href="https://shiny.rstudio.com/" target="_blank">shiny</a>.</p>
+<p>This series of posts share my path towards the creation of the Shiny app. It is a live project and I decided to share my path and experiences along the creation process. The posts are not only about the Shiny app, but the package I created behind it, including topics of functions crafting, creation of the maps, classes of objects, etc., as well as any interesting issue that appear on the way. It is my way to contribute to the R community and at the same time keeping the project documented for myself.</p>
+<p>This post is about <strong>Creating functions for ggplot</strong>.</p>
+<p>I hope you all enjoy it. Feel free to leave any kind of comment and/or question at the end.</p>
+<p><img class="img-zoomable" src="/post/2022/map_any_region_with_ggplot2_part_I/maps_DrawingMap.png" alt="R Maps" />
+</p>
+<h2 id="background-and-preliminaries">Background and preliminaries</h2>
+<p>In the <a href="https://blog.rwhitedwarf.com/post/map_any_region_with_ggplot2_part_i/" target="_blank">first post</a> we created a function to create the basic map. Since then I have modified the function slightly, but the concept is the same. You can see below the most up to date version and compare it with the <a href="https://blog.rwhitedwarf.com/post/map_any_region_with_ggplot2_part_i/#function-to-create-the-basic-map-in-r" target="_blank">previous version</a> if you wish.</p>
+<pre><code class="language-r">my_country_prev &lt;- function(country,
+                            map_colors,
+                            x_limits = NULL,
+                            y_limits = NULL,
+                            show_coords = FALSE) {
+  require(maps)
+  require(ggplot2)
+
+  ## Verifying the arguments passed to the function
+  if (length(country) != 1) stop(&quot;Function supports only one country per map&quot;)
+  stopifnot(is.logical(show_coords))
+  stopifnot(&quot;Name of the country should be character&quot; = is.character(country))
+
+  if (!country %in% map_data('world')$region) {
+    stop(paste(&quot;Country name not recognized&quot;,
+               &quot;To see a list of recognized countries run&quot;,
+               &quot;&lt;unique(maps::map_data('world')$region)&gt;&quot;, sep = &quot;\n&quot;))
+  }
+
+  ## If coords limits missing, print worldwide map with coordinates system to allow
+  ## User observe coords for reference
+  if (missing(x_limits) || missing(y_limits)) {
+    warning(&quot;X and/or Y limits not provided.\nPrinting worldwide map.&quot;)
+    map_country_theme &lt;- theme(panel.background = element_rect(fill = map_colors$oceans))
+  } else if (show_coords) {
+    map_country_theme &lt;- theme(panel.background = element_rect(fill = map_colors$oceans))
+  } else {
+    if (length(x_limits) != 2 || length(y_limits) != 2 ||
+         !all(grepl(&quot;^-?[0-9.]+$&quot;, c(x_limits, y_limits)))) {
+      stop(&quot;Limits for X and Y coords should be provided as vectors with two numeric values&quot;)
+    } else {
+
+      ## All the received inputs are correct.
+      ## Let's define our custom theme for the final map
+      map_country_theme &lt;- theme_bw() +
+        theme(panel.background = element_rect(fill = map_colors$oceans),
+              legend.position = &quot;none&quot;,
+              panel.grid.major = element_blank(),
+              panel.grid.minor = element_blank(),
+              axis.line = element_line(colour = &quot;black&quot;),
+              axis.title.x = element_blank(),
+              axis.text.x = element_blank(),
+              axis.ticks.x = element_blank(),
+              axis.title.y = element_blank(),
+              axis.text.y = element_blank(),
+              axis.ticks.y = element_blank())
+    }
+  }
+
+  ## make a df with only the country to overlap
+  map_data_country &lt;- map_data('world')[map_data('world')$region == country, ]
+  ## The map (maps + ggplot2 )
+  mapic &lt;- ggplot() +
+    ## First layer: worldwide map
+    geom_polygon(data = map_data(&quot;world&quot;),
+                 aes(x = long, y = lat, group = group),
+                 color = map_colors$border_countries, # border countries
+                 fill = map_colors$empty_countries) + # empty countries
+    ## Second layer: Country map
+    geom_polygon(data = map_data_country,
+                 aes(x = long, y = lat, group = group),
+                 color = map_colors$border_countries, # border target country
+                 fill = map_colors$target_country) + # target country
+    coord_map() +
+    coord_fixed(1.3,
+                xlim = x_limits,
+                ylim = y_limits) +
+    map_country_theme
+
+  return(mapic)
+}
+</code></pre>
+<p>One critical difference is the argument <code>map_colors</code> that is nor explained or well defined. This is a list object containing the values for the colors to be used for all the elements of the maps. There are different ways to define and use this. The idea is to make it an S3 object and explain it on its own, but it is a topic that I am still exploring and I haven&rsquo;t decided yet the details of it. For now, let&rsquo;s use it simply as a list containing our chosen colors for the map.</p>
+<pre><code class="language-r">map_colors &lt;- list(dots_orgs = &quot;#493252&quot;,
+                   target_country = &quot;#8caeb4&quot;,
+                   empty_countries = &quot;#f3f3f3&quot;,
+                   border_countries = &quot;#9c9c9c&quot;,
+                   oceans = &quot;#4e91d2&quot;,
+                   text_cities = &quot;#a0a0a0&quot;,
+                   text_legend = &quot;#493252&quot;,
+                   background_legend = &quot;#ffffff&quot;,
+                   text_copyright = &quot;#f3f3f3&quot;)
+</code></pre>
+<p>The function easily prints the map of any country, using the naming from the package <code>maps</code>. Now we want to add the data to it.</p>
+<p>Now we need to define some simple data frame simulating a collection of organizations in Mexico.</p>
+<pre><code class="language-r">mx_data &lt;- data.frame(
+  ID = c(1:10),
+  Name = sprintf(&quot;org%d&quot;, seq(1:10)),
+  Registration_year = c(2001:2010),
+  Country = &quot;MX&quot;,
+  Region = c(&quot;Mexico&quot;,
+             &quot;Baja California Norte&quot;,
+             &quot;Mexico&quot;,
+             &quot;Jalisco&quot;,
+             &quot;Queretaro&quot;,
+             &quot;Baja California Norte&quot;,
+             &quot;Mexico&quot;,
+             &quot;Morelos&quot;,
+             &quot;Mexico&quot;,
+             &quot;Estado de Mexico&quot;),
+  City = c(&quot;Ciudad de Mexico&quot;,
+           &quot;Tijuana&quot;,
+           &quot;Ciudad de Mexico&quot;,
+           &quot;Guadalajara&quot;,
+           &quot;Queretaro&quot;,
+           &quot;Tijuana&quot;,
+           &quot;Ciudad de Mexico&quot;,
+           &quot;Cuernavaca&quot;,
+           &quot;Ciudad de Mexico&quot;,
+           &quot;Texcoco&quot;))
+</code></pre>
+<p>We can see it as a company that along 10 years managed to open one new franchise per year, and we want to map where each is located and where it has grown the most. For that, we need the coordinates of the cities where each franchise is located. We can easily obtain that using code from the previous posts: either directly from <a href="https://blog.rwhitedwarf.com/post/map_any_region_with_ggplot2_part_ii/" target="_blank">part II</a> or the <a href="https://blog.rwhitedwarf.com/post/webscrap_and_iteration_in_r/" target="_blank">improved version of the function</a>.</p>
+<pre><code class="language-r">webscrap_to_db(db_name = &quot;test-mex.sqlite&quot;,
+               dat = mx_data,
+               city = &quot;City&quot;,
+               country = &quot;Country&quot;,
+               db_backup_after = 5)
+</code></pre>
+<p>And also using previously defined functions, we can combine the data with the just obtained coordinates system.</p>
+<pre><code class="language-r">(datmx &lt;- combine_csv_sql(db_file = &quot;test-mex.sqlite&quot;,
+                         csv_file = mx_data))
+</code></pre>
+<pre><code>&gt;    ID  Name Registration_year             City Country Region State County
+&gt; 1   1  org1              2001 Ciudad de Mexico      MX                    
+&gt; 2   2  org2              2002          Tijuana      MX                    
+&gt; 3   3  org3              2003 Ciudad de Mexico      MX                    
+&gt; 4   4  org4              2004      Guadalajara      MX                    
+&gt; 5   5  org5              2005        Queretaro      MX                    
+&gt; 6   6  org6              2006          Tijuana      MX                    
+&gt; 7   7  org7              2007 Ciudad de Mexico      MX                    
+&gt; 8   8  org8              2008       Cuernavaca      MX                    
+&gt; 9   9  org9              2009 Ciudad de Mexico      MX                    
+&gt; 10 10 org10              2010          Texcoco      MX                    
+&gt;                                                            osm_name        lon
+&gt; 1                                          Ciudad de México, México  -99.13318
+&gt; 2     Tijuana, Municipio de Tijuana, Baja California, 22320, México -117.01953
+&gt; 3                                          Ciudad de México, México  -99.13318
+&gt; 4                                      Guadalajara, Jalisco, México -103.33840
+&gt; 5  Santiago de Querétaro, Municipio de Querétaro, Querétaro, México -100.39706
+&gt; 6     Tijuana, Municipio de Tijuana, Baja California, 22320, México -117.01953
+&gt; 7                                          Ciudad de México, México  -99.13318
+&gt; 8                                Cuernavaca, Morelos, 62000, México  -99.23423
+&gt; 9                                          Ciudad de México, México  -99.13318
+&gt; 10                                   Texcoco, Carbó, Sonora, México -111.05867
+&gt;         lat
+&gt; 1  19.43263
+&gt; 2  32.53174
+&gt; 3  19.43263
+&gt; 4  20.67204
+&gt; 5  20.59547
+&gt; 6  32.53174
+&gt; 7  19.43263
+&gt; 8  18.92183
+&gt; 9  19.43263
+&gt; 10 29.63900
+</code></pre>
+<p>Now <code>datmx</code> should have the coordinates, together with the rest of the data about our franchises. We should also have our SQLite file and, of course, our source data. It means that we are ready to add the data to the map.</p>
+<h2 id="programming-with-ggplot2">Programming with ggplot2</h2>
+<p>If you ever wondered how to create functions with ggplot2, there are a few ways, but here is the basic point that we need to understand, if we want to have them working in the same style as ggplot works:</p>
+<p>Once you have the base plot with the function <code>ggplot()</code> you can add geoms and stats to it by simply using <code>+</code>, or you can create new functions by returning a <code>list</code> of geoms and stats.</p>
+<p>The first point is as simple as the following lines:</p>
+<pre><code class="language-r">my_country_prev(&quot;Mexico&quot;, map_colors, x_limits = c(-118, -86), y_limits = c(14, 34)) +
+  ggtitle(&quot;A map of Mexico&quot;)
+</code></pre>
+<p><img class="img-zoomable" src="/post/2023/map_any_region_with_ggplot2_part_III/map1-1.png" alt="plot of chunk map1" />
+</p>
+<p>Or we could do the same by creating a function and returning the title inside a list.</p>
+<pre><code class="language-r">my_title &lt;- function(text) {
+  return(list(ggtitle(text)))
+}
+
+my_country_prev(&quot;Mexico&quot;, map_colors, x_limits = c(-118, -86), y_limits = c(14, 34)) +
+  my_title(&quot;The same map of Mexico&quot;)
+</code></pre>
+<p><img class="img-zoomable" src="/post/2023/map_any_region_with_ggplot2_part_III/map2-1.png" alt="plot of chunk map2" />
+</p>
+<p>With that in mind, we can do all the calculations we want and start adding the data in form of geoms and stats to the base map.</p>
+<h3 id="a-map-with-growing-dots-per-city">A map with growing dots per city</h3>
+<p>We started with something simple, adding the amount of organizations per city, as growing dots.</p>
+<pre><code class="language-r">make_dots &lt;- function(.df,
+                      year,
+                      map_colors,
+                      column_names = list(
+                        lat = &quot;lat&quot;,
+                        lon = &quot;lon&quot;,
+                        cities = &quot;city&quot;,
+                        start_year = &quot;year&quot;,
+                        end_year = NULL),
+                      dot_size = 1) {
+  require(dplyr)
+  require(tidyr)
+  require(stringr)
+
+  ## Some error handling
+  mandatory_cols &lt;- c(&quot;lat&quot;, &quot;lon&quot;, &quot;cities&quot;, &quot;start_year&quot;)
+  if(!all(mandatory_cols %in% names(column_names))) {
+    stop(&quot;Column names missing!&quot;)
+  } else {
+    if (!&quot;end_year&quot; %in% names(column_names)) {
+      .df$final_year &lt;- NA_real_
+      column_names[[&quot;end_year&quot;]] &lt;- &quot;final_year&quot;
+    }
+  }
+
+  ## Dots base size
+  base_size &lt;- 5
+  dot_sizes &lt;- c(0.5 * (base_size * dot_size),
+                 1 * (base_size * dot_size),
+                 2 * (base_size * dot_size),
+                 3 * (base_size * dot_size),
+                 4 * (base_size * dot_size),
+                 5 * (base_size * dot_size),
+                 7 * (base_size * dot_size),
+                 8 * (base_size * dot_size),
+                 9 * (base_size * dot_size))
+
+  ## Data manipulation to be used in the map
+  filt &lt;- .df  %&gt;%
+    mutate(year_final = replace_na(!!sym(column_names$end_year), year + 1),
+           city_name = str_to_sentence(!!sym(column_names$cities))) %&gt;%
+    filter(year_final &gt; year &amp; !!sym(column_names$start_year) &lt;= year) %&gt;%
+    group_by(city_name) %&gt;%
+    summarise(x = median(!!sym(column_names$lon), na.rm = T),
+              y = median(!!sym(column_names$lat), na.rm = T),
+              n = n()) %&gt;%
+    mutate(dot_size = case_when(n == 1 ~ dot_sizes[1], 
+                                n &gt;= 2 &amp; n &lt;= 5 ~ dot_sizes[2], 
+                                n &gt;= 6 &amp; n &lt;= 10 ~ dot_sizes[3], 
+                                n &gt;= 11 &amp; n &lt;= 30 ~ dot_sizes[4], 
+                                n &gt;= 31 &amp; n &lt;= 50 ~ dot_sizes[5], 
+                                n &gt;= 51 &amp; n &lt;= 100 ~ dot_sizes[6], 
+                                n &gt;= 101 &amp; n &lt;= 200 ~ dot_sizes[7], 
+                                n &gt;= 201 &amp; n &lt;= 300 ~ dot_sizes[8], 
+                                n &gt;= 301 ~ dot_sizes[9],
+                                TRUE ~ NA))
+
+  ## -------------------------- MAIN MAP ----------------------------------
+  map_points &lt;- list(
+    geom_point(data = filt,
+               aes(x, y, size = dot_size),
+               color = map_colors$dots_orgs,
+               alpha = 7/10,
+               shape = 19) ,
+    scale_size_identity('',
+                        breaks = dot_sizes, 
+                        labels = c('1', '2-5', '6-10', '11-30', '31-50',
+                                   '51-100', '101-200', '201-300', '&gt;300'),
+                        guide = guide_legend(label.position = 'bottom',
+                                             label.vjust = 0,
+                                             nrow = 1)),
+    geom_point(data = filter(filt, n == 1),
+               aes(x, y),
+               color = map_colors$dots_orgs,
+               shape = 19,
+               size = 2.5) ,
+    theme(legend.position = 'bottom')
+  )
+
+  return(map_points)
+}
+</code></pre>
+<p>As you can see, the function also requires our object <code>map_colors</code>, which we created before. Another way of passing values from a list is by defining these values directly within the function arguments, as we did here for <code>column_names</code>. We could pass the arguments directly when calling the function, or define them earlier to be used. Let&rsquo;s use the second approach.</p>
+<pre><code class="language-r">col_names = list(lat = &quot;lat&quot;,
+                 lon = &quot;lon&quot;,
+                 cities = &quot;City&quot;,
+                 start_year = &quot;Registration_year&quot;)
+</code></pre>
+<p>If you look at the data frame that we created containing the data, this are simply the names of the columns as we specified them.</p>
+<p>Now, about the function itself, it starts, as expected, by calling the libraries and then doing a bit of error handling to ensure that the fields that are strictly required are actually present in the data frame. There I am also adding the options for the <code>end_year</code> which is used in case some franchise closed and we want to map it only for the period of time it was present.</p>
+<p>Then we define the <strong>&ldquo;Dots base size&rdquo;</strong>. Here we experimented with so many sizes, both for the dots and for the final map, and this are the ones that look the best. Still, I&rsquo;m allowing this value to be changed as the parameter <code>dot_size</code> in the function definition, however I wouldn&rsquo;t recommend changing it. You can also play with the internal values and see it for yourself. Since the idea here is to create functions for the &ldquo;standards&rdquo; of the maps, allowing minimal changes, we are not so strict as per how big the dots should be, yet we have certain degree of control.</p>
+<p>Then we do a little bit of data manipulation before being able to use the data. This includes the standardization of the names of Cities (up to some degree), filtering the data that does not match with the selected year, using only the median value of the latitude and longitude data, and defining the sizes of the dots according to the amount of franchises. The last one is a tricky one that I haven&rsquo;t decided yet what amount of freedom should still be out there. Maybe there should be a separated function to define all that. Our maps were created to handle data containing from few hundreds of rows, to a couple of thousands, thus, the values presented here. But if you want to show just a few organizations (as is the case of this example), the map looks quite deserted; on the other hand, if you need to map values of thousands per city, the maps look overloaded. For the present post I&rsquo;m keeping it as is, with a note for consideration. We also added one extra <code>geom_point</code> to overwrite the alpha value for the case of only 1, and make it solid. This also works well on the visuals.</p>
+<p>In any case, the function above shows how we can manipulate the data inside a function, and return only what we need to add it to an existent ggplot. We can now add the dots as we would normally do in ggplot style.</p>
+<pre><code class="language-r">my_country_prev(&quot;Mexico&quot;,
+                map_colors,
+                 x_limits = c(-118, -86),
+                 y_limits = c(14, 34),
+                 show_coords = T) +
+  make_dots(datmx,
+            year = 2022,
+            map_colors, column_names = col_names) +
+  scale_x_continuous(n.breaks = 20) +
+  ggtitle(&quot;A map of Mexico&quot;)
+</code></pre>
+<p><img class="img-zoomable" src="/post/2023/map_any_region_with_ggplot2_part_III/unnamed-chunk-5-1.png" alt="plot of chunk unnamed-chunk-5" />
+</p>
+<h3 id="adding-labels-for-the-map">Adding labels for the map</h3>
+<p>Moving forward, we want to add some labels to the maps to know what we are seeing. Here I created one function to show which year is being mapped, and a second one to show the totals. Although we can achieve that easily in different ways, I managed to make it complicated, keeping in mind that we want to map any region in the world.</p>
+<pre><code class="language-r">my_print_years &lt;- function(year, map_colors, x_limits, y_limits, year_label = &quot;Year&quot;) {
+
+  ## POSITION FOR THE LABELS
+  ## Starting points
+  x_units &lt;- abs(x_limits[1] - x_limits[2])/10
+  y_units &lt;- abs(y_limits[1] - y_limits[2])/10
+  start_x &lt;- min(x_limits)
+  start_y &lt;- min(y_limits)
+  ## Frame
+  rectangle.start.x &lt;- start_x
+  rectangle.wide &lt;- rectangle.start.x + x_units
+  rectangle.start.y &lt;- start_y
+  rectangle.high &lt;- rectangle.start.y + y_units
+  ## Text
+  num.size &lt;- 4
+  text.size &lt;- 3  
+  num.position.x &lt;- start_x + (x_units * 0.5)
+  text.position.x &lt;- start_x + (x_units * 0.5)
+  num.position.y &lt;- start_y + (y_units * 0.25)
+  text.position.y &lt;- start_y + (y_units * 0.65)
+
+  ## Adding the ggplot geoms
+  pyears &lt;- list(
+    geom_rect(
+      aes(xmin = rectangle.start.x, xmax = rectangle.wide,
+          ymin = rectangle.start.y, ymax = rectangle.high),
+      color = map_colors$text_legend,
+      fill = map_colors$text_legend,
+      alpha = 9/10),
+    geom_text(
+      aes(x = num.position.x,
+          y = num.position.y,
+          label = year),
+      size = num.size,
+      fontface = 'bold',
+      color = map_colors$background_legend),
+    geom_text(
+      aes(x = text.position.x,
+          y = text.position.y,
+          label = year_label),
+      size = text.size,
+      fontface = 'bold',
+      alpha = 9/10,
+      color = map_colors$background_legend)
+  )
+  return(pyears)
+}
+</code></pre>
+<p>Consider this some kind of snippet to add the labels wherever you want, and in any size you want. Our function is basically doing some basic simple calculations to place the labelling inside the map area, on the bottom-left corner. The first part with the comment <code>## POSITION FOR THE LABELS</code> shows the basic calculations to do that, based on the coords, which should be the same as the coords specified in the map function. The calculations and the position are very stiff in size and location, but they will work the same regardless of the region mapped. On the other hand, it provides the basis for the function. Feel free to play with them to add custom options such as selecting the sizes or the corner where we want to display them.</p>
+<p>The rest of the code is intuitive, <code>geom_text</code> to add the info we want to show, one for the word &ldquo;Year&rdquo; and another one for the numeric value. We add the corresponding values to the <code>aes</code>, the sizes, some alpha for transparency and our colors defined in <code>map_colors</code>.</p>
+<pre><code class="language-r">my_print_totals &lt;- function(totals, map_colors, x_limits, y_limits, totals_label = &quot;Totals&quot;) {
+  ## POSITION FOR THE LABELS
+  ## Starting points
+  x_units &lt;- abs(x_limits[1] - x_limits[2])/10
+  y_units &lt;- abs(y_limits[1] - y_limits[2])/10
+  start_x &lt;- min(x_limits) + x_units
+  start_y &lt;- min(y_limits)
+  ## Frame
+  rectangle.start.x &lt;- start_x
+  rectangle.wide &lt;- rectangle.start.x + x_units
+  rectangle.start.y &lt;- start_y
+  rectangle.high &lt;- rectangle.start.y + y_units
+  ## Text
+  num.size &lt;- 4
+  text.size &lt;- 3  
+  num.position.x &lt;- start_x + (x_units*0.5)
+  text.position.x &lt;- start_x + (x_units*0.5)
+  num.position.y &lt;- start_y + (y_units*0.25)
+  text.position.y &lt;- start_y + (y_units*0.65)
+  
+    ptotals &lt;- list(
+        geom_rect(aes(xmin = rectangle.start.x, xmax = rectangle.wide,
+                      ymin = rectangle.start.y, ymax = rectangle.high),
+                  color = '#283151',
+                  fill = map_colors$background_legend,
+                  alpha = 9/10),
+        geom_text(
+            aes(x = num.position.x, y = num.position.y,
+                label = totals),
+            size = num.size,
+            fontface = 'bold',
+            alpha = 9/10,
+            color = map_colors$text_legend),
+        geom_text(
+            aes(x = text.position.x, y = text.position.y,
+                label = totals_label),
+            size = text.size,
+            fontface = 'bold',
+            alpha = 9/10,
+            color = map_colors$text_legend)
+    )
+    return(ptotals)
+}
+</code></pre>
+<p>We can follow exactly the same approach for the totals, to place them right next to the year. For now we have to specify the value of the total that we want to be shown, but this actually should be calculated by the function. Actually, if you think about it, we are passing a great deal of information that should be coming from the previous functions, and we should keep here arguments that control the visuals of the labels only. That is not an easy topic and I decided to cover it in a separated post. Another reason why I don&rsquo;t want to show it yet is because I haven&rsquo;t decided yet which approach I want to use.</p>
+<p>So, for now we have to pass each argument to each function and make sure that we are passing the same argument, but that is easy to achieve in R by directing the values to an object before passing it to the functions. Let&rsquo;s see it in action.</p>
+<p>The dataset has already been stored in <code>datmx</code> and the colors in <code>map_colors</code>. Now we need to define a few more.</p>
+<pre><code class="language-r">x_coords &lt;- c(-118, -86)
+y_coords &lt;- c(14, 34)
+yr &lt;- 2020
+totals &lt;- 10
+my_country_prev(&quot;Mexico&quot;,
+                map_colors,
+                x_coords,
+                y_coords,
+                show_coords = T) +
+  make_dots(rbind(datmx, datmx),
+            map_colors,
+            year = yr,
+            col_names) +
+  my_print_years(yr, map_colors, x_coords, y_coords, &quot;Año&quot;) +
+  my_print_totals(totals, map_colors, x_coords, y_coords, &quot;Totales&quot;)
+</code></pre>
+<p><img class="img-zoomable" src="/post/2023/map_any_region_with_ggplot2_part_III/unnamed-chunk-8-1.png" alt="plot of chunk unnamed-chunk-8" />
+</p>
+<p>And there it is. Since my map is for Mexico, I am adding labels in Spanish. Feel free to test it in your own language and with more data. We can also have a look at how the labels fit to other countries, for example, smaller and bigger compared to Mexico.</p>
+<pre><code class="language-r">x_coords &lt;- c(4, 18)
+y_coords &lt;- c(47, 56)
+my_country_prev(&quot;Germany&quot;,
+                map_colors,
+                 x_coords, y_coords,
+                 show_coords = T) + 
+  my_print_years(yr, map_colors, x_coords, y_coords) +
+  my_print_totals(totals, map_colors, x_coords, y_coords) +
+  ggtitle(&quot;A map of Germany&quot;)
+</code></pre>
+<p><img class="img-zoomable" src="/post/2023/map_any_region_with_ggplot2_part_III/unnamed-chunk-9-1.png" alt="plot of chunk unnamed-chunk-9" />
+</p>
+<p>Germany is also looking good. And since we have the possibility of passing the values for year and totals, we don&rsquo;t actually need to have any data to test it, although the info shown is incorrect.</p>
+<pre><code class="language-r">x_coords &lt;- c(28, 185)
+y_coords &lt;- c(10, 100)
+my_country_prev(&quot;Russia&quot;,
+                map_colors,
+                 x_coords, y_coords,
+                 show_coords = T) +
+  my_print_years(yr, map_colors, x_coords, y_coords) +
+  my_print_totals(totals, map_colors, x_coords, y_coords)
+</code></pre>
+<p><img class="img-zoomable" src="/post/2023/map_any_region_with_ggplot2_part_III/unnamed-chunk-10-1.png" alt="plot of chunk unnamed-chunk-10" />
+</p>
+<p>Russia is a very particular case because the country is quite long but not so wide. If we specify coordinates too narrow for latitude, the map does not look good and the labels start getting deformed. It would be the same case with Chile, if we make it narrow in longitude but it is naturally long in latitude. Since the main aim of the functions is to take care of the aesthetics and visualization, we have to ensure that this should not happen, somehow. Having certain degree of the labels is one way to do that. We will see a few more in the future.</p>
+<h2 id="conclusions">Conclusions</h2>
+<p>If your aim is only to make maps like the above for any given country, our first 3 posts should have you covered. We could also import our functions to a shiny app and work with that. However, there are many improvements that we can still do.</p>
+<p>Now that we know the basis for functional programming with ggplot2, we can extend the power of our functions in the way how they share arguments by exploring the OOP (Object Oriented Programming) in R, the <code>ggproto</code> system to extend ggplot, and the use of environments.</p>
+<p>Since we want the maps to be dynamic in time, we could also work on a couple of functions to cover that. It could easily be achieved in a for loop, which is perfectly fine. We could also use the <code>apply</code> family of functions or the <code>map</code> family of functions from the <code>purrr</code> package (not to be confused with geographic maps or the package maps). The last options could be a bit of complication because of the excess of arguments in our functions. That only shows that it is worth it to still improve them.</p>
+<p>The next posts will be focused on this topic, so stay connected if you are interested on how I tackle these challenges.</p>
+
+    </div>
+    <div class="bg-white dark:bg-warmgray-900 p-5 my-4">
+      <div class="post-comment">
+	<script src="https://utteranc.es/client.js"
+            repo="RWhiteDwarf/blog"
+            issue-term="pathname"
+            theme="github-light"
+            crossorigin="anonymous"
+            async>
+</script>
+
+      </div>
+    </div>
+</article>
+
+
+
+            </div>
+            <aside class="col-12 col-md-3 float-left sidebar">
+    
+    <div class="sidebar-item sidebar-pages">
+        <h3>Pages</h3>
+        <ul>
+            
+            <li>
+                <a href="/es/">Español</a>
+            </li>
+            
+            <li>
+                <a href="/">Home</a>
+            </li>
+            
+            <li>
+                <a href="/archives/">Archives</a>
+            </li>
+            
+            <li>
+                <a href="/about/">About</a>
+            </li>
+            
+            <li>
+                <a href="/search/">Search</a>
+            </li>
+            
+            <li>
+                <a href="/index.xml">RSS</a>
+            </li>
+            
+        </ul>
+    </div>
+    
+    <div class="sidebar-item sidebar-links">
+        <h3>Links</h3>
+        <ul>
+            
+            <li>
+                <a href="https://www.r-project.org/" target="_blank"><span>The R Project</span></a>
+            </li>
+            
+            <li>
+                <a href="https://www.r-bloggers.com/" target="_blank"><span>R Bloggers</span></a>
+            </li>
+            
+            <li>
+                <a href="https://www.bioconductor.org/" target="_blank"><span>Bioconductor</span></a>
+            </li>
+            
+        </ul>
+    </div>
+    
+    <div class="sidebar-item sidebar-tags">
+        <h3>Tags</h3>
+        <div>
+            
+            <span>
+                <a href="/tags/code-visuals/">Code Visuals</a>
+            </span>
+            
+            <span>
+                <a href="/tags/data-analysis/">data analysis</a>
+            </span>
+            
+            <span>
+                <a href="/tags/database/">database</a>
+            </span>
+            
+            <span>
+                <a href="/tags/docker/">docker</a>
+            </span>
+            
+            <span>
+                <a href="/tags/emacs/">emacs</a>
+            </span>
+            
+            <span>
+                <a href="/tags/ggplot2/">ggplot2</a>
+            </span>
+            
+            <span>
+                <a href="/tags/maps-app/">maps-app</a>
+            </span>
+            
+            <span>
+                <a href="/tags/minitutorial/">minitutorial</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-basics/">R basics</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-dev/">R-dev</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-funciones/">R funciones</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-functions/">R functions</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-mapas/">R mapas</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-maps/">R maps</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-shiny/">R shiny</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-tips/">R tips</a>
+            </span>
+            
+            <span>
+                <a href="/tags/recursion/">recursion</a>
+            </span>
+            
+            <span>
+                <a href="/tags/references/">references</a>
+            </span>
+            
+            <span>
+                <a href="/tags/referencias/">referencias</a>
+            </span>
+            
+            <span>
+                <a href="/tags/web-scrap/">web-scrap</a>
+            </span>
+            
+        </div>
+    </div>
+    <div class="sidebar-item sidebar-toc">
+        <h3>Table of Contents</h3><nav id="TableOfContents">
+  <ul>
+    <li><a href="#scope-of-this-post">Scope of this post</a></li>
+    <li><a href="#background-and-preliminaries">Background and preliminaries</a></li>
+    <li><a href="#programming-with-ggplot2">Programming with ggplot2</a>
+      <ul>
+        <li><a href="#a-map-with-growing-dots-per-city">A map with growing dots per city</a></li>
+        <li><a href="#adding-labels-for-the-map">Adding labels for the map</a></li>
+      </ul>
+    </li>
+    <li><a href="#conclusions">Conclusions</a></li>
+  </ul>
+</nav></div>
+</aside>
+
+        </div>
+        <div class="btn">
+    <div class="btn-menu" id="btn-menu">
+        <i class="iconfont icon-grid-sharp"></i>
+    </div>
+    <div class="btn-toggle-mode">
+        <i class="iconfont icon-contrast-sharp"></i>
+    </div>
+    <div class="btn-scroll-top">
+        <i class="iconfont icon-chevron-up-circle-sharp"></i>
+    </div>
+</div>
+<aside class="sidebar-mobile" style="display: none;">
+  <div class="sidebar-wrapper">
+    
+    <div class="sidebar-item sidebar-pages">
+        <h3>Pages</h3>
+        <ul>
+            
+            <li>
+                <a href="/es/">Español</a>
+            </li>
+            
+            <li>
+                <a href="/">Home</a>
+            </li>
+            
+            <li>
+                <a href="/archives/">Archives</a>
+            </li>
+            
+            <li>
+                <a href="/about/">About</a>
+            </li>
+            
+            <li>
+                <a href="/search/">Search</a>
+            </li>
+            
+            <li>
+                <a href="/index.xml">RSS</a>
+            </li>
+            
+        </ul>
+    </div>
+    
+    <div class="sidebar-item sidebar-links">
+        <h3>Links</h3>
+        <ul>
+            
+            <li>
+                <a href="https://www.r-project.org/" target="_blank"><span>The R Project</span></a>
+            </li>
+            
+            <li>
+                <a href="https://www.r-bloggers.com/" target="_blank"><span>R Bloggers</span></a>
+            </li>
+            
+            <li>
+                <a href="https://www.bioconductor.org/" target="_blank"><span>Bioconductor</span></a>
+            </li>
+            
+        </ul>
+    </div>
+    
+    <div class="sidebar-item sidebar-tags">
+        <h3>Tags</h3>
+        <div>
+            
+            <span>
+                <a href="/tags/code-visuals/">Code Visuals</a>
+            </span>
+            
+            <span>
+                <a href="/tags/data-analysis/">data analysis</a>
+            </span>
+            
+            <span>
+                <a href="/tags/database/">database</a>
+            </span>
+            
+            <span>
+                <a href="/tags/docker/">docker</a>
+            </span>
+            
+            <span>
+                <a href="/tags/emacs/">emacs</a>
+            </span>
+            
+            <span>
+                <a href="/tags/ggplot2/">ggplot2</a>
+            </span>
+            
+            <span>
+                <a href="/tags/maps-app/">maps-app</a>
+            </span>
+            
+            <span>
+                <a href="/tags/minitutorial/">minitutorial</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-basics/">R basics</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-dev/">R-dev</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-funciones/">R funciones</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-functions/">R functions</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-mapas/">R mapas</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-maps/">R maps</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-shiny/">R shiny</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-tips/">R tips</a>
+            </span>
+            
+            <span>
+                <a href="/tags/recursion/">recursion</a>
+            </span>
+            
+            <span>
+                <a href="/tags/references/">references</a>
+            </span>
+            
+            <span>
+                <a href="/tags/referencias/">referencias</a>
+            </span>
+            
+            <span>
+                <a href="/tags/web-scrap/">web-scrap</a>
+            </span>
+            
+        </div>
+    </div>
+    
+    
+    
+    <div class="sidebar-item sidebar-toc">
+        <h3>Table of Contents</h3>
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#scope-of-this-post">Scope of this post</a></li>
+    <li><a href="#background-and-preliminaries">Background and preliminaries</a></li>
+    <li><a href="#programming-with-ggplot2">Programming with ggplot2</a>
+      <ul>
+        <li><a href="#a-map-with-growing-dots-per-city">A map with growing dots per city</a></li>
+        <li><a href="#adding-labels-for-the-map">Adding labels for the map</a></li>
+      </ul>
+    </li>
+    <li><a href="#conclusions">Conclusions</a></li>
+  </ul>
+</nav>
+    </div>
+    
+    
+  </div>
+</aside>
+    </main>
+
+    <footer>
+    <div class="container-lg clearfix">
+        <div class="col-12 footer">
+            
+            <span>&copy; 2021-2023
+                <a href="https://blog.rwhitedwarf.com">R White Dwarf</a>
+                
+                | Powered by <a href="https://github.com/dsrkafuu/hugo-theme-fuji/"
+                   target="_blank">Fuji-v2</a> &amp; <a href="https://gohugo.io/"
+                                                    target="_blank">Hugo</a> 
+            </span>
+        </div>
+    </div>
+</footer>
+
+    
+<script defer src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.6/dist/medium-zoom.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/lazysizes@5.3.2/lazysizes.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/prismjs@1.27.0/components/prism-core.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/prismjs@1.27.0/plugins/autoloader/prism-autoloader.min.js"></script>
+
+
+
+<script defer src="/assets/js/fuji.min.js"></script>
+
+
+
+</body>
+
+</html>
