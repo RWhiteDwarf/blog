@@ -10,6 +10,10 @@ categories: ["R"]
 archives: ["2022"]
 ---
 
+Pueden encontrar todas las publicaciones en este tema bajo la etiqueta [maps-app](https://blog.rwhitedwarf.com/tags/maps-app/) (incluyendo las versiones en inglés).
+
+También pueden encontrar el estado actual del proyecto en [mi GitHub](https://github.com/teotenn) repo [mapic](https://github.com/teotenn/mapic).
+
 ## Sobre este post
 
 Esta es la segunda parte de las series de cómo crear mapas de cualquier región del mundo con R. De antemano me disculpo por detalles que puedan encontrar en la traducción, el post original lo creé en Inglés y el trabajo de traducción puede ser excesivo si voy a cada detalle. Por otro lado, recomiendo un conocimiento al menos básico del idioma Inglés si se quiere tener éxito en R o programación en general. Ayuda mucho a entender la sintaxis. 
@@ -17,10 +21,6 @@ Esta es la segunda parte de las series de cómo crear mapas de cualquier región
 Estamos creando mapas de datos que muestran los cambios durante un período de tiempo para diferentes países y orientado a todo tipo de ciudades. Esto básicamente significa que necesitamos **mapear cualquier región del mundo con R**. Hoy en día existen todo tipo de paquetes y técnicas para hacerlo. Quiero compartir la estrategia que utilicé con [ggplot2](https://cran.r-project.org/web/packages/ggplot2/index.html) y [maps](https://cran.r-project.org/web/packages/maps/index.html), utilizando el soporte de [Open Street Map](https://www.openstreetmap.org/) para obtener las coordenadas de las ciudades y finalmente hacerlo interactivo con [shiny](https://shiny.rstudio.com/). 
 
 Estas publicaciones comparten mi camino en la creación de la aplicación Shiny. Es un proyecto vivo en el que estoy trabajando actualmente y decidí compartir mis experiencias durante el proceso de creación. Estas publicaciones no son sólo acerca de Shiny apps, si no más bien sobre la creación del paquete detrás, incluyendo temas sobre la generación de funciones, creación de los mapas, clases de objetos, entre otros, incluyendo cualquier tema interesante que aparezca en el camino. Es mi manera de contribuir a la comunidad de R y al mismo tiempo documentar el proyecto en si mismo.
-
-Pueden encontrar todas las publicaciones en este tema bajo la etiqueta [maps-app](https://blog.rwhitedwarf.com/tags/maps-app/) (incluyendo las versiones en inglés).
-
-También pueden encontrar el estado actual del proyecto en [mi GitHub](https://github.com/teotenn) repo [mapic](https://github.com/teotenn/mapic).
 
 Espero que lo disfruten. Siéntanse libres de dejar cualquier tipo de comentario y/o pregunta al final.
 

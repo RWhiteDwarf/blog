@@ -6,19 +6,457 @@
     <description>Recent content in web-scrap on R with White Dwarf</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Fri, 04 Nov 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.rwhitedwarf.com/tags/web-scrap/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 24 Mar 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.rwhitedwarf.com/tags/web-scrap/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Webscrap and iteration in R</title>
+      <link>https://blog.rwhitedwarf.com/post/webscrap_and_iteration_in_r/</link>
+      <pubDate>Fri, 24 Mar 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.rwhitedwarf.com/post/webscrap_and_iteration_in_r/</guid>
+      <description>&lt;h2 id=&#34;about-this-post&#34;&gt;About this post&lt;/h2&gt;
+&lt;p&gt;We are creating maps of data showing changes over a span of time for different countries and pointing at all kinds of cities. That basically means that we need to &lt;strong&gt;map any region of the world with R&lt;/strong&gt;. Today there are all kinds of packages and techniques to do that. I will share the strategy I used with &lt;a href=&#34;https://cran.r-project.org/web/packages/ggplot2/index.html&#34; target=&#34;_blank&#34;&gt;ggplot2&lt;/a&gt; and &lt;a href=&#34;https://cran.r-project.org/web/packages/maps/index.html&#34; target=&#34;_blank&#34;&gt;maps&lt;/a&gt; packages, using support of &lt;a href=&#34;https://www.openstreetmap.org/&#34; target=&#34;_blank&#34;&gt;Open Street Map&lt;/a&gt; to obtain the coordinates of cities and finally making it interactive with &lt;a href=&#34;https://shiny.rstudio.com/&#34; target=&#34;_blank&#34;&gt;shiny&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;This series of posts share my path towards the creation of the Shiny app. It is a live project and I decided to share my path and experiences along the creation process. The posts are not only about the Shiny app, but the package I created behind it, including topics of functions crafting, creation of the maps, classes of objects, etc., as well as any interesting issue that appear on the way. It is my way to contribute to the R community and at the same time keeping the project documented for myself.&lt;/p&gt;
+&lt;p&gt;You can find all the posts on this series under the tag &lt;a href=&#34;https://blog.rwhitedwarf.com/tags/maps-app/&#34; title=&#34;#maps-app&#34; target=&#34;_blank&#34;&gt;maps-app&lt;/a&gt; (including the Spanish versions).&lt;/p&gt;
+&lt;p&gt;You can also find the current state of the project under &lt;a href=&#34;https://github.com/teotenn&#34; target=&#34;_blank&#34;&gt;my GitHub&lt;/a&gt; repo &lt;a href=&#34;https://github.com/teotenn/mapic&#34; target=&#34;_blank&#34;&gt;mapic&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;This post is originally written in Spanish, from the Amsterdam airport, on the way to Mexico. I hope you enjoy. Feel free to leave any type of comment and/or question at the end.&lt;/p&gt;
+&lt;p&gt;&lt;img class=&#34;img-zoomable&#34; src=&#34;https://blog.rwhitedwarf.com/post/2022/map_any_region_with_ggplot2_part_I/maps_DrawingMap.png&#34; alt=&#34;R Maps&#34; /&gt;
+&lt;/p&gt;
+&lt;h2 id=&#34;motivation&#34;&gt;Motivation&lt;/h2&gt;
+&lt;p&gt;As I mentioned in the previous posts in the series, I&amp;rsquo;ve been working lately on the code for creating the maps and I&amp;rsquo;ve made changes that increase the efficiency of the functions, the readability of the code, and make it easier to use. At the same it allows me to extend the functions beyond their original design.&lt;/p&gt;
+&lt;p&gt;I have mentioned on a few occasions that the code evolved slowly from scripts created to generate the specific map of some country. So, the first few functions are more of a collection of the steps used to generate the map, wrapped in the form of functions to automate the process.&lt;/p&gt;
+&lt;p&gt;For this reason, I wanted to make changes to adapt the functions to paradigms more suitable for functional programming, which is R&amp;rsquo;s strong point. However, back then the priority was to generate the maps, and thus, most of my time was devoted to creating the maps and the debugging of the code when it was necessary. I need to add that this project is part of a voluntary work for an NGO, of which I became the director of the research division, which generated even more responsibilities and work for me. And all as a side job, separated from my main source of income (which is also based on R).&lt;/p&gt;
+&lt;p&gt;However, for better or worse, 2022 was a year full of changes and challenges for me and my family, which forced me to put the project aside for a while, resign my position as responsible of the division, and focus solely on to my career, my health and my family. The result was that when I managed to regaining stability in my life, I found myself with more free time and fewer obligations to rethink the code and work on it. Additionally, my main job had a turn going from statistics to more programming oriented in R, which has given me more tools and experience to improve the code, and has motivated me to take up old lessons about functional programming and, above all, iteration.&lt;/p&gt;
+&lt;p&gt;This allowed me to improve the two main functions: the one in charge of the webscrapping and the one that sends the data to SQLite. You can find the original functions in the previous post, &lt;a href=&#34;https://blog.rwhitedwarf.com/post/map_any_region_with_ggplot2_part_i/&#34; target=&#34;_blank&#34;&gt;Map any region in the world with R - Part I: The basic map&lt;/a&gt; and compare it with the new, improved functions in this.&lt;/p&gt;
+&lt;h2 id=&#34;webscrapp-to-sqlite&#34;&gt;Webscrapp to SQLite&lt;/h2&gt;
+&lt;p&gt;The &lt;code&gt;webscrap_to_sqlite&lt;/code&gt; function is responsible for sending the coordinates found by Open Street Map to our database. The original function is inefficient, as it does each operation line by line. It is also very rigid in the way it directs the values of the regions, both its request to the API and the placement of the values in the database, which makes any extension or modification very complicated.&lt;/p&gt;
+&lt;p&gt;For these reasons, it is the function that received the most changes, it was practically rewritten from scratch, making the search more efficient, also allowing internal search of the data already stored; more flexible, dealing with region parameters more clearly; and more understandable, improving the style of the code.&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;webscrap_to_sqlite &amp;lt;- function(db.name,
+                               dat,
+                               city = &amp;quot;City&amp;quot;,
+                               country = &amp;quot;Country&amp;quot;,
+                               region = NULL,
+                               state = NULL,
+                               county = NULL,
+                               db_backup_after = 10) {
+  ## Loading libraries
+  require(RSQLite)
+  require(dplyr)
+
+  ## 1. DB connection
+  con &amp;lt;- dbConnect(drv = SQLite(), dbname = db.name)
+  dbExecute(conn = con,
+            &amp;quot;CREATE TABLE IF NOT EXISTS orgs
+                    (ID INTEGER UNIQUE,
+                     City TEXT,
+                     Country TEXT, 
+                     Region TEXT,
+                     State TEXT,
+                     County TEXT,
+                     osm_name TEXT,
+                     lon REAL,
+                     lat REAL)&amp;quot;)
+  db &amp;lt;- as_tibble(dbReadTable(con, &amp;quot;orgs&amp;quot;))
+
+  ## 2. Data filtering
+  new_coords &amp;lt;- data.frame()
+  dat_local &amp;lt;- compare_db_data(db.name, dat)
+  df_len &amp;lt;- nrow(dat_local)
+
+  ## 3. While there are rows in DF:
+  if (df_len != 0) {
+    ## 3.1 Define subsample size
+    dat_local &amp;lt;- dat_local[c(1:db_backup_after), ]
+    dat_local &amp;lt;- filter(dat_local, rowSums(is.na(dat_local)) != ncol(dat_local))
+
+    ## 3.2 for loop for the webscrapping
+    for (i in 1:nrow(dat_local)) {
+      print(paste0(&amp;quot;Searching entry &amp;quot;, dat_local[[&amp;quot;ID&amp;quot;]][i]))
+      
+      ## 3.3 Info abstraction
+      rg &amp;lt;- ifelse(is.null(region), &amp;quot;&amp;quot;, dat_local[[region]][i])
+      st &amp;lt;- ifelse(is.null(state), &amp;quot;&amp;quot;, dat_local[[state]][i])
+      ct &amp;lt;- ifelse(is.null(county), &amp;quot;&amp;quot;, dat_local[[county]][i])
+      rcity &amp;lt;- dat_local[[city]][i]
+      rcountry &amp;lt;- dat_local[[country]][i]
+
+      ## 3.4 Getting the coords
+      ## 3.4.1. First, check if they are already in the DB
+      search_query &amp;lt;- filter(db, City == rcity, Country == rcountry,
+                             Region == rg, State == st, County == ct)
+      if (nrow(search_query != 0)) {
+        coords &amp;lt;- search_query[1, ]
+        coords$ID &amp;lt;- dat_local[[&amp;quot;ID&amp;quot;]][i]
+        print(&amp;quot;Found from memory&amp;quot;)
+        
+        ## 3.4.2 If they are not, search with OSM API
+      } else {
+        coords &amp;lt;- coords_from_city(rcity, rcountry,
+                                   Region = rg, State = st, County = ct)
+        coords &amp;lt;- cbind(ID = dat_local[[&amp;quot;ID&amp;quot;]][i],
+                        City = rcity,
+                        Country = rcountry,
+                        Region = rg,
+                        State = st,
+                        County = ct,
+                        coords)
+      }
+      new_coords &amp;lt;- rbind(new_coords, coords)
+    }
+
+    ## Send only new results to DB
+    dbWriteTable(con, &amp;quot;orgs&amp;quot;, new_coords, append = TRUE)
+    dbDisconnect(con)
+
+    ## 3.4.3 Repeat
+    webscrap_to_sqlite(db.name = db.name,
+                       dat = dat,
+                       city = city,
+                       country = country,
+                       region = region,
+                       state = state,
+                       county = county,
+                       db_backup_after = db_backup_after)
+
+    ## 4. Exit iteration
+  } else {
+    db_final &amp;lt;- import_db_as_df(db.name)
+    size &amp;lt;- nrow(db_final)
+    not_found &amp;lt;- nrow(db_final[is.na(db_final$lat), ])
+    message(paste(&amp;quot;Search finished.\n&amp;quot;,
+                  size, &amp;quot;entries searched.\n&amp;quot;,
+                  not_found, &amp;quot;ENTRIES NOT FOUND&amp;quot;))
+  }
+}        
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The function starts by calling the necessary libraries and (1) connecting to the database, creating it if necessary. (2) Then it generates two data frames, an empty one that will store new coordinates and a relative one that contains only the data that does not yet exist in the database. (3) So, as long as there is data in this last data frame, the function will continue to loop.&lt;/p&gt;
+&lt;p&gt;(3.1) We then define the subsample, which is a subset of &lt;code&gt;dat_local&lt;/code&gt; the size of &lt;code&gt;db_backup_after&lt;/code&gt; and focus solely on this subsample. (3.2) On this subsample we make the iterations using &lt;code&gt;for&lt;/code&gt; to obtain the coordinates. First (3.3) we prepare the data as strings and then (3.4) we look up the coordinates. (3.4.1) If they already exist in the database we take it from there, and if not (3.4.2) they are searched using &lt;code&gt;coords_from_city&lt;/code&gt;. Finally, (3.4.3) we iterate all over again, allowing the function to call itself.&lt;/p&gt;
+&lt;p&gt;Since step 2 filters the data that is not yet in the database and step 3 places the results of new searches in an empty data frame, the function calls itself and applies only for each subset of data. When &lt;code&gt;compare_db_data&lt;/code&gt; finally returns 0 values because all the data that was fed into the function is already contained in the database, we can exit the function. In this case I decided to import the data again from SQLite to get details of the search, and end the iteration by sending a message to the user about the total number of entries and the number of which were not found.&lt;/p&gt;
+&lt;p&gt;If we compare this function with the one proposed in my previous post, the function is completely different but the end result is the same. The arguments used by the function are also the same and take the same values, which avoids conflicts for the user. The only new parameter is &lt;code&gt;db_backup_after&lt;/code&gt; which allows us to control how many rows the iteration is done. A smaller value means more iterations, which results in higher local memory usage, but also faster in finding data that already exists in the DB. On the other hand, a higher value reduces the number of iterations but increases the number of API connections. For this reason I have given it a default value of 10. This, in addition to being a balanced value, also reduces confusion for the user who might not be familiar with the changes.&lt;/p&gt;
+&lt;h2 id=&#34;remove-missing-values-from-the-database&#34;&gt;Remove missing values from the database&lt;/h2&gt;
+&lt;p&gt;In the previous proposal, only found coordinates were sent to the database, and those not found were ignored. In the present proposal, all entries are sent to the DB. Therefore, it is important to have some option to remove the missing entries.&lt;/p&gt;
+&lt;p&gt;For this I generated the function &lt;code&gt;remove_na_from_db&lt;/code&gt;, a very simple function which gives the user the possibility of removing &lt;code&gt;NA&lt;/code&gt;s automatically.&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;remove_na_from_db &amp;lt;- function(db.file) {
+  require(RSQLite)
+  con &amp;lt;- dbConnect(drv = RSQLite::SQLite(), dbname = db.file)
+  dbExecute(conn = con,
+            &amp;quot;DELETE FROM orgs WHERE lon IS NULL OR trim(lon) = &#39;&#39;;&amp;quot;)
+  dbDisconnect(con)
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The function is just a connection to the database that issues the command to remove rows where the &lt;code&gt;lon&lt;/code&gt; field is empty, in SQLite syntax. This is the safest, most direct and fastest way to do it. We could also import the data back into R, filter it, and send it back to SQLite, but this would require more local memory usage, more code, and more risk as it would require rewriting the database to SQLite entirely. . The power of the &lt;code&gt;RSQLite&lt;/code&gt; library (or any other library that connects R to SQL) lies precisely in the ability to pass commands written and executed directly in SQL.&lt;/p&gt;
+&lt;h2 id=&#34;obtaining-the-coordinates&#34;&gt;Obtaining the coordinates&lt;/h2&gt;
+&lt;p&gt;The &lt;code&gt;coords_from_city&lt;/code&gt; function also received significant changes in code readability and flexibility, and a bit less in functionality and efficiency.&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;coords_from_city &amp;lt;- function(city = NULL,
+                             country_code,
+                             region = NULL,
+                             state = NULL,
+                             county = NULL) {
+  require(&amp;quot;RJSONIO&amp;quot;)
+
+  ## 1. Abstract regions for OSM
+  CityCoded &amp;lt;- gsub(&amp;quot; &amp;quot;, &amp;quot;%20&amp;quot;, City) 
+  CountryCoded &amp;lt;- paste(&amp;quot;&amp;amp;countrycodes=&amp;quot;, CountryTwoLetter, sep = &amp;quot;&amp;quot;)
+  extras &amp;lt;- c(city = City, state = State, region = Region, county = County)
+  extrasCoded &amp;lt;- &amp;quot;&amp;quot;
+  if (!is.null(extras)) {
+    for (i in 1:length(extras)) {
+      if (extras[i] != &amp;quot;&amp;quot; &amp;amp;&amp;amp; !is.na(extras[i]) &amp;amp;&amp;amp; !grepl(&amp;quot;^\\s*$&amp;quot;, extras[i])) {
+        valCoded &amp;lt;- gsub(&amp;quot; &amp;quot;, &amp;quot;%20&amp;quot;, extras[i])
+        extrasCoded &amp;lt;- paste0(extrasCoded, &amp;quot;&amp;amp;&amp;quot;, names(extras)[i], &amp;quot;=&amp;quot;, valCoded)
+      }
+    }
+  }
+
+  ## 2. Response
+  link &amp;lt;- paste(
+    &amp;quot;http://nominatim.openstreetmap.org/search?city=&amp;quot;
+  , extrasCoded
+  , CountryCoded
+  , &amp;quot;&amp;amp;format=json&amp;quot;
+  , sep = &amp;quot;&amp;quot;
+  )
+
+  response &amp;lt;- try({fromJSON(link)},
+                  silent = TRUE)
+
+  if (class(response) == &amp;quot;try-error&amp;quot;) {
+    stop(response[1])
+  } else if (class(response) == &amp;quot;response&amp;quot;) {
+    response_status &amp;lt;- http_status(response)
+    if (response_status$category != &amp;quot;Success&amp;quot;) {
+      stop(response_status$message)
+    }
+  } else if (is.list(response)) {
+
+    ## 3. Organize results
+    if (length(response) == 0) {
+      message(paste(&amp;quot;No results found for&amp;quot;, extrasCoded))
+      coords &amp;lt;- data.frame(&amp;quot;lon&amp;quot; = NA, &amp;quot;lat&amp;quot; = NA, &amp;quot;osm_name&amp;quot; = as.character(NA))
+      
+    } else if (length(response) == 1) {
+      message(paste(&amp;quot;Found&amp;quot;, response[[1]]$display_name))
+      coords &amp;lt;- data.frame(
+        lon = response[[1]]$lon,
+        lat = response[[1]]$lat,
+        osm_name = response[[1]]$display_name
+      )
+      
+    } else {
+      message(paste(&amp;quot;Several entries found for&amp;quot;, city, country_code))
+      coords &amp;lt;- data.frame(
+        lon = response[[1]]$lon,
+        lat = response[[1]]$lat,
+        osm_name = response[[1]]$display_name
+      )
+    }
+  }
+    
+  ## 4. Exit as data frame
+  return(coords)
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The main change is in section 1, instead of passing each of the regions as its own string and formatting them one by one, I have abstracted them all into a single vector. This reduces the amount of code, memory usage, and allows us to include the city in the list, making it an optional value as well. The reason I had prepared them separately in the previous post is simply because the feature grew slowly: at first we only needed city, but then we had to use some additional fields depending on the country we were working in. To make things easier for me, I simply added each region field as needed. Now that I have time to work on the code, this was the first function I modified.&lt;/p&gt;
+&lt;p&gt;Step 2 now prints messages that help us identify the error when it comes to the connection, while also stopping the process. Whether it is a local connection error, or problems on the API side, we will get a message and the process will stop, which should avoid long waiting times when there is no connection and several locations are being searched.&lt;/p&gt;
+&lt;p&gt;Step 3 changes the organization of the results a bit, always returning a data frame with the same columns when the results were not found, but now with empty fields in such case. This helps the functions presented above to populate the database. Additionally, when many results were found, this information is printed on the screen; for now this is for information purposes only. The idea is to keep this space to make changes in the future that allow us to select the option interactively. This is something I still need to think about and plan properly because on one hand I want to use it in a Shiny app, and on the other we want to keep the ability for web scrapping to happen automatically with as little intervention as possible.&lt;/p&gt;
+&lt;p&gt;As I mentioned before, these new features also allow us to perform searches with the empty city value. This was a requested requirement in the last version, as some users started making maps by region, while others, not finding very small cities, decided to group the data by region. Thanks to the changes made to &lt;code&gt;coords_from_city&lt;/code&gt;, the &lt;code&gt;webscrap_to_sqlite&lt;/code&gt; function can now return results when the value for city is &lt;code&gt;NA&lt;/code&gt;, assuming that the coordinates for the region or state are found. Here it is important to mention that it is recommended to use the &lt;code&gt;state&lt;/code&gt; argument for region search, for some reason this works better in the OSM API. As an example, the search &lt;code&gt;coords_from_city(state = &amp;quot;Castilla La Mancha&amp;quot;, country_code = &amp;quot;ES&amp;quot;)&lt;/code&gt; returns the expected results, despite of the fact that Spain has no states; however if we do &lt;code&gt;coords_from_city(region = &amp;quot;Castilla La Mancha&amp;quot;, country_code = &amp;quot;ES&amp;quot;)&lt;/code&gt; nominatim does not find the results.&lt;/p&gt;
+&lt;h2 id=&#34;conclusions&#34;&gt;Conclusions&lt;/h2&gt;
+&lt;p&gt;These changes have been very important in speeding up the coordinate search process and automating map creation. On the other hand, it allowed me to style the code more and improve its efficiency. Since my main project for now is turning it into a Shiny app, it was important for me to improve the code and the efficiency before dealing with the details of the server. Since this is recent work that I have been doing in the last few months, I decided to share it right away now that I have fresh information on the changes. I hope it can help more than one to make more abstract code and practice recursion.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Webscrap e iteraciones con R</title>
+      <link>https://blog.rwhitedwarf.com/es/post/2023/webscrap_e_iteracion_con_r/</link>
+      <pubDate>Fri, 24 Mar 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.rwhitedwarf.com/es/post/2023/webscrap_e_iteracion_con_r/</guid>
+      <description>&lt;h2 id=&#34;sobre-este-post&#34;&gt;Sobre este post&lt;/h2&gt;
+&lt;p&gt;Estamos creando mapas de datos que muestran los cambios durante un período de tiempo para diferentes países y orientado a todo tipo de ciudades. Esto básicamente significa que necesitamos &lt;strong&gt;mapear cualquier región del mundo con R&lt;/strong&gt;. Hoy en día existen todo tipo de paquetes y técnicas para hacerlo. Quiero compartir la estrategia que utilicé con &lt;a href=&#34;https://cran.r-project.org/web/packages/ggplot2/index.html&#34; target=&#34;_blank&#34;&gt;ggplot2&lt;/a&gt; y &lt;a href=&#34;https://cran.r-project.org/web/packages/maps/index.html&#34; target=&#34;_blank&#34;&gt;maps&lt;/a&gt;, utilizando el soporte de &lt;a href=&#34;https://www.openstreetmap.org/&#34; target=&#34;_blank&#34;&gt;Open Street Map&lt;/a&gt; para obtener las coordenadas de las ciudades y finalmente hacerlo interactivo con &lt;a href=&#34;https://shiny.rstudio.com/&#34; target=&#34;_blank&#34;&gt;shiny&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;Estas publicaciones comparten mi camino en la creación de la aplicación Shiny. Es un proyecto vivo en el que estoy trabajando actualmente y decidí compartir mis experiencias durante el proceso de creación. Estas publicaciones no son sólo acerca de Shiny apps, si no más bien sobre la creación del paquete detrás, incluyendo temas sobre la generación de funciones, creación de los mapas, clases de objetos, entre otros, incluyendo cualquier tema interesante que aparezca en el camino. Es mi manera de contribuir a la comunidad de R y al mismo tiempo documentar el proyecto en si mismo.&lt;/p&gt;
+&lt;p&gt;Pueden encontrar todas las publicaciones en este tema bajo la etiqueta &lt;a href=&#34;https://blog.rwhitedwarf.com/tags/maps-app/&#34; target=&#34;_blank&#34;&gt;maps-app&lt;/a&gt; (incluyendo las versiones en inglés).&lt;/p&gt;
+&lt;p&gt;También pueden encontrar el estado actual del proyecto en &lt;a href=&#34;https://github.com/teotenn&#34; target=&#34;_blank&#34;&gt;mi GitHub&lt;/a&gt; repo &lt;a href=&#34;https://github.com/teotenn/mapic&#34; target=&#34;_blank&#34;&gt;mapic&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;Este post está escrito originalmente en español, desde el aeropuerto de Amsterdam, de camino a México. Espero que lo disfruten. Siéntanse libres de dejar cualquier tipo de comentario y/o pregunta al final.&lt;/p&gt;
+&lt;p&gt;&lt;img class=&#34;img-zoomable&#34; src=&#34;https://blog.rwhitedwarf.com/post/2022/map_any_region_with_ggplot2_part_I/maps_DrawingMap.png&#34; alt=&#34;R Maps&#34; /&gt;
+&lt;/p&gt;
+&lt;h2 id=&#34;motivación&#34;&gt;Motivación&lt;/h2&gt;
+&lt;p&gt;Como mencioné en los posts anteriores de la serie, he estado trabajando últimamente en el código para la creación de los mapas y he hecho cambios que incrementan la eficiencia de las funciones, la lectura del código, y facilitan su uso, al mismo tiempo que me permite extender las funciones mas allá de cómo fueron originalmente diseñadas.&lt;/p&gt;
+&lt;p&gt;He mencionado en algunas ocasiones que el código evolucionó poco a poco a partir de scripts creados para generar el mapa específico de algún país. Por lo tanto, las primeras funciones son más bien una colección de los pasos utilizados para generar el mapa, atrapados en forma de funciones para automatizar el proceso.&lt;/p&gt;
+&lt;p&gt;Por este motivo había querido hacer cambios para adecuar las funciones a paradigmas mas adecuados a la programación funcional, que es el punto fuerte de R. Sin embargo, la prioridad era generar los mapas, así que la mayoría de mi tiempo iba dirigido a la creación de los mapas y el debug del código cuando era necesario. A esto debo agregar que este proyecto es parte de un trabajo voluntario para una ONG, de la cual pasé a ser el director de la división de investigación, lo que me generaba aún mas responsabilidades y trabajo. Y todo como trabajo secundario, separado de mi fuente principal de ingresos (que también esta basada en R).&lt;/p&gt;
+&lt;p&gt;Sin embargo, para bien o para mal, 2022 fue un año lleno de cambios y retos para mi y mi familia, lo que me obligó a dejar de lado el proyecto por un tiempo, resignar mi posición como director de la división, y enfocarme únicamente a mi carrera, mi salud y mi familia. Esto resultó en que, al recuperar la estabilidad en mi vida, me encontré con mas tiempo libre y menos obligaciones para re pensar el código y trabajar en ello. Adicionalmente, mi trabajo principal tuvo un giro que fue de la estadística a mas orientado a la programación en R, lo cual me ha dado mas herramientas para mejorar el código, y me ha motivado a retomar viejas lecciones sobre programación funcional y, sobre todo, iteración.&lt;/p&gt;
+&lt;p&gt;Esto me permitió mejorar las dos funciones principales: la encargada del webscrapping y la que manda los datos a SQLite. Puedes encontrar las funciones originales en el post anterior &lt;a href=&#34;https://blog.rwhitedwarf.com/es/post/2022/mapa_de_cualquier_region_con_ggplot2_i/&#34; target=&#34;_blank&#34;&gt;Mapa de cualquier región del mundo con R - Parte I: El mapa base&lt;/a&gt; y compararlos con las nuevas funciones mejoradas en este.&lt;/p&gt;
+&lt;h2 id=&#34;webscrapp-a-sqlite&#34;&gt;Webscrapp a SQLite&lt;/h2&gt;
+&lt;p&gt;La función &lt;code&gt;webscrap_to_sqlite&lt;/code&gt; se encarga de enviar las coordenadas encontradas por Open Street Map a nuestra base de datos. La función como está definida originalmente es poco efectiva, ya que hace cada operación línea por línea. También es muy rígida en la forma en la que dirige los valores de las regiones, tanto su petición a la API como la colocación de los valores en la base de datos, lo que hace cualquier extensión o modificación muy complicada.&lt;/p&gt;
+&lt;p&gt;Por lo tanto, es la función que recibió mas cambios, fue prácticamente re escrita desde ceros, haciendo la búsqueda mas eficiente, permitiendo también búsqueda interna de los datos ya almacenados; mas flexible, lidiando con los parámetros de las regiones de forma mas clara; y mas entendible, mejorando el estilo del código.&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;webscrap_to_sqlite &amp;lt;- function(db.name,
+                               dat,
+                               city = &amp;quot;City&amp;quot;,
+                               country = &amp;quot;Country&amp;quot;,
+                               region = NULL,
+                               state = NULL,
+                               county = NULL,
+                               db_backup_after = 10) {
+  ## Cargas las liberarias necesarias
+  require(RSQLite)
+  require(dplyr)
+
+  ## 1. Conexion a la DB
+  con &amp;lt;- dbConnect(drv = SQLite(), dbname = db.name)
+  dbExecute(conn = con,
+            &amp;quot;CREATE TABLE IF NOT EXISTS orgs
+                    (ID INTEGER UNIQUE,
+                     City TEXT,
+                     Country TEXT, 
+                     Region TEXT,
+                     State TEXT,
+                     County TEXT,
+                     osm_name TEXT,
+                     lon REAL,
+                     lat REAL)&amp;quot;)
+  db &amp;lt;- as_tibble(dbReadTable(con, &amp;quot;orgs&amp;quot;))
+
+  ## 2. Filtrado de los datos
+  new_coords &amp;lt;- data.frame()
+  dat_local &amp;lt;- compare_db_data(db.name, dat)
+  df_len &amp;lt;- nrow(dat_local)
+
+  ## 3. Mientras haya filas en DF repetimos:
+  if (df_len != 0) {
+    ## 3.1 Definir tamaño de la sub-muestra
+    dat_local &amp;lt;- dat_local[c(1:db_backup_after), ]
+    dat_local &amp;lt;- filter(dat_local, rowSums(is.na(dat_local)) != ncol(dat_local))
+
+    ## 3.2 for loop para el webscrapping
+    for (i in 1:nrow(dat_local)) {
+      print(paste0(&amp;quot;Searching entry &amp;quot;, dat_local[[&amp;quot;ID&amp;quot;]][i]))
+      
+      ## 3.3 Abstracción de la info
+      rg &amp;lt;- ifelse(is.null(region), &amp;quot;&amp;quot;, dat_local[[region]][i])
+      st &amp;lt;- ifelse(is.null(state), &amp;quot;&amp;quot;, dat_local[[state]][i])
+      ct &amp;lt;- ifelse(is.null(county), &amp;quot;&amp;quot;, dat_local[[county]][i])
+      rcity &amp;lt;- dat_local[[city]][i]
+      rcountry &amp;lt;- dat_local[[country]][i]
+
+      ## 3.4 Obtener las coordenadas
+      ## 3.4.1. Primero buscamos si ya existen en DB
+      search_query &amp;lt;- filter(db, City == rcity, Country == rcountry,
+                             Region == rg, State == st, County == ct)
+      if (nrow(search_query != 0)) {
+        coords &amp;lt;- search_query[1, ]
+        coords$ID &amp;lt;- dat_local[[&amp;quot;ID&amp;quot;]][i]
+        print(&amp;quot;Found from memory&amp;quot;)
+        
+        ## 3.4.2 Si aun no existen, busca en OSM API
+      } else {
+        coords &amp;lt;- coords_from_city(rcity, rcountry,
+                                   Region = rg, State = st, County = ct)
+        coords &amp;lt;- cbind(ID = dat_local[[&amp;quot;ID&amp;quot;]][i],
+                        City = rcity,
+                        Country = rcountry,
+                        Region = rg,
+                        State = st,
+                        County = ct,
+                        coords)
+      }
+      new_coords &amp;lt;- rbind(new_coords, coords)
+    }
+
+    ## Y envía sólo los nuevos resultados a la DB
+    dbWriteTable(con, &amp;quot;orgs&amp;quot;, new_coords, append = TRUE)
+    dbDisconnect(con)
+
+    ## 3.4.3 Repetir
+    webscrap_to_sqlite(db.name = db.name,
+                       dat = dat,
+                       city = city,
+                       country = country,
+                       region = region,
+                       state = state,
+                       county = county,
+                       db_backup_after = db_backup_after)
+
+    ## 4. Terminar la iteracion
+  } else {
+    db_final &amp;lt;- import_db_as_df(db.name)
+    size &amp;lt;- nrow(db_final)
+    not_found &amp;lt;- nrow(db_final[is.na(db_final$lat), ])
+    message(paste(&amp;quot;Search finished.\n&amp;quot;,
+                  size, &amp;quot;entries searched.\n&amp;quot;,
+                  not_found, &amp;quot;ENTRIES NOT FOUND&amp;quot;))
+  }
+}        
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;La función comienza llamando a las librerías necesarias y (1) conectándose a la base de datos, creándola si es necesario. (2) Luego genero dos data frames, uno vacío que almacenará nuevas coordenadas y otro relativo que contiene únicamente los datos que aún no existen en la base de datos. (3) Así pues, mientras haya datos en esta última data frame, la función continuará repitiéndose.&lt;/p&gt;
+&lt;p&gt;(3.1) Luego definimos la sub-muestra, que es un sub conjunto de &lt;code&gt;dat_local&lt;/code&gt; del tamaño de &lt;code&gt;db_backup_after&lt;/code&gt; y nos enfocamos únicamente en esta sub-muestra. (3.2) Sobre esa sub muestra hacemos las iteraciones utilizando &lt;code&gt;for&lt;/code&gt; para obtener las coordenadas. Primero (3.3) preparamos la información como strings y después (3.4) buscamos las coordenadas. (3.4.1) Si ya existen en la base de datos lo tomamos de ahí, y si no (3.4.2) se buscan utilizado &lt;code&gt;coords_from_city&lt;/code&gt;. Finalmente, (3.4.3) repetimos todo de nuevo permitiendo a la función llamarse a si misma.&lt;/p&gt;
+&lt;p&gt;Dado que en el paso 2 se filtran los datos que aún no están en la base de datos y en 3 se colocan los resultados de nuevas búsquedas en un data frame vacío, la función se llama a sí misma y aplica únicamente para cada sub conjunto de datos. Cuando finalmente &lt;code&gt;compare_db_data&lt;/code&gt; arroja 0 valores por que todos los datos que se ingresaron a la función ya están contenidos en la base de datos, podemos salir de la función. En este caso decidí importar de nuevo los datos desde SQLite para obtener detalles de la búsqueda, y terminar la iteración enviando un mensaje al usuario sobre el total de entradas y la cantidad de las cuales no fueron encontradas.&lt;/p&gt;
+&lt;p&gt;Si comparamos esta función con la propuesta en mi post anterior, la función es completamente diferente pero el resultado final es el mismo. Los argumentos utilizados por la función también son los mismo y toman los mismos valores, lo cual evita conflictos para el usuario. El único parámetro nuevo es &lt;code&gt;db_backup_after&lt;/code&gt; que nos permite controlar a cada cuantas filas se realiza la iteración. Un valor mas pequeño significa más iteraciones, lo que resultado en un mayor uso de la memoria local, pero también mayor agilidad para encontrar datos que ya existen en la DB. Por otro lado, un valor mas alto reduce el número de iteraciones pero incrementa el número de conexiones a la API. Por este motivo le he otorgado un valor pre definido de 10. Esto, además de ser un valor balanceado, también reduce la confusión del usuario que podría no estar familiarizado con los cambios.&lt;/p&gt;
+&lt;h2 id=&#34;remover-valores-faltantes-de-la-base-de-datos&#34;&gt;Remover valores faltantes de la base de datos&lt;/h2&gt;
+&lt;p&gt;En la propuesta anterior, únicamente las coordenadas encontradas eran enviadas a la base de datos, y las no encontradas se ignoraban. En la propuesta presente, todas las entradas se envían a la DB. Por lo tanto, es importante tener alguna opción para remover las entradas no encontradas.&lt;/p&gt;
+&lt;p&gt;Para ello generé la función &lt;code&gt;remove_na_from_db&lt;/code&gt;, una función muy simple pero que le otorga al usuario una propuesta remover &lt;code&gt;NA&lt;/code&gt;s automáticamente.&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;remove_na_from_db &amp;lt;- function(db.file) {
+  require(RSQLite)
+  con &amp;lt;- dbConnect(drv = RSQLite::SQLite(), dbname = db.file)
+  dbExecute(conn = con,
+            &amp;quot;DELETE FROM orgs WHERE lon IS NULL OR trim(lon) = &#39;&#39;;&amp;quot;)
+  dbDisconnect(con)
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;La función es únicamente una conexión a la base de datos que envía la orden de remover filas donde el campo &lt;code&gt;lon&lt;/code&gt; está vacío, en sintaxis de SQLite. Esto es la manera mas segura, directa y rápida de hacerlo. También podríamos importar los datos de nuevo a R, filtrarlos y enviarlos de nuevo a SQLite, pero esto requeriría mayor uso de la memoria local, mayor cantidad de código y un mayor riesgo ya que requeriría re-escribir la base de datos a SQLite por completo. El poder de la librería &lt;code&gt;RSQLite&lt;/code&gt; (o cualquier otra librería que conecta a R con SQL) está precisamente en la posibilidad de pasar ordenes escritas y ejecutadas directamente en SQL.&lt;/p&gt;
+&lt;h2 id=&#34;la-obtención-de-las-coordenadas&#34;&gt;La obtención de las coordenadas&lt;/h2&gt;
+&lt;p&gt;La función &lt;code&gt;coords_from_city&lt;/code&gt; también recibió cambios considerables en lectura del código y flexibilidad, y un poco menores en funcionamiento y eficiencia.&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;coords_from_city &amp;lt;- function(city = NULL,
+                             country_code,
+                             region = NULL,
+                             state = NULL,
+                             county = NULL) {
+  require(&amp;quot;RJSONIO&amp;quot;)
+
+  ## 1. Abstracción de regiones para OSM
+  CityCoded &amp;lt;- gsub(&amp;quot; &amp;quot;, &amp;quot;%20&amp;quot;, City) 
+  CountryCoded &amp;lt;- paste(&amp;quot;&amp;amp;countrycodes=&amp;quot;, CountryTwoLetter, sep = &amp;quot;&amp;quot;)
+  extras &amp;lt;- c(city = City, state = State, region = Region, county = County)
+  extrasCoded &amp;lt;- &amp;quot;&amp;quot;
+  if (!is.null(extras)) {
+    for (i in 1:length(extras)) {
+      if (extras[i] != &amp;quot;&amp;quot; &amp;amp;&amp;amp; !is.na(extras[i]) &amp;amp;&amp;amp; !grepl(&amp;quot;^\\s*$&amp;quot;, extras[i])) {
+        valCoded &amp;lt;- gsub(&amp;quot; &amp;quot;, &amp;quot;%20&amp;quot;, extras[i])
+        extrasCoded &amp;lt;- paste0(extrasCoded, &amp;quot;&amp;amp;&amp;quot;, names(extras)[i], &amp;quot;=&amp;quot;, valCoded)
+      }
+    }
+  }
+
+  ## 2. Respuesta
+  link &amp;lt;- paste(
+    &amp;quot;http://nominatim.openstreetmap.org/search?city=&amp;quot;
+  , extrasCoded
+  , CountryCoded
+  , &amp;quot;&amp;amp;format=json&amp;quot;
+  , sep = &amp;quot;&amp;quot;
+  )
+
+  response &amp;lt;- try({fromJSON(link)},
+                  silent = TRUE)
+
+  if (class(response) == &amp;quot;try-error&amp;quot;) {
+    stop(response[1])
+  } else if (class(response) == &amp;quot;response&amp;quot;) {
+    response_status &amp;lt;- http_status(response)
+    if (response_status$category != &amp;quot;Success&amp;quot;) {
+      stop(response_status$message)
+    }
+  } else if (is.list(response)) {
+
+    ## 3. Organización de los resultados
+    if (length(response) == 0) {
+      message(paste(&amp;quot;No results found for&amp;quot;, extrasCoded))
+      coords &amp;lt;- data.frame(&amp;quot;lon&amp;quot; = NA, &amp;quot;lat&amp;quot; = NA, &amp;quot;osm_name&amp;quot; = as.character(NA))
+      
+    } else if (length(response) == 1) {
+      message(paste(&amp;quot;Found&amp;quot;, response[[1]]$display_name))
+      coords &amp;lt;- data.frame(
+        lon = response[[1]]$lon,
+        lat = response[[1]]$lat,
+        osm_name = response[[1]]$display_name
+      )
+      
+    } else {
+      message(paste(&amp;quot;Several entries found for&amp;quot;, city, country_code))
+      coords &amp;lt;- data.frame(
+        lon = response[[1]]$lon,
+        lat = response[[1]]$lat,
+        osm_name = response[[1]]$display_name
+      )
+    }
+    
+    ## 4. Salida como data frame
+    return(coords)
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;&amp;gt; Error: &amp;lt;text&amp;gt;:68:0: unexpected end of input
+&amp;gt; 66:     return(coords)
+&amp;gt; 67: }
+&amp;gt;    ^
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;El principal cambio está en la sección 1, en lugar de pasar cada una de las regiones como su propio string y darles formato una por una, las he abstraído todas en un solo vector. Esto reduce la cantidad de código, el uso de memoria, y nos permite incluir la ciudad en la lista, convirtiéndolo también en un valor opcional. La razón por la que las había preparado por separado publicación anterior es simplemente porque la función creció lentamente: al principio solo necesitábamos ciudad, pero luego tuvimos que usar algunos campos adicionales según el país en el que trabajábamos. Para facilitarme las cosas, simplemente agregué cada campo de región según fuera necesario. Ahora que tengo tiempo para trabajar en el código, esta fue la primera función que modifiqué.&lt;/p&gt;
+&lt;p&gt;El paso 2 ahora imprime mensajes que nos ayudan a identificar el error cuando se trata de la conexión, al mismo tiempo que detiene el proceso. Ya sea un error local de conexión, o problemas del lado del API, obtendremos un mensaje y el proceso se detendrá, lo cual debe evitar tiempos de espera largos cuando no hay conexión y se está haciendo la búsqueda de muchas localidades.&lt;/p&gt;
+&lt;p&gt;El paso 3 cambia un poco la organización de los resultados, devolviendo siempre un data frame con las mismas columnas cuando los resultados no fueron encontrados, pero ahora con los campos vacíos en dicho caso. Esto ayuda a las funciones presentadas anteriormente para llenar la base de datos. Adicionalmente, cuando muchos resultados fueron encontrados, se imprime esta información en pantalla; por ahora es sólo como información. La idea es mantener este espacio para realizar cambios en el futuro que nos permitan seleccionar la opción de manera interactiva. Esto es algo que aún necesito pensar y planear por que, por un lado quiero utilizarlo en una aplicación Shiny, y por otro lado queremos mantener la habilidad de que el web scrapping suceda automáticamente con menor intervención posible.&lt;/p&gt;
+&lt;p&gt;Como ya he mencionado antes, estas nuevas funciones también nos permiten realizar búsquedas con el valor de ciudad vacío. Este fue un requisito solicitado en la última versión, ya que algunos usuarios comenzaron a hacer mapas por regiones, mientras que otros, al no encontrar ciudades muy pequeñas, decidieron agrupar los datos por región. Gracias a los cambios realizados en &lt;code&gt;coords_from_city&lt;/code&gt;, la función &lt;code&gt;webscrap_to_sqlite&lt;/code&gt; ahora puede obtener resultados cuando el valor para ciudad es &lt;code&gt;NA&lt;/code&gt;, considerando que se encuentren las coordenadas para la región o el estado. Aquí es importante mencionar que se recomienda utilizar el argumento &lt;code&gt;state&lt;/code&gt; para la búsqueda de regiones, por alguna razón, esto función mejor en la API de OSM. Como ejemplo, la búsqueda &lt;code&gt;coords_from_city(state = &amp;quot;Castilla La Mancha&amp;quot;, country_code = &amp;quot;ES&amp;quot;)&lt;/code&gt; nos arroja los resultados esperados, a pesar de que España no tiene estados; sin embargo si hacemos &lt;code&gt;coords_from_city(region = &amp;quot;Castilla La Mancha&amp;quot;, country_code = &amp;quot;ES&amp;quot;)&lt;/code&gt; nominatim no encuentra los resultados.&lt;/p&gt;
+&lt;h2 id=&#34;conclusiones&#34;&gt;Conclusiones&lt;/h2&gt;
+&lt;p&gt;Estos cambios han resultado muy importantes para agilizar el proceso de la búsqueda de coordenadas y la automatización de la creación de mapas. Por otro lado, me permitió darle mas estilo al código y mejorar su eficiencia. Ya que mi principal proyecto por ahora es convertirlo en una aplicación Shiny, era importante para mi el mejorar el código y la eficiencia antes de lidiar con los detalles del server. Ya que este es un trabajo reciente que he realizado en los últimos meses, decidí compartirlo de inmediato ahora que tengo fresca la información de los cambios. Espero que pueda a ayudar a mas de uno a hacer código mas abstracto y practicar recursión.&lt;/p&gt;
+</description>
+    </item>
+    
     <item>
       <title>Map any region in the world with R - Part II: Obtaining the coordinates</title>
       <link>https://blog.rwhitedwarf.com/post/map_any_region_with_ggplot2_part_ii/</link>
       <pubDate>Fri, 04 Nov 2022 00:00:00 +0000</pubDate>
       
       <guid>https://blog.rwhitedwarf.com/post/map_any_region_with_ggplot2_part_ii/</guid>
-      <description>&lt;h2 id=&#34;scope-of-this-post&#34;&gt;Scope of this post&lt;/h2&gt;
+      <description>&lt;p&gt;You can find all the posts on this series under the tag &lt;a href=&#34;https://blog.rwhitedwarf.com/tags/maps-app/&#34; title=&#34;#maps-app&#34; target=&#34;_blank&#34;&gt;maps-app&lt;/a&gt; (including the Spanish versions).&lt;/p&gt;
+&lt;p&gt;You can also find the current state of the project under &lt;a href=&#34;https://github.com/teotenn&#34; target=&#34;_blank&#34;&gt;my GitHub&lt;/a&gt; repo &lt;a href=&#34;https://github.com/teotenn/mapic&#34; target=&#34;_blank&#34;&gt;mapic&lt;/a&gt;.&lt;/p&gt;
+&lt;h2 id=&#34;scope-of-this-post&#34;&gt;Scope of this post&lt;/h2&gt;
 &lt;p&gt;This is the second part of the series to create a map of any region of the world with R.&lt;/p&gt;
 &lt;p&gt;We are creating maps of data showing changes over a span of time for different countries and pointing at all kinds of cities. That basically means that we need to &lt;strong&gt;map any region of the world with R&lt;/strong&gt;. Today there are all kinds of packages and techniques to do that. I will share the strategy I used with &lt;a href=&#34;https://cran.r-project.org/web/packages/ggplot2/index.html&#34; target=&#34;_blank&#34;&gt;ggplot2&lt;/a&gt; and &lt;a href=&#34;https://cran.r-project.org/web/packages/maps/index.html&#34; target=&#34;_blank&#34;&gt;maps&lt;/a&gt; packages, using support of &lt;a href=&#34;https://www.openstreetmap.org/&#34; target=&#34;_blank&#34;&gt;Open Street Map&lt;/a&gt; to obtain the coordinates of cities and finally making it interactive with &lt;a href=&#34;https://shiny.rstudio.com/&#34; target=&#34;_blank&#34;&gt;shiny&lt;/a&gt;.&lt;/p&gt;
 &lt;p&gt;This series of posts share my path towards the creation of the Shiny app. It is a live project and I decided to share my path and experiences along the creation process. The posts are not only about the Shiny app, but the package I created behind it, including topics of functions crafting, creation of the maps, classes of objects, etc., as well as any interesting issue that appear on the way. It is my way to contribute to the R community and at the same time keeping the project documented for myself.&lt;/p&gt;
-&lt;p&gt;You can find all the posts on this series under the tag &lt;a href=&#34;https://blog.rwhitedwarf.com/tags/maps-app/&#34; title=&#34;#maps-app&#34; target=&#34;_blank&#34;&gt;maps-app&lt;/a&gt; (including the Spanish versions).&lt;/p&gt;
-&lt;p&gt;You can also find the current state of the project under &lt;a href=&#34;https://github.com/teotenn&#34; target=&#34;_blank&#34;&gt;my GitHub&lt;/a&gt; repo &lt;a href=&#34;https://github.com/teotenn/mapic&#34; target=&#34;_blank&#34;&gt;mapic&lt;/a&gt;.&lt;/p&gt;
 &lt;p&gt;This post is about &lt;strong&gt;Web scrapping with nominatim open street maps&lt;/strong&gt;&lt;/p&gt;
 &lt;p&gt;I hope you all enjoy it. Feel free to leave any kind of comment and/or question at the end.&lt;/p&gt;
 &lt;p&gt;&lt;img class=&#34;img-zoomable&#34; src=&#34;https://blog.rwhitedwarf.com/post/2022/map_any_region_with_ggplot2_part_I/maps_DrawingMap.png&#34; alt=&#34;R Maps&#34; /&gt;
@@ -365,12 +803,12 @@ site &amp;lt;- paste0(start.nominatim, city, country, state, end.nominatim)
       <pubDate>Fri, 04 Nov 2022 00:00:00 +0000</pubDate>
       
       <guid>https://blog.rwhitedwarf.com/es/post/2022/mapa_de_cualquier_region_con_ggplot2ii/</guid>
-      <description>&lt;h2 id=&#34;sobre-este-post&#34;&gt;Sobre este post&lt;/h2&gt;
+      <description>&lt;p&gt;Pueden encontrar todas las publicaciones en este tema bajo la etiqueta &lt;a href=&#34;https://blog.rwhitedwarf.com/tags/maps-app/&#34; target=&#34;_blank&#34;&gt;maps-app&lt;/a&gt; (incluyendo las versiones en inglés).&lt;/p&gt;
+&lt;p&gt;También pueden encontrar el estado actual del proyecto en &lt;a href=&#34;https://github.com/teotenn&#34; target=&#34;_blank&#34;&gt;mi GitHub&lt;/a&gt; repo &lt;a href=&#34;https://github.com/teotenn/mapic&#34; target=&#34;_blank&#34;&gt;mapic&lt;/a&gt;.&lt;/p&gt;
+&lt;h2 id=&#34;sobre-este-post&#34;&gt;Sobre este post&lt;/h2&gt;
 &lt;p&gt;Esta es la segunda parte de las series de cómo crear mapas de cualquier región del mundo con R. De antemano me disculpo por detalles que puedan encontrar en la traducción, el post original lo creé en Inglés y el trabajo de traducción puede ser excesivo si voy a cada detalle. Por otro lado, recomiendo un conocimiento al menos básico del idioma Inglés si se quiere tener éxito en R o programación en general. Ayuda mucho a entender la sintaxis.&lt;/p&gt;
 &lt;p&gt;Estamos creando mapas de datos que muestran los cambios durante un período de tiempo para diferentes países y orientado a todo tipo de ciudades. Esto básicamente significa que necesitamos &lt;strong&gt;mapear cualquier región del mundo con R&lt;/strong&gt;. Hoy en día existen todo tipo de paquetes y técnicas para hacerlo. Quiero compartir la estrategia que utilicé con &lt;a href=&#34;https://cran.r-project.org/web/packages/ggplot2/index.html&#34; target=&#34;_blank&#34;&gt;ggplot2&lt;/a&gt; y &lt;a href=&#34;https://cran.r-project.org/web/packages/maps/index.html&#34; target=&#34;_blank&#34;&gt;maps&lt;/a&gt;, utilizando el soporte de &lt;a href=&#34;https://www.openstreetmap.org/&#34; target=&#34;_blank&#34;&gt;Open Street Map&lt;/a&gt; para obtener las coordenadas de las ciudades y finalmente hacerlo interactivo con &lt;a href=&#34;https://shiny.rstudio.com/&#34; target=&#34;_blank&#34;&gt;shiny&lt;/a&gt;.&lt;/p&gt;
 &lt;p&gt;Estas publicaciones comparten mi camino en la creación de la aplicación Shiny. Es un proyecto vivo en el que estoy trabajando actualmente y decidí compartir mis experiencias durante el proceso de creación. Estas publicaciones no son sólo acerca de Shiny apps, si no más bien sobre la creación del paquete detrás, incluyendo temas sobre la generación de funciones, creación de los mapas, clases de objetos, entre otros, incluyendo cualquier tema interesante que aparezca en el camino. Es mi manera de contribuir a la comunidad de R y al mismo tiempo documentar el proyecto en si mismo.&lt;/p&gt;
-&lt;p&gt;Pueden encontrar todas las publicaciones en este tema bajo la etiqueta &lt;a href=&#34;https://blog.rwhitedwarf.com/tags/maps-app/&#34; target=&#34;_blank&#34;&gt;maps-app&lt;/a&gt; (incluyendo las versiones en inglés).&lt;/p&gt;
-&lt;p&gt;También pueden encontrar el estado actual del proyecto en &lt;a href=&#34;https://github.com/teotenn&#34; target=&#34;_blank&#34;&gt;mi GitHub&lt;/a&gt; repo &lt;a href=&#34;https://github.com/teotenn/mapic&#34; target=&#34;_blank&#34;&gt;mapic&lt;/a&gt;.&lt;/p&gt;
 &lt;p&gt;Espero que lo disfruten. Siéntanse libres de dejar cualquier tipo de comentario y/o pregunta al final.&lt;/p&gt;
 &lt;p&gt;&lt;img class=&#34;img-zoomable&#34; src=&#34;https://blog.rwhitedwarf.com/post/2022/map_any_region_with_ggplot2_part_I/maps_DrawingMap.png&#34; alt=&#34;R Maps&#34; /&gt;
 &lt;/p&gt;
