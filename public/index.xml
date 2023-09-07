@@ -6,7 +6,134 @@
     <description>Recent content on R with White Dwarf</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Wed, 19 Apr 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.rwhitedwarf.com/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 07 Sep 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.rwhitedwarf.com/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Adding a website next to your Shiny server</title>
+      <link>https://blog.rwhitedwarf.com/post/adding_website_to_siny/</link>
+      <pubDate>Thu, 07 Sep 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.rwhitedwarf.com/post/adding_website_to_siny/</guid>
+      <description>
+&lt;p&gt;
+I have been off from the blog lately due to a big load of personal projects. Just lately I got a few days off and found time to work on my personal website, to be ready soon. That made me get more into Nginx configuration, where I consider myself a total rookie. However, I was mainly adding a few domains that are intended for different purposes. That is incredibly easy to do using Nginx even with minimal knowledge, and that&amp;#39;s what I want to show here.&lt;/p&gt;
+&lt;p&gt;
+Basically I want to have my shiny apps under one domain, and some other sites under different domains, but using only one server. I also decided to add my own customized 404 error page. There are different ways to accomplish that, here are just a couple of them. I hope they can be of use.&lt;/p&gt;
+&lt;div id=&#34;outline-container-headline-1&#34; class=&#34;outline-3&#34;&gt;
+&lt;h3 id=&#34;headline-1&#34;&gt;
+Using sites-enabled
+&lt;/h3&gt;
+&lt;div id=&#34;outline-text-headline-1&#34; class=&#34;outline-text-3&#34;&gt;
+&lt;p&gt;
+If you followed my previous post about how to &lt;a href=&#34;https://blog.rwhitedwarf.com/post/deploy_shiny_on_debian/&#34;&gt;deploy your own shiny app&lt;/a&gt; in your own server using Nginx, the next step to deploy a new website with a different domain in the same server is very easy. Nginx uses the concept of server blocks that use the &lt;code class=&#34;verbatim&#34;&gt;server_name&lt;/code&gt; and listen directives to bind to tcp sockets.&lt;/p&gt;
+&lt;p&gt;
+Go to you Nginx file where we placed the details for the Shiny server in &lt;code class=&#34;verbatim&#34;&gt;/etc/nginx/sites-enabled/default&lt;/code&gt; and add a new server block at the very end of the file. It can be something like below.&lt;/p&gt;
+&lt;pre class=&#34;example&#34;&gt;
+server {
+    root /var/www/example/;
+    server_name example.mydomain.com;
+
+    index index.html;
+
+    location / {
+        try_files $uri $uri/ uri.html =404;
+    }
+
+}
+&lt;/pre&gt;
+&lt;p&gt;
+Direct the &lt;code class=&#34;verbatim&#34;&gt;root&lt;/code&gt; to the path where your public website files are, and &lt;code class=&#34;verbatim&#34;&gt;server_name&lt;/code&gt; to your domain. Remember that you also have to direct your domain to the public IP address of your server, this means the same where your shiny app is. Finally restart Nginx &lt;code class=&#34;verbatim&#34;&gt;sudo systemctl reload nginx&lt;/code&gt; and your new address should show the &lt;code class=&#34;verbatim&#34;&gt;index.html&lt;/code&gt; file stored in your path.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;outline-container-headline-2&#34; class=&#34;outline-3&#34;&gt;
+&lt;h3 id=&#34;headline-2&#34;&gt;
+Using nginx.conf
+&lt;/h3&gt;
+&lt;div id=&#34;outline-text-headline-2&#34; class=&#34;outline-text-3&#34;&gt;
+&lt;p&gt;
+Another option is to configure directly &lt;code class=&#34;verbatim&#34;&gt;/etc/nginx/nginx.conf&lt;/code&gt; and add as many server blocks as you need, within the http block. Here is the example used above alongside the shiny server. Remember to add the=map= parameter before the shiny block.&lt;/p&gt;
+&lt;pre class=&#34;example&#34;&gt;
+http{
+    ## Leave anything above untouch, add your blocks at the end
+
+    ## Example server
+    server {
+        root /var/www/example/;
+        server_name example.mydomain.com;
+
+        index index.html;
+
+        location / {
+            try_files $uri $uri/ uri.html =404;
+        }
+    }
+
+    ## Shiny server
+    map $http_upgrade $connection_upgrade {
+        default upgrade;
+        &amp;#39;&amp;#39;      close;
+    }
+
+    server {
+        root /var/www/shiny/; ## Don&amp;#39;t forget to create the folder
+        index index.html index.htm index.nginx-debian.html;
+
+        server_name shiny.myomain.com;
+
+        location /shiny/ {
+            proxy_pass http://127.0.0.1:3838/;
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection &amp;#34;upgrade&amp;#34;;
+            rewrite ^(/shiny/[^/]+)$ $1/ permanent;
+        }
+}
+&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;outline-container-headline-3&#34; class=&#34;outline-3&#34;&gt;
+&lt;h3 id=&#34;headline-3&#34;&gt;
+Adding a custom 404 page
+&lt;/h3&gt;
+&lt;div id=&#34;outline-text-headline-3&#34; class=&#34;outline-text-3&#34;&gt;
+&lt;p&gt;
+To add a custom 404 error page (or basically any error page) we could create it as part of our site and point Nginx to it. However, we can as well create and maintain only one page and share it for all or some of our domains.&lt;/p&gt;
+&lt;p&gt;
+You can create a some file like &lt;code class=&#34;verbatim&#34;&gt;custom_404.html&lt;/code&gt; in the path &lt;code class=&#34;verbatim&#34;&gt;/usr/share/nginx/html/&lt;/code&gt;, edit it to your liking and then add it to each server block where you want to use it. The Nginx code goes something like this:&lt;/p&gt;
+&lt;pre class=&#34;example&#34;&gt;
+error_page 404 /custom_404.html;
+    location = /custom_404.html {
+    root /usr/share/nginx/html;
+    internal;
+}
+&lt;/pre&gt;
+&lt;p&gt;
+We can also cover several errors by listing them to the parameter &lt;code class=&#34;verbatim&#34;&gt;error_page&lt;/code&gt;. Here is an example to cover several 500 errors.&lt;/p&gt;
+&lt;pre class=&#34;example&#34;&gt;
+
+error_page 500 502 503 504 /custom_50x.html;
+    location = /custom_50x.html {
+    root /usr/share/nginx/html;
+    internal;
+}
+&lt;/pre&gt;
+&lt;p&gt;
+In this case, Nginx will use whatever we have in &lt;code class=&#34;verbatim&#34;&gt;/usr/share/nginx/html/csutom_50x.html&lt;/code&gt; to show when the errors 500, 502, 503 and 504 appear.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;outline-container-headline-4&#34; class=&#34;outline-3&#34;&gt;
+&lt;h3 id=&#34;headline-4&#34;&gt;
+Final considerations
+&lt;/h3&gt;
+&lt;div id=&#34;outline-text-headline-4&#34; class=&#34;outline-text-3&#34;&gt;
+&lt;p&gt;
+Whichever steps you take, don&amp;#39;t forget to execute &lt;code class=&#34;verbatim&#34;&gt;sudo nginx -t&lt;/code&gt; when you make modifications to ensure that your configuration files and syntax are correct. The more often you run it, the easier will be to identify potential problems. &lt;/p&gt;
+&lt;p&gt;
+Also, don&amp;#39;t forget to check the &lt;a href=&#34;https://nginx.org/en/docs/&#34;&gt;Nginx documentation&lt;/a&gt;, it has a &lt;a href=&#34;https://nginx.org/en/docs/beginners_guide.html&#34;&gt;beginner&amp;#39;s guide&lt;/a&gt; and my favorite, a &lt;a href=&#34;https://www.nginx.com/resources/wiki/start/#&#34;&gt;getting started&lt;/a&gt; site with tons of examples.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+</description>
+    </item>
+    
     <item>
       <title>Map any region in the world with R - Part III: Programming with ggplot2</title>
       <link>https://blog.rwhitedwarf.com/post/map_any_region_with_ggplot2_part_iii/</link>
