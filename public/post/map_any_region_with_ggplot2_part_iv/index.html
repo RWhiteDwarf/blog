@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+<meta name="HandheldFriendly" content="True" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<meta name="generator" content="Hugo 0.113.0">
+
+
+<link rel="apple-touch-icon" sizes="180x180" href="favicon/RWD-apple-touch-icon.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="favicon/RWD-favicon-32x32.png" />
+<link rel="icon" type="image/png" sizes="16x16" href="favicon/RWD-favicon-16x16.png" />
+<link rel="manifest" href="favicon/site.webmanifest" />
+<link rel="shortcut icon" type="image/x-icon" href="favicon/RWD-favicon.ico" />
+<meta name="theme-color" content="#ffffff">
+
+
+
+<title>Map any region in the world with R - Part IV: Object Oriented Programming in R with S3 | R with White Dwarf</title>
+
+
+<meta name="author" content="Manuel Teodoro Tenango" />
+
+
+<meta name="description" content="Part of making maps of any region in the world with R using ggplot2 and maps packages: Object Oriented Programming" />
+
+
+<meta name="keywords" content="maps-app, R maps, OOP" />
+
+
+<meta property="og:title" content="Map any region in the world with R - Part IV: Object Oriented Programming in R with S3" />
+<meta name="twitter:title" content="Map any region in the world with R - Part IV: Object Oriented Programming in R with S3" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://blog.rwhitedwarf.com/post/map_any_region_with_ggplot2_part_iv/" /><meta property="og:description" content="Part of making maps of any region in the world with R using ggplot2 and maps packages: Object Oriented Programming" />
+<meta name="twitter:description" content="Part of making maps of any region in the world with R using ggplot2 and maps packages: Object Oriented Programming" /><meta property="og:image" content="https://blog.rwhitedwarf.com/post/2022/map_any_region_with_ggplot2_part_I/maps_DrawingMap.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://blog.rwhitedwarf.com/post/2022/map_any_region_with_ggplot2_part_I/maps_DrawingMap.png" /><meta property="article:published_time" content="2023-09-13T00:00:00+00:00" /><meta property="article:modified_time" content="2023-09-13T00:00:00+00:00" />
+
+
+<style>
+    @media (prefers-color-scheme: dark) {
+        body[data-theme='auto'] img {
+            filter: brightness(60%);
+        }
+    }
+
+    body[data-theme='dark'] img {
+        filter: brightness(60%);
+    }
+</style>
+
+
+
+
+<link rel="stylesheet" href="https://blog.rwhitedwarf.com/assets/css/fuji.min.css" />
+
+
+
+
+
+
+
+
+</head>
+
+<body
+  data-theme="auto"
+  data-theme-auto='true'
+  >
+    <script data-cfasync="false">
+  
+  var fujiThemeData = localStorage.getItem('fuji_data-theme');
+  
+  if (!fujiThemeData) {
+    localStorage.setItem('fuji_data-theme', 'auto');
+  } else {
+    
+    if (fujiThemeData !== 'auto') {
+      document.body.setAttribute('data-theme', fujiThemeData === 'dark' ? 'dark' : 'light');
+    }
+  }
+</script>
+
+    <header>
+    <div class="container-lg clearfix">
+        <div class="col-12 header">
+            <a class="title-main" href="https://blog.rwhitedwarf.com">R with White Dwarf</a>
+            
+            <span class="title-sub">A distant star coding in R</span>
+            
+        </div>
+    </div>
+</header>
+
+    <main>
+        <div class="container-lg clearfix">
+            
+            <div class="col-12 col-md-9 float-left content">
+                
+<article>
+    
+    <h2 class="post-item post-title">
+        <a href="https://blog.rwhitedwarf.com/post/map_any_region_with_ggplot2_part_iv/">Map any region in the world with R - Part IV: Object Oriented Programming in R with S3</a>
+    </h2>
+    <div class="post-item post-meta">
+        <span><i class="iconfont icon-today-sharp"></i>&nbsp;2023-09-13</span>
+
+<span><i class="iconfont icon-file-tray-sharp"></i>&nbsp;2854 words</span>
+
+<span><i class="iconfont icon-pricetags-sharp"></i>&nbsp;<a href="/tags/maps-app">maps-app</a>&nbsp;<a href="/tags/r-maps">R maps</a>&nbsp;<a href="/tags/oop">OOP</a>&nbsp;</span>
+
+    </div>
+    
+    <div class="post-content markdown-body">
+        <p>You can find all the posts on this series under the tag <a href="https://blog.rwhitedwarf.com/tags/maps-app/" title="#maps-app" target="_blank">maps-app</a> (including the Spanish versions).</p>
+<p>You can also find the current state of the project under <a href="https://github.com/teotenn" target="_blank">my GitHub</a> repo <a href="https://github.com/teotenn/mapic" target="_blank">mapic</a>.</p>
+<h1 id="scope-of-this-post">Scope of this post</h1>
+<p>We are creating maps of data showing changes over a span of time for different countries and pointing at all kinds of cities. That basically means that we need to <strong>map any region of the world with R</strong>. Today there are all kinds of packages and techniques to do that. I will share the strategy I used with <a href="https://cran.r-project.org/web/packages/ggplot2/index.html" target="_blank">ggplot2</a> and <a href="https://cran.r-project.org/web/packages/maps/index.html" target="_blank">maps</a> packages, using support of <a href="https://www.openstreetmap.org/" target="_blank">Open Street Map</a> to obtain the coordinates of cities and finally making it interactive with <a href="https://shiny.rstudio.com/" target="_blank">shiny</a>.</p>
+<p>This series of posts share my path towards the creation of the Shiny app. It is a live project and I decided to share my path and experiences along the creation process. The posts are not only about the Shiny app, but the package I created behind it, including topics of functions crafting, creation of the maps, classes of objects, etc., as well as any interesting issue that appear on the way. It is my way to contribute to the R community and at the same time keeping the project documented for myself.</p>
+<p>This post is about <strong>Object Oriented Programming in R using S3 objects</strong>.</p>
+<p>I hope you all enjoy it. Feel free to leave any kind of comment and/or question at the end.</p>
+<p><img class="img-zoomable" src="/post/2022/map_any_region_with_ggplot2_part_I/maps_DrawingMap.png" alt="R Maps" />
+</p>
+<h1 id="object-oriented-programming-and-r">Object oriented programming and R</h1>
+<p>R is a programming language that benefits greatly from the paradigm of functional programming. This is actually how most of R users utilize it and how it is recommended. However, it also offers the possibility of applying object oriented programming (OOP) paradigm which is the creation and use of objects with defined characteristics and methods. If you have never heard of this concept I recommend you to do a little research about it before getting deep into this post. I would recommend to start with the introduction to OOP of <a href="https://adv-r.hadley.nz/oo.html" target="_blank">Advanced R</a>. It is not my intention to explain OOP but rather to use it, in combination with functional programming, to support sharing information between functions.</p>
+<p>If you followed the <a href="/post/map_any_region_with_ggplot2_part_iii/">previous post</a> you might have noticed that at the <a href="/post/map_any_region_with_ggplot2_part_iii/#conclusions">conclusions</a> section I mentioned the use of OOP to extend our ggplot2 functions. The idea is to pass information between the functions to make the calculations more accurate rather than forcing the end user to repeat the information in each function. I mentioned the possibility of using environments, or the ggplot2 internal class <code>ggproto</code>. The use of environments has a different function than what I am trying to achieve here, while the <code>ggproto</code> objects are excellent to pass information between graphics created with <code>ggplot2</code> but they become complicated if we want to include any more information like data frames or lists of values. Therefore I decided to keep it simple with the use of S3 objects.</p>
+<p>S3 objects are the most commonly used in R packages, the recommended ones and apparently, the only ones used in base-r and stats packages. As <a href="https://adv-r.hadley.nz/s3.html" target="_blank">Hadley Wickham</a> says it:</p>
+<blockquote>
+<p>S3 is R’s first and simplest OO system. S3 is informal and ad hoc, but there is a certain elegance in its minimalism: you can’t take away any part of it and still have a useful OO system. For these reasons, you should use it, unless you have a compelling reason to do otherwise. S3 is the only OO system used in the base and stats packages, and it’s the most commonly used system in CRAN packages.</p>
+<p>S3 is very flexible, which means it allows you to do things that are quite ill-advised. If you’re coming from a strict environment like Java this will seem pretty frightening, but it gives R programmers a tremendous amount of freedom. It may be very difficult to prevent people from doing something you don’t want them to do, but your users will never be held back because there is something you haven’t implemented yet. Since S3 has few built-in constraints, the key to its successful use is applying the constraints yourself.</p>
+</blockquote>
+<h1 id="implementation-of-s3-class-objects-for-the-creation-of-the-maps">Implementation of S3 class objects for the creation of the maps</h1>
+<p>An S3 object in R is basically a structured list with a class name. It can be easily created by placing the list within the function <code>structure</code> and defining the <code>class</code>, <code>structure(list(...), class = c(&quot;class_name&quot;))</code>, or by creating the list first and then setting the class of that list. Then we create generics using the function <code>UseMethod()</code> and add methods for each class by appending the class name to the generic, followed by a dot (i.e., <code>my_generic.MyClass</code>, <code>my_generic.vector</code>, <code>my_generic.matrix</code>, etc.).</p>
+<p>Let&rsquo;s start with a simple example.</p>
+<h2 id="a-simple-s3-object-for-the-colors">A simple S3 object for the colors</h2>
+<p>We start by defining a function that initializes the object, our <strong>constructor</strong>. We should use this function to also check that our object contains the values that we need and throw some errors when there are mistakes.</p>
+<pre><code class="language-r">define_map_colors &lt;- function(dots_orgs,
+                              target_country,
+                              empty_countries,
+                              border_countries,
+                              oceans,
+                              text_cities,
+                              text_legend,
+                              background_legend,
+                              text_copyright) {
+  require(stringr)
+
+  ## Error handling
+  all_arguments &lt;- c(as.list(environment()))
+  for (arggs in all_arguments) {
+    stopifnot(&quot;All arguments must be character&quot; = is.character(arggs))
+    if (nchar(arggs) != 7) {
+      stop(&quot;Colors should be in hex notation&quot;)
+    }
+    if (!str_detect(arggs, &quot;^#&quot;)) {
+      stop(&quot;Colors should be in hex notation&quot;)
+    }
+  }
+
+  ## S3 object definition
+  structure(
+    list(
+      dots_orgs = dots_orgs,
+      target_country = target_country,
+      empty_countries = empty_countries,
+      border_countries = border_countries,
+      oceans = oceans,
+      text_cities = text_cities,
+      text_legend = text_legend,
+      background_legend = background_legend,
+      text_copyright = text_copyright),
+    class = c(&quot;map_colors&quot;))
+}
+</code></pre>
+<p>The function takes 9 arguments, each of them should be a color in hex notation, meaning that it must start with <code>#</code> and it must contain 6 alphanumeric characters (i.e., <code>#f0f0f0</code>). Thus, our error handling basically verifies that the parameters passed are of class <code>character</code> starting with <code>#</code> and containing exactly 7 symbols. Then, each of the 9 arguments is passed to a list within <code>structure</code> and set them to the class <code>map_colors</code>. And our object is created.</p>
+<pre><code class="language-r">default_map_colors &lt;- define_map_colors(dots_orgs = &quot;#493252&quot;,
+                               target_country = &quot;#8caeb4&quot;,
+                               empty_countries = &quot;#f3f3f3&quot;,
+                               border_countries = &quot;#9c9c9c&quot;,
+                               oceans = &quot;#4e91d2&quot;,
+                               text_cities = &quot;#a0a0a0&quot;,
+                               text_legend = &quot;#493252&quot;,
+                               background_legend = &quot;#ffffff&quot;,
+                               text_copyright = &quot;#f3f3f3&quot;)
+</code></pre>
+<p>This is the same list of colors used in our <a href="/post/map_any_region_with_ggplot2_part_iii/">previous post</a> by the <a href="/post/map_any_region_with_ggplot2_part_iii/#background-and-preliminaries">function that creates the maps</a>. If you check the class of our new list of colors, <code>class(default_map_colors)</code> it should be <code>map_colors</code>. Since our new object is also a list, we could use it indistinctly to create the maps. Thus, we need a method that verifies that our object is actually of the class <code>map_colors</code>. This is the <strong>validator</strong>. The method <code>is</code> already does that for other classes (i.e., <code>is.character()</code>) therefore, we can add our object to tell it how to handle it.</p>
+<pre><code class="language-r">is.map_colors &lt;- function(x) inherits(x, &quot;map_colors&quot;)
+
+is.map_colors(default_map_colors)
+</code></pre>
+<blockquote>
+<p>[1] TRUE</p>
+</blockquote>
+<p>The function is very simple, we just need to check if the object passed inherits the class. Now we can use <code>is.map_colors()</code> in all the functions that create maps in order to ensure that our new class is used rather than a simple list.</p>
+<h2 id="creating-a-new-object-within-a-function">Creating a new object within a function</h2>
+<p>Once again, I have made improvements to the function presented before, <a href="/post/map_any_region_with_ggplot2_part_iii/#background-and-preliminaries">my_country_prev</a>. This time the change is only one, almost by the end of the body: the addition of an S3 object that holds information which is used later by other functions that add layers to the map. It is not only about the colors, but we are also adding the values of the limits, so that other functions, such as labels creation, know about it. Since this version is more stable, I have also renamed it to a more formal name.</p>
+<pre><code class="language-r">base_map &lt;- function(country,
+                     x_limits = NULL,
+                     y_limits = NULL,
+                     show_coords = FALSE,
+                     return_mapic_obj = TRUE,
+                     map_colors = default_map_colors) {
+  require(maps)
+  require(ggplot2)
+
+  ## Verifying the arguments passed to the function
+  if (length(country) != 1) stop(&quot;Function supports only one country per map&quot;)
+  stopifnot(is.logical(show_coords))
+  stopifnot(&quot;Name of the country should be character&quot; = is.character(country))
+
+  if (!country %in% map_data(&quot;world&quot;)$region) {
+    stop(paste(&quot;Country name not recognized&quot;,
+               &quot;To see a list of recognized countries run&quot;,
+               &quot;&lt;unique(maps::map_data('world')$region)&gt;&quot;, sep = &quot;\n&quot;))
+  }
+
+  ## If coords limits missing, print worldwide map with coordinates system to allow
+  ## User observe coords for reference
+  if (missing(x_limits) || missing(y_limits)) {
+    warning(&quot;X and/or Y limits not provided.\nPrinting worldwide map.&quot;)
+    map_country_theme &lt;- theme(panel.background = element_rect(fill = map_colors$oceans))
+  } else if (show_coords) {
+    map_country_theme &lt;- theme(panel.background = element_rect(fill = map_colors$oceans))
+  } else {
+    if (length(x_limits) != 2 || length(y_limits) != 2 ||
+         !all(grepl(&quot;^-?[0-9.]+$&quot;, c(x_limits, y_limits)))) {
+      stop(&quot;Limits for X and Y coords should be provided as vectors with two numeric values&quot;)
+    } else {
+
+      ## Custom theme for the final map
+      map_country_theme &lt;- theme_bw() +
+        theme(panel.background = element_rect(fill = map_colors$oceans),
+              legend.position = &quot;none&quot;,
+              panel.grid.major = element_blank(),
+              panel.grid.minor = element_blank(),
+              axis.line = element_line(colour = &quot;black&quot;),
+              axis.title.x = element_blank(),
+              axis.text.x = element_blank(),
+              axis.ticks.x = element_blank(),
+              axis.title.y = element_blank(),
+              axis.text.y = element_blank(),
+              axis.ticks.y = element_blank())
+    }
+  }
+
+  ## Get the target cpuntry data
+  map_data_country &lt;- map_data(&quot;world&quot;)[map_data(&quot;world&quot;)$region == country, ]
+
+  ## The map
+  mapic &lt;- ggplot() +
+    ## First layer: worldwide map
+    geom_polygon(data = map_data(&quot;world&quot;),
+                 aes(x = long, y = lat, group = group),
+                 color = map_colors$border_countries,
+                 fill = map_colors$empty_countries) +
+    ## Second layer: Country map
+    geom_polygon(data = map_data_country,
+                 aes(x = long, y = lat, group = group),
+                 color = map_colors$border_countries,
+                 fill = map_colors$target_country) +
+    coord_map() +
+    coord_fixed(1.3,
+                xlim = x_limits,
+                ylim = y_limits) +
+    map_country_theme
+
+  if (return_mapic_obj) {
+    map_pointer &lt;- structure(
+      list(
+        mapic = mapic,
+        base_map = mapic,
+        x_limits = x_limits,
+        y_limits = y_limits,
+        colors = map_colors
+      ),
+      class = &quot;mapicHolder&quot;)
+    return(map_pointer)
+  } else {
+    return(mapic)
+  }
+}
+</code></pre>
+<p>The new <code>base_map</code> does the same as the previous <code>my_country_prev</code>: it creates the base map of a country. However, we have added the option to return a mapic object or not. When the option, <code>return_mapic_obj</code> is set to <code>FALSE</code>, the function behaves as before and it returns the map only. But when it is set as <code>TRUE</code>, it generates a new object of class <code>mapicHolder</code> that holds the information that will be piped to other functions as we mentioned above. Other changes are  minimal regarding style, the function still does the same.</p>
+<p>As you can see, the object does not necessarily has to be available to the end user for manipulation or modification. Here we can create 2 different objects to move forward with the creation of the maps and the end user does not need to know the structure or even the existence of the object. Thus, <code>spain &lt;- base_map(&quot;Spain&quot;)</code> will create an object with the base map for Spain, and <code>france &lt;- base_map(&quot;France&quot;)</code> creates a similar object for the base map of France. Each of them in an object of class <code>mapicHolder</code> that can be called later. The idea is to be able to use the information of each of them easily by the rest of the functions that add layers to our maps.</p>
+<h2 id="defining-our-own-methods">Defining our own methods</h2>
+<p>Now that we have our S3 object and we know how to modify methods, let&rsquo;s create a new method specially for it. We are going to replace our previous function <a href="/post/map_any_region_with_ggplot2_part_iii/#a-map-with-growing-dots-per-city">make_dots</a> for a method that works differently depending on the class of object that is passed. The initialization is pretty simple, it can be accomplished in one line:</p>
+<pre><code class="language-r">make_dots &lt;- function(x, ...) UseMethod(&quot;make_dots&quot;)
+</code></pre>
+<p>After this <code>make_dots</code> exists as a method which behavior we can modified based on the class of the object passed. Notice the ellipsis (the three dots <code>...</code>) in the function definition, they are necessary to ensure that all the arguments defined after our object (<code>x</code>) are taken into account as well.</p>
+<p>With this we can re-write the definition of our function <a href="/post/map_any_region_with_ggplot2_part_iii/#a-map-with-growing-dots-per-city">make_dots</a>, or in other words, its name, to have it as the default behavior. The body of the function remains the same.</p>
+<pre><code class="language-r">make_dots.default &lt;- function(.df,
+                      year,
+                      map_colors,
+                      column_names = list(
+                        lat = &quot;lat&quot;,
+                        lon = &quot;lon&quot;,
+                        cities = &quot;city&quot;,
+                        start_year = &quot;year&quot;,
+                        end_year = NULL),
+                      dot_size = 1) {
+  ...
+}
+</code></pre>
+<p>The function should be working as if no changes were done. The advantage is that now, we can create a second one, with the same name, which will behave differently when our object <code>mapicHolder</code> is used.</p>
+<pre><code class="language-r">make_dots.mapicHolder &lt;- function(.mapic_holder,
+                                        .df,
+                                        year,
+                                        column_names = list(
+                                          lat = &quot;lat&quot;,
+                                          lon = &quot;lon&quot;,
+                                          cities = &quot;city&quot;,
+                                          start_year = &quot;year&quot;,
+                                          end_year = NULL),
+                                        dot_size = 1) {
+  require(dplyr)
+  require(tidyr)
+  require(stringr)
+
+  column_names &lt;- column_names[lengths(column_names) != 0]
+  year__ &lt;- year
+
+  ## Check required fields
+  mandatory_cols &lt;- c(&quot;lat&quot;, &quot;lon&quot;, &quot;cities&quot;, &quot;start_year&quot;)
+  if (!all(mandatory_cols %in% names(column_names))) {
+    stop(&quot;Column names missing!&quot;)
+  } else {
+    if (!&quot;end_year&quot; %in% names(column_names)) {
+      .df$final_year &lt;- NA_real_
+      column_names[[&quot;end_year&quot;]] &lt;- &quot;final_year&quot;
+    }
+  }
+
+  ## Make map using default method
+  mapic_dots &lt;- make_dots(.df = .df,
+                          year = year__,
+                          map_colors = .mapic_holder$colors,
+                          column_names = column_names,
+                          dot_size = dot_size)
+
+  ## Papere the data
+  data_for_map &lt;- .df  %&gt;%
+    mutate_at(vars(column_names$end_year), ~replace_na(., year__ + 1)) %&gt;%
+    mutate(year_final = !!sym(column_names$end_year),
+           city_name = str_to_sentence(!!sym(column_names$cities))) %&gt;%
+    filter(year_final &gt; year__ &amp; !!sym(column_names$start_year) &lt;= year__) %&gt;%
+    group_by(city_name) %&gt;%
+    summarise(x = median(!!sym(column_names$lon), na.rm = TRUE),
+              y = median(!!sym(column_names$lat), na.rm = TRUE),
+              n = n())
+
+  ## Empty theme for labels
+  empty_theme &lt;- theme_bw() +
+    theme(legend.position = &quot;none&quot;,
+          panel.grid.major = element_blank(),
+          panel.grid.minor = element_blank(),
+          axis.line = element_line(colour = &quot;white&quot;),
+          axis.title.x = element_blank(),
+          axis.text.x = element_blank(),
+          axis.ticks.x = element_blank(),
+          axis.title.y = element_blank(),
+          axis.text.y = element_blank(),
+          axis.ticks.y = element_blank(),
+          plot.margin = unit(c(-0, -0, -0, -0), &quot;cm&quot;))
+
+  .mapic_holder[[&quot;theme_labels&quot;]] &lt;- empty_theme
+  .mapic_holder[[&quot;mapic_dots&quot;]] &lt;- mapic_dots
+  .mapic_holder[[&quot;year&quot;]] &lt;- year__
+  .mapic_holder[[&quot;data&quot;]] &lt;- list(base = .df, map = data_for_map)
+  .mapic_holder[[&quot;mapic&quot;]] &lt;- .mapic_holder[[&quot;mapic&quot;]] + mapic_dots
+  return(.mapic_holder)
+}
+</code></pre>
+<p>The new function is basically applying the default function to the data, but the parameters required are different: we now request the object of class <code>mapicHolder</code> but we don&rsquo;t need to request the <code>map_colors</code> because they come within the mentioned object. Additionally, we are adding additional data to our <code>mapicHolder</code> to be passed and used for more functions.</p>
+<p>Now we have two options to create the maps. One specifying every parameter like in the <a href="/posts/2023/programming_with_ggplot2">previous post</a> using the <code>.default</code> method:</p>
+<pre><code class="language-r">base_map(&quot;Mexico&quot;,
+                map_colors,
+                 x_limits = c(-118, -86),
+                 y_limits = c(14, 34),
+                 show_coords = T) +
+  make_dots(datmx,
+            year = 2022,
+            map_colors, column_names = col_names)
+</code></pre>
+<p>Or the new version where the <code>mapicHolder</code> can be piped from function to function:</p>
+<pre><code class="language-r">base_map(&quot;Mexico&quot;,
+         map_colors,
+         x_limits = c(-118, -86),
+         y_limits = c(14, 34),
+         show_coords = T) |&gt;
+  make_dots(datmx,
+            year = 2022,
+            column_names = col_names)
+</code></pre>
+<p>It has been a good exercise to learn the basis of S3 object but so far the differences between one and the other are minimal. Other than avoid repeating the list of colors, there is not much gain. However, all the information that we have gathered in our <code>mapicHolder</code> object has high value to create the labels accurately and to place them in a proper position.</p>
+<h2 id="passing-information-to-the-labels">Passing information to the labels</h2>
+<p>To have our map complete, we are going to pass our <code>mapicHolder</code> to the functions that print the years and the totals. As we did above, we first create our method and define its default behaviour.</p>
+<pre><code class="language-r">my_print_totals &lt;- function(x, ...) UseMethod(&quot;my_print_totals&quot;)
+
+my_print_totals.default &lt;- function(totals, map_colors, x_limits, y_limits, totals_label = &quot;Totals&quot;) {
+  ...
+}
+</code></pre>
+<p>You can find the <a href="/post/map_any_region_with_ggplot2_part_iii/#adding-labels-for-the-map">code of the original functions</a> in my previous post. Now for our new function we can basically remove all the parameters and add only a <code>mapicHolder</code> object, which already contains the rest of the information.</p>
+<pre><code class="language-r">my_print_totals.mapicHolder &lt;- function(.mapic_holder,
+                                        totals_label = &quot;Totals&quot;) {
+  data_totals &lt;- sum(.mapic_holder$data$map$n)
+  mapic_totals &lt;- my_print_totals(totals = data_totals,
+                                  x_limits = .mapic_holder$x_limits,
+                                  y_limits = .mapic_holder$y_limits,
+                                  totals_label = totals_label,
+                                  map_colors = .mapic_holder$colors)
+
+  .mapic_holder[[&quot;mapic_totals&quot;]] &lt;- mapic_totals
+  .mapic_holder[[&quot;totals&quot;]] &lt;- data_totals
+  .mapic_holder[[&quot;mapic&quot;]] &lt;- .mapic_holder[[&quot;mapic&quot;]] + mapic_totals
+  return(.mapic_holder)
+}
+</code></pre>
+<p>Basically the body of <code>my_print_totals.mapicHolder</code> consists of passing the right parameters to <code>my_print_totals.default</code>, and adding the new layer to the <code>mapicHolder</code>. We can do exactly the same for the years and we will have the complete map ready to be shown.</p>
+<h1 id="creating-the-map">Creating the map</h1>
+<p>Before we are able to pipe and show the map, we need a couple preparations more. In order to show the map when we call our object, rather than a bunch of information, we need to add our object class to <code>print</code>.</p>
+<pre><code class="language-r">print.mapicHolder &lt;- function(p) plot(p$mapic)
+</code></pre>
+<p>It will be useful to do the same for <code>plot</code>.</p>
+<pre><code class="language-r">plot.mapicHolder &lt;- function(p) plot(p$mapic)
+</code></pre>
+<p>Now we can simply pipe one function after the other and reduce the amount of arguments passed to each function.</p>
+<pre><code class="language-r">my_country_prev(&quot;Mexico&quot;,
+                map_colors,
+                x_coords,
+                y_coords,
+                show_coords = T) |&gt;
+  make_dots(rbind(datmx, datmx),
+            year = 2020,
+            col_names) |&gt;
+  my_print_years(year_label = &quot;Año&quot;) |&gt;
+  my_print_totals(totals_label = &quot;Totales&quot;)
+</code></pre>
+<p><img class="img-zoomable" src="/post/2023/map_any_region_with_ggplot2_part_III/unnamed-chunk-8-1.png" alt="plot of chunk unnamed-chunk-8" />
+</p>
+<h1 id="final-remarks">Final Remarks</h1>
+<p>Now we have not only a functional workflow for the creation of the maps, but also a more user friendly one. If it is true that it does not follow the standards of <code>ggplot2</code> of adding layers using <code>+</code>, it uses the R pipe introduced in version 4.0 (we can also use dplyr&rsquo;s pipe <code>%&gt;%</code>) which makes more sense, since it is the direction that R as a whole is taking.</p>
+<p>In the next post we will step back to the coordinates manipulation to implement a new system of objects to be able to use different types of databases. For now, our functions are able to use only <code>SQLite</code> and <code>data.frame</code> to store the information, which is fine for prototyping or for small projects, but very limited for production usage.</p>
+
+    </div>
+    <div class="bg-white dark:bg-warmgray-900 p-5 my-4">
+      <div class="post-comment">
+	<script src="https://utteranc.es/client.js"
+            repo="RWhiteDwarf/blog"
+            issue-term="pathname"
+            theme="github-light"
+            crossorigin="anonymous"
+            async>
+</script>
+
+      </div>
+    </div>
+</article>
+
+
+
+            </div>
+            <aside class="col-12 col-md-3 float-left sidebar">
+    
+    <div class="sidebar-item sidebar-pages">
+        <h3>Pages</h3>
+        <ul>
+            
+            <li>
+                <a href="/es/">Español</a>
+            </li>
+            
+            <li>
+                <a href="/">Home</a>
+            </li>
+            
+            <li>
+                <a href="/archives/">Archives</a>
+            </li>
+            
+            <li>
+                <a href="/about/">About</a>
+            </li>
+            
+            <li>
+                <a href="/search/">Search</a>
+            </li>
+            
+            <li>
+                <a href="/index.xml">RSS</a>
+            </li>
+            
+        </ul>
+    </div>
+    
+    <div class="sidebar-item sidebar-links">
+        <h3>Links</h3>
+        <ul>
+            
+            <li>
+                <a href="https://www.r-project.org/" target="_blank"><span>The R Project</span></a>
+            </li>
+            
+            <li>
+                <a href="https://www.r-bloggers.com/" target="_blank"><span>R Bloggers</span></a>
+            </li>
+            
+            <li>
+                <a href="https://www.bioconductor.org/" target="_blank"><span>Bioconductor</span></a>
+            </li>
+            
+        </ul>
+    </div>
+    
+    <div class="sidebar-item sidebar-tags">
+        <h3>Tags</h3>
+        <div>
+            
+            <span>
+                <a href="/tags/code-visuals/">Code Visuals</a>
+            </span>
+            
+            <span>
+                <a href="/tags/data-analysis/">data analysis</a>
+            </span>
+            
+            <span>
+                <a href="/tags/database/">database</a>
+            </span>
+            
+            <span>
+                <a href="/tags/docker/">docker</a>
+            </span>
+            
+            <span>
+                <a href="/tags/emacs/">emacs</a>
+            </span>
+            
+            <span>
+                <a href="/tags/ggplot2/">ggplot2</a>
+            </span>
+            
+            <span>
+                <a href="/tags/maps-app/">maps-app</a>
+            </span>
+            
+            <span>
+                <a href="/tags/minitutorial/">minitutorial</a>
+            </span>
+            
+            <span>
+                <a href="/tags/oop/">OOP</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-basics/">R basics</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-dev/">R-dev</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-funciones/">R funciones</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-functions/">R functions</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-mapas/">R mapas</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-maps/">R maps</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-shiny/">R shiny</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-tips/">R tips</a>
+            </span>
+            
+            <span>
+                <a href="/tags/recursion/">recursion</a>
+            </span>
+            
+            <span>
+                <a href="/tags/references/">references</a>
+            </span>
+            
+            <span>
+                <a href="/tags/referencias/">referencias</a>
+            </span>
+            
+            <span>
+                <a href="/tags/web-scrap/">web-scrap</a>
+            </span>
+            
+        </div>
+    </div>
+    <div class="sidebar-item sidebar-toc">
+        <h3>Table of Contents</h3><nav id="TableOfContents">
+  <ul>
+    <li><a href="#a-simple-s3-object-for-the-colors">A simple S3 object for the colors</a></li>
+    <li><a href="#creating-a-new-object-within-a-function">Creating a new object within a function</a></li>
+    <li><a href="#defining-our-own-methods">Defining our own methods</a></li>
+    <li><a href="#passing-information-to-the-labels">Passing information to the labels</a></li>
+  </ul>
+</nav></div>
+</aside>
+
+        </div>
+        <div class="btn">
+    <div class="btn-menu" id="btn-menu">
+        <i class="iconfont icon-grid-sharp"></i>
+    </div>
+    <div class="btn-toggle-mode">
+        <i class="iconfont icon-contrast-sharp"></i>
+    </div>
+    <div class="btn-scroll-top">
+        <i class="iconfont icon-chevron-up-circle-sharp"></i>
+    </div>
+</div>
+<aside class="sidebar-mobile" style="display: none;">
+  <div class="sidebar-wrapper">
+    
+    <div class="sidebar-item sidebar-pages">
+        <h3>Pages</h3>
+        <ul>
+            
+            <li>
+                <a href="/es/">Español</a>
+            </li>
+            
+            <li>
+                <a href="/">Home</a>
+            </li>
+            
+            <li>
+                <a href="/archives/">Archives</a>
+            </li>
+            
+            <li>
+                <a href="/about/">About</a>
+            </li>
+            
+            <li>
+                <a href="/search/">Search</a>
+            </li>
+            
+            <li>
+                <a href="/index.xml">RSS</a>
+            </li>
+            
+        </ul>
+    </div>
+    
+    <div class="sidebar-item sidebar-links">
+        <h3>Links</h3>
+        <ul>
+            
+            <li>
+                <a href="https://www.r-project.org/" target="_blank"><span>The R Project</span></a>
+            </li>
+            
+            <li>
+                <a href="https://www.r-bloggers.com/" target="_blank"><span>R Bloggers</span></a>
+            </li>
+            
+            <li>
+                <a href="https://www.bioconductor.org/" target="_blank"><span>Bioconductor</span></a>
+            </li>
+            
+        </ul>
+    </div>
+    
+    <div class="sidebar-item sidebar-tags">
+        <h3>Tags</h3>
+        <div>
+            
+            <span>
+                <a href="/tags/code-visuals/">Code Visuals</a>
+            </span>
+            
+            <span>
+                <a href="/tags/data-analysis/">data analysis</a>
+            </span>
+            
+            <span>
+                <a href="/tags/database/">database</a>
+            </span>
+            
+            <span>
+                <a href="/tags/docker/">docker</a>
+            </span>
+            
+            <span>
+                <a href="/tags/emacs/">emacs</a>
+            </span>
+            
+            <span>
+                <a href="/tags/ggplot2/">ggplot2</a>
+            </span>
+            
+            <span>
+                <a href="/tags/maps-app/">maps-app</a>
+            </span>
+            
+            <span>
+                <a href="/tags/minitutorial/">minitutorial</a>
+            </span>
+            
+            <span>
+                <a href="/tags/oop/">OOP</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-basics/">R basics</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-dev/">R-dev</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-funciones/">R funciones</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-functions/">R functions</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-mapas/">R mapas</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-maps/">R maps</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-shiny/">R shiny</a>
+            </span>
+            
+            <span>
+                <a href="/tags/r-tips/">R tips</a>
+            </span>
+            
+            <span>
+                <a href="/tags/recursion/">recursion</a>
+            </span>
+            
+            <span>
+                <a href="/tags/references/">references</a>
+            </span>
+            
+            <span>
+                <a href="/tags/referencias/">referencias</a>
+            </span>
+            
+            <span>
+                <a href="/tags/web-scrap/">web-scrap</a>
+            </span>
+            
+        </div>
+    </div>
+    
+    
+    
+    <div class="sidebar-item sidebar-toc">
+        <h3>Table of Contents</h3>
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#a-simple-s3-object-for-the-colors">A simple S3 object for the colors</a></li>
+    <li><a href="#creating-a-new-object-within-a-function">Creating a new object within a function</a></li>
+    <li><a href="#defining-our-own-methods">Defining our own methods</a></li>
+    <li><a href="#passing-information-to-the-labels">Passing information to the labels</a></li>
+  </ul>
+</nav>
+    </div>
+    
+    
+  </div>
+</aside>
+    </main>
+
+    <footer>
+    <div class="container-lg clearfix">
+        <div class="col-12 footer">
+            
+            <span>&copy; 2021-2023
+                <a href="https://blog.rwhitedwarf.com">R White Dwarf</a>
+                
+                | Powered by <a href="https://github.com/dsrkafuu/hugo-theme-fuji/"
+                   target="_blank">Fuji-v2</a> &amp; <a href="https://gohugo.io/"
+                                                    target="_blank">Hugo</a> 
+            </span>
+        </div>
+    </div>
+</footer>
+
+    
+<script defer src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.6/dist/medium-zoom.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/lazysizes@5.3.2/lazysizes.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/prismjs@1.27.0/components/prism-core.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/prismjs@1.27.0/plugins/autoloader/prism-autoloader.min.js"></script>
+
+
+
+<script defer src="/assets/js/fuji.min.js"></script>
+
+
+
+</body>
+
+</html>
